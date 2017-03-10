@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_home" />
+        android:title="@string/title_home"
+        android:enabled="true"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_dashboard"
+        android:enabled="true"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/recording"
         android:icon="@drawable/recording"
-        android:title="Recording" />
+        android:title="Recording"
+        android:enabled="true"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/profil"
         android:icon="@drawable/user"
-        android:title="Profil" />
+        android:title="Profil"
+        android:enabled="true"
+        app:showAsAction="ifRoom" />
 </menu>

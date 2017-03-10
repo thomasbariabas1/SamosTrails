@@ -117,6 +117,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
 
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
+        hsv  = (ScrollView) view.findViewById(R.id.sv);
         mMapView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v,MotionEvent ev) {
@@ -138,7 +139,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
                 return true;
             }
         });
-        hsv  = (ScrollView) view.findViewById(R.id.sv);
+
 
         return view;
     }

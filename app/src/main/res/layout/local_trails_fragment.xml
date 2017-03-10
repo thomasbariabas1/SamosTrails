@@ -10,7 +10,7 @@
         android:text="Favorite Trails"
         android:textSize="30sp"
         android:gravity="center"
-        android:background="@color/colorPrimary"
+        android:background="@color/downHeader"
         android:textColor="#FFFFFF"
         />
     <GridView

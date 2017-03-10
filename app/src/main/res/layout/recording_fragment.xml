@@ -1,23 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="gr.aegean.com.samostrails.MainActivity">
+    tools:context=".MainActivity" >
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/recordingmap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <ImageView
-        android:id="@+id/truiton_image"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/recording"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/downHeader">
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recordingmapinfo"
+            android:text="TesT Text"/>
 
-    <TextView
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/setRangeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/truiton_image"
-        android:layout_centerHorizontal="true"
-        android:text="Fragment 1"
-        android:textSize="30sp"/>
-
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/norecording"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>
