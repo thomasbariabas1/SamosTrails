@@ -1,41 +1,30 @@
 package gr.aegean.com.samostrails.Adapters;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import gr.aegean.com.samostrails.Models.Trail;
 import gr.aegean.com.samostrails.R;
-import gr.aegean.com.samostrails.Utilities;
 
 
-public class AdapterTrails extends BaseAdapter {
+public class AdapterTrailsOffline extends BaseAdapter {
     private final List<Item> mItems = new ArrayList<Item>();
     private  LayoutInflater mInflater = null;
     ArrayList<Trail> trails;
-    public AdapterTrails(Context context,ArrayList<Trail> trails) {
+    public AdapterTrailsOffline(Context context,ArrayList<Trail> trails) {
 
         if (context != null) {
             mInflater = LayoutInflater.from(context);
         }
         this.trails=trails;
-        //Log.e("test","view");
         for(Trail trail:trails){
-            //Log.e("test","view"+trail);
             mItems.add(new Item(trail.getTitle(),trail.getImage(),trail.getTrailId()));
         }
     }
@@ -68,40 +57,12 @@ public class AdapterTrails extends BaseAdapter {
             v.setTag(R.id.text, v.findViewById(R.id.text));
             v.setTag(R.id.trailid,v.findViewById(R.id.trailid));
         }
-       // Log.e("test","view"+v);
         picture = (ImageView) v.getTag(R.id.picture);
         name = (TextView) v.getTag(R.id.text);
         trailid = (TextView)v.getTag(R.id.trailid);
-       // Log.e("test","view"+v);
         Item item = getItem(i);
         final Bitmap[] bmp = new Bitmap[1];
-        //Log.e("test","view"+v);
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    Log.e("inside do background","before if");
-                    if(Utilities.isNetworkAvailable(mInflater.getContext())) {
-                        InputStream in = new URL(trails.get(i).getImage()).openStream();
-                        bmp[0] = BitmapFactory.decodeStream(in);
-                        trails.get(i).setDownlImage(bmp[0]);
-                    }
-                    Log.e("inside do background","after if");
-                } catch (Exception e) {
-                    // log error
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                Log.e("inside do PostExecute","before if"+trails.get(i).getDownlImage());
-
-              picture.setImageBitmap(trails.get(i).getDownlImage());
-
-            }
-
-        }.execute();
+        picture.setImageBitmap(trails.get(i).getDownlImage());
         trailid.setVisibility(View.GONE);
         name.setText(item.name);
         trailid.setText(String.valueOf(item.trailid));

@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +29,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 
 import gr.aegean.com.samostrails.Models.Trail;
+import gr.aegean.com.samostrails.SQLDb.TrailDb;
 
 
 public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback {
@@ -49,6 +52,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
     private TextView OtherTransports;
     private TextView ConnectionToOtherTrails;
     private Trail trail;
+    private Button SaveTrail;
     ScrollView hsv;
     public static TrailInfoFragment newInstance() {
         TrailInfoFragment fragment = new TrailInfoFragment();
@@ -78,6 +82,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
          ChildrenFriendly=(TextView) view.findViewById(R.id.childrenfriendly);
          OtherTransports=(TextView) view.findViewById(R.id.othertransport);
          ConnectionToOtherTrails=(TextView) view.findViewById(R.id.connectiontoothertrails);
+        SaveTrail = (Button) view.findViewById(R.id.savetrail);
         Bundle bundle = getArguments();
          trail = (Trail) bundle.getParcelable("trail");
         //TrailImage.setImageBitmap(trail.getDownlImage());
@@ -93,19 +98,54 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         ChildrenFriendly.setText(String.valueOf(trail.isChildren_Friedly()));
         OtherTransports.setText(trail.getOtherTransport());
         ConnectionToOtherTrails.setText(trail.getConnectionToOtherTrails());
+        if (TrailDb.ifExists(trail,TrailDb.initiateDB(getActivity()))){
+          SaveTrail.setVisibility(View.GONE);
+        }
+        SaveTrail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!TrailDb.ifExists(trail,TrailDb.initiateDB(getActivity()))){
+                    TrailDb.insertIntoDb(trail, TrailDb.initiateDB(getActivity()));
+            }else{
+                    Toast.makeText(getActivity(),"Trail is already in your collection!!",Toast.LENGTH_LONG).show();
 
-
+                }
+            }
+        });
         MapsInitializer.initialize(this.getActivity());
         mMapView = (MapView) view.findViewById(R.id.map);
+
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
-        hsv  = (ScrollView) view.findViewById(R.id.scrollView);
+        mMapView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v,MotionEvent ev) {
+                Log.e("inside event","-------------------------");
+                int action = ev.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        Log.e("inside event","-------------------------");
+                        ((ScrollView) v.findViewById(R.id.sv)).requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        Log.e("inside event","-------------------------");
+                        ((ScrollView) v.findViewById(R.id.sv)).requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+
+                return true;
+            }
+        });
+        hsv  = (ScrollView) view.findViewById(R.id.sv);
+
         return view;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //Log.e("To split","asddsds");
+
         mMap = googleMap;
         setUpMap();
     }
@@ -120,7 +160,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
        // Log.e("To split",""+first);
         String[] commatokens = toSplit.split(",");
         for (String commatoken : commatokens) {
-            Log.e("commatoken","-" + commatoken + "-");
+           // Log.e("commatoken","-" + commatoken + "-");
             coordinates.add(commatoken);
         }
         for (int i = 0; i < coordinates.size(); i++) {
@@ -139,7 +179,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
 
                linestring.add(tokens[j]);
 
-                Log.e("tokens",""+  tokens[j]);
+              //  Log.e("tokens",""+  tokens[j]);
             }
 
 
@@ -163,37 +203,20 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
             LatLng dest = fullline.get(i + 1);
 
             // mMap is the Map Object
-            Polyline line = mMap.addPolyline(
-                    new PolylineOptions().add(
+             mMap.addPolyline(new PolylineOptions().add(
                             new LatLng(src.latitude, src.longitude),
                             new LatLng(dest.latitude,dest.longitude)
-                    ).width(5).color(Color.BLUE).geodesic(true)
-            );
+                    ).width(5).color(Color.BLUE).geodesic(true));
         }
         for(LatLng i :fullpoints ){
             mMap.addMarker(new MarkerOptions().position(i));
         }
 
-        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(fullpoints.get(0) , 13.0f) );
+        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(fullpoints.get(1) , 13.0f) );
 
 
 
-        mMapView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        Log.e("mesa","dasdas");
-                        hsv.requestDisallowInterceptTouchEvent(true);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        hsv.requestDisallowInterceptTouchEvent(true);
-                        break;
-                }
-                return mMapView.onTouchEvent(event);
-            }
-        });
+
     }
 
     public void onResume() {
@@ -228,4 +251,6 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         }
         return temp;
     }
+
+
 }

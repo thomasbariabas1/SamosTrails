@@ -3,20 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="gr.aegean.com.samostrails.MainActivity">
-
-    <ImageView
-        android:id="@+id/truiton_image"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/user"/>
-
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/truiton_image"
         android:layout_centerHorizontal="true"
-        android:text="Fragment 1"
-        android:textSize="30sp"/>
+        android:text="Favorite Trails"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF"
+        />
+    <GridView
+        android:id="@+id/gridview2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:verticalSpacing="3dp"
+        android:horizontalSpacing="3dp"
+        android:stretchMode="columnWidth"
+        android:numColumns="2"
+        android:paddingTop="40dp"
+
+
+        />
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/nofoundimage"
+        android:visibility="invisible"
+        android:src="@drawable/nofoundimage"
+        />
 
 </RelativeLayout>

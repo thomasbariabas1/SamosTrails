@@ -30,9 +30,6 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.recording:
                     selectedFragment = RecordingFragment.newInstance();
                     break;
-                case R.id.navigation_notifications:
-                    selectedFragment = NotificationFragment.newInstance();
-                    break;
                 case R.id.profil:
                     selectedFragment = ProfilFragment.newInstance();
                     break;

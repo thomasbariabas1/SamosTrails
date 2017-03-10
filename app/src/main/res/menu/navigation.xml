@@ -15,10 +15,7 @@
         android:id="@+id/recording"
         android:icon="@drawable/recording"
         android:title="Recording" />
-    <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/title_notifications" />
+
     <item
         android:id="@+id/profil"
         android:icon="@drawable/user"

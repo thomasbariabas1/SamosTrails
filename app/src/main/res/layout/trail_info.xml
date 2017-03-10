@@ -6,15 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="gr.aegean.com.samostrails.MainActivity"
-    android:id="@+id/scrollView">
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="gr.aegean.com.samostrails.TrailInfoFragment">
+    android:id="@+id/sv">
+
 
     <FrameLayout
         android:id="@+id/content"
@@ -38,10 +31,7 @@
                     android:textColor="#ffffff"
                     android:background="@color/colorPrimaryDark"
                     />
-                <com.google.android.gms.maps.MapView
-                    android:id="@+id/map"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp" />
+
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -62,6 +52,10 @@
                     android:shadowDy="0"
                     android:shadowRadius="1"
                     />
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/map"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -234,12 +228,14 @@
                     android:shadowDy="0"
                     android:shadowRadius="1"
                     />
-
+                    <android.support.v7.widget.AppCompatButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Save Trail"
+                        android:id="@+id/savetrail"/>
 
             </LinearLayout>
 
     </FrameLayout>
 
-
-</LinearLayout>
 </ScrollView>

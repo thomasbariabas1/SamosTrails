@@ -28,10 +28,21 @@
         />
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/nofoundimage"
         android:visibility="invisible"
         android:src="@drawable/nofoundimage"
+        android:gravity="center"
+        android:layout_marginTop="200dp"
         />
-
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No Internet Found"
+            android:visibility="invisible"
+            android:id="@+id/nointernetfount"
+            android:layout_marginTop="300dp"
+            android:gravity="center"
+            android:textSize="30dp"
+            />
 </RelativeLayout>

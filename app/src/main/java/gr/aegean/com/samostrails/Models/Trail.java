@@ -1,9 +1,13 @@
 package gr.aegean.com.samostrails.Models;
 
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.BaseColumns;
 
 import java.util.ArrayList;
 
@@ -50,6 +54,7 @@ public class Trail implements Parcelable {
         this.Video=Video;
     }
 
+    public boolean getChildrenFriendly(){return this.Children_Friedly;}
     public void setConnectionToOtherTrails(String connectionToOtherTrails) {
         ConnectionToOtherTrails = connectionToOtherTrails;
     }
@@ -186,6 +191,11 @@ public class Trail implements Parcelable {
     public void setTrailId(int trailId) {
         TrailId = trailId;
     }
+
+
+
+
+    //Parceble----
 
     protected Trail(Parcel in) {
         Children_Friedly = in.readByte() != 0x00;

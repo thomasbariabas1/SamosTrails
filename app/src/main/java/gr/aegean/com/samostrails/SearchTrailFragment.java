@@ -28,6 +28,7 @@ import gr.aegean.com.samostrails.Models.DifficultyLevel;
 import gr.aegean.com.samostrails.Models.DistanceLevel;
 import gr.aegean.com.samostrails.Models.KindOfTrail;
 import gr.aegean.com.samostrails.Models.Trail;
+import gr.aegean.com.samostrails.SQLDb.TrailDb;
 
 import static android.R.attr.fragment;
 import static android.content.ContentValues.TAG;
@@ -37,6 +38,7 @@ public class SearchTrailFragment extends Fragment{
     private ProgressDialog pDialog;
     private GridView lv;
     private ImageView nofoundimage;
+    private TextView nointernetfound;
     private static String url = "http://test.samostrails.com/trail-webservice";
     ArrayList<Trail> TrailsArray = new ArrayList<>();
     public static SearchTrailFragment newInstance() {
@@ -56,16 +58,20 @@ public class SearchTrailFragment extends Fragment{
 
         lv = (GridView) view.findViewById (R.id.gridview);
         nofoundimage = (ImageView) view.findViewById(R.id.nofoundimage);
+        nointernetfound= (TextView) view.findViewById(R.id.nointernetfount);
 
         if(Utilities.isNetworkAvailable(getActivity())) {
             lv.setVisibility(View.VISIBLE);
-            nofoundimage.setVisibility(View.INVISIBLE);
+            nofoundimage.setVisibility(View.GONE);
+            nointernetfound.setVisibility(View.GONE);
             new GetTrails().execute();
 
         }else{
             lv.setVisibility(View.INVISIBLE);
             nofoundimage.setVisibility(View.VISIBLE);
+            nointernetfound.setVisibility(View.VISIBLE);
         }
+       // TrailDb.deleteAll(TrailDb.initiateDB(getActivity()));
         return view;
     }
     private class GetTrails extends AsyncTask<Void, Void, Void> {
