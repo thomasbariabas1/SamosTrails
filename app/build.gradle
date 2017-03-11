@@ -33,4 +33,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:10.2.0'
     testCompile 'junit:junit:4.12'
     compile 'com.google.android.gms:play-services-maps:10.2.0'
+    compile 'com.mcxiaoke.volley:library-aar:1.0.0'
 }

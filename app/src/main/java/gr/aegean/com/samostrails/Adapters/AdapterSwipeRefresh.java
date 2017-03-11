@@ -25,7 +25,7 @@ import gr.aegean.com.samostrails.Utilities;
  * Created by Ravi on 13/05/15.
  */
 public class AdapterSwipeRefresh extends BaseAdapter {
-    private final List<Item> mItems = new ArrayList<AdapterSwipeRefresh.Item>();
+    private final List<Item> mItems = new ArrayList<>();
     private  LayoutInflater mInflater = null;
     ArrayList<Trail> trails;
 
@@ -83,13 +83,12 @@ public class AdapterSwipeRefresh extends BaseAdapter {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    Log.e("inside do background","before if");
                     if(Utilities.isNetworkAvailable(mInflater.getContext())) {
                         InputStream in = new URL(trails.get(i).getImage()).openStream();
                         bmp[0] = BitmapFactory.decodeStream(in);
                         trails.get(i).setDownlImage(bmp[0]);
                     }
-                    Log.e("inside do background","after if");
+
                 } catch (Exception e) {
                     // log error
                 }
@@ -98,7 +97,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
 
             @Override
             protected void onPostExecute(Void result) {
-                Log.e("inside do PostExecute","before if"+trails.get(i).getDownlImage());
+
 
                 picture.setImageBitmap(trails.get(i).getDownlImage());
 

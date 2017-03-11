@@ -3,10 +3,13 @@ package gr.aegean.com.samostrails;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Movie;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import  android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +18,15 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +34,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import gr.aegean.com.samostrails.API.GetTrails;
 import gr.aegean.com.samostrails.API.HttpHandler;
+import gr.aegean.com.samostrails.Adapters.AdapterSwipeRefresh;
 import gr.aegean.com.samostrails.Adapters.AdapterTrails;
 import gr.aegean.com.samostrails.Models.DifficultyLevel;
 import gr.aegean.com.samostrails.Models.DistanceLevel;
@@ -34,8 +48,8 @@ import static android.R.attr.fragment;
 import static android.content.ContentValues.TAG;
 
 
-public class SearchTrailFragment extends Fragment{
-    private ProgressDialog pDialog;
+public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+    private SwipeRefreshLayout swipeRefreshLayout;
     private GridView lv;
     private ImageView nofoundimage;
     private TextView nointernetfound;
@@ -55,115 +69,35 @@ public class SearchTrailFragment extends Fragment{
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.explore, container, false);
         // Inflate the layout for this fragment
-
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         lv = (GridView) view.findViewById (R.id.gridview);
         nofoundimage = (ImageView) view.findViewById(R.id.nofoundimage);
         nointernetfound= (TextView) view.findViewById(R.id.nointernetfount);
+
+        swipeRefreshLayout.setOnRefreshListener(this);
+
 
         if(Utilities.isNetworkAvailable(getActivity())) {
             lv.setVisibility(View.VISIBLE);
             nofoundimage.setVisibility(View.GONE);
             nointernetfound.setVisibility(View.GONE);
-            if(TrailsArray.size()==0) {
-                new GetTrails().execute();
-            }else{
-                initiate();
-            }
+
+                swipeRefreshLayout.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                swipeRefreshLayout.setRefreshing(true);
+                                                fetchTrails();
+
+                                            }
+                                        }
+                );
+
         }else{
             lv.setVisibility(View.INVISIBLE);
             nofoundimage.setVisibility(View.VISIBLE);
             nointernetfound.setVisibility(View.VISIBLE);
         }
        // TrailDb.deleteAll(TrailDb.initiateDB(getActivity()));
-        return view;
-    }
-    private class GetTrails extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpHandler sh = new HttpHandler();
-
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url);
-
-
-            if (jsonStr != null) try {
-
-                JSONObject jsonObj = new JSONObject(jsonStr);
-
-                // Getting JSON Array node
-                JSONArray trails = jsonObj.getJSONArray("nodes");
-
-
-                // looping through All Contacts
-                for (int i = 0; i < trails.length(); i++) {
-                    JSONObject z = trails.getJSONObject(i);
-                    JSONObject c = z.getJSONObject("node");
-                    JSONObject image = c.getJSONObject("Image");
-
-                    TrailsArray.add(new Trail(!c.getString("Children Friedly").equals("No") , Integer. parseInt(c.getString("Entity ID")),
-                            DifficultyLevel.valueOf(c.getString("Difficulty Level")), DistanceLevel.valueOf(c.getString("Distance Level").equals("Long (>3km)") ? "Long" : "Short"),
-                            KindOfTrail.valueOf(c.getString("Kind of trail").equals("One Way") ? "OneWay" : "Loop"), image.getString("src").replace("\\", ""), c.getString("Leaflet"),
-                            Double.parseDouble(c.getString("Distance").replaceAll("\\D+", "")), c.getString("Title"),c.getString("CONNECTION TO OTHER TRAILS"),
-                            c.getString("Description"),c.getString("MAIN SIGHTS"),c.getString("Other Transport"),c.getString("STARTING POINT"),c.getString("Tips"),c.getString("Video")));
-
-
-
-
-                }
-            } catch (final JSONException e) {
-                Log.e(TAG, "Json parsing error: " + e.getMessage());
-
-
-            }
-            else {
-                Log.e(TAG, "Couldn't get json from server.");
-
-
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-
-            initiate();
-
-
-
-        }
-
-    }
-
-
-    public void initiate(){
-
-        AdapterTrails adbTrails;
-
-
-//then populate myListItems
-
-
-        adbTrails= new AdapterTrails (getActivity(),  TrailsArray);
-
-        lv.setAdapter(adbTrails);
-
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -178,7 +112,105 @@ public class SearchTrailFragment extends Fragment{
 
             }
         });
+        return view;
     }
+
+    @Override
+    public void onRefresh() {
+
+            if (Utilities.isNetworkAvailable(getActivity())) {
+
+                lv.setVisibility(View.VISIBLE);
+                nofoundimage.setVisibility(View.GONE);
+                nointernetfound.setVisibility(View.GONE);
+                
+
+                    fetchTrails();
+
+            } else {
+                lv.setVisibility(View.INVISIBLE);
+                nofoundimage.setVisibility(View.VISIBLE);
+                nointernetfound.setVisibility(View.VISIBLE);
+                Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }
+
+
+
+
+    private void fetchTrails() {
+
+        // showing refresh animation before making http call
+        swipeRefreshLayout.setRefreshing(true);
+
+        JsonObjectRequest req= new JsonObjectRequest(Request.Method.GET,url,null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+                        if (response!=null) {
+
+                            JSONArray trails = null;
+                            // Getting JSON Array node
+                            try {
+                                trails= response.getJSONArray("nodes");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            TrailsArray.clear();
+                            // looping through json and adding to movies list
+                            for (int i = 0; i < trails.length(); i++) {
+                                try {
+                                    JSONObject z = trails.getJSONObject(i);
+                                    JSONObject c = z.getJSONObject("node");
+                                    JSONObject image = c.getJSONObject("Image");
+
+                                    TrailsArray.add(new Trail(!c.getString("Children Friedly").equals("No") , Integer. parseInt(c.getString("Entity ID")),
+                                            DifficultyLevel.valueOf(c.getString("Difficulty Level")), DistanceLevel.valueOf(c.getString("Distance Level").equals("Long (>3km)") ? "Long" : "Short"),
+                                            KindOfTrail.valueOf(c.getString("Kind of trail").equals("One Way") ? "OneWay" : "Loop"), image.getString("src").replace("\\", ""), c.getString("Leaflet"),
+                                            Double.parseDouble(c.getString("Distance").replaceAll("\\D+", "")), c.getString("Title"),c.getString("CONNECTION TO OTHER TRAILS"),
+                                            c.getString("Description"),c.getString("MAIN SIGHTS"),c.getString("Other Transport"),c.getString("STARTING POINT"),c.getString("Tips"),c.getString("Video")));
+
+
+
+
+
+                                } catch (JSONException e) {
+                                    Log.e(TAG, "JSON Parsing error: " + e.getMessage());
+                                }
+                            }
+
+
+                            lv.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray));
+
+
+                        }
+
+                        // stopping swipe refresh
+                        swipeRefreshLayout.setRefreshing(false);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Server Error: " + error.getMessage());
+
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
+
+                // stopping swipe refresh
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+
+
+        // Adding request to request queue
+        RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        queue.add(req);
+    }
+
     public void onResume() {
         Log.e("DEBUG", "onResume of Search");
         super.onResume();
