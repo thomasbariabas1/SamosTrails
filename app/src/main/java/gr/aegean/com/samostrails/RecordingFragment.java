@@ -38,11 +38,11 @@ import java.util.ArrayList;
 public class RecordingFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
     private static final String TAG = MainActivity.class.getSimpleName();
-    int i = 0;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
 
     private Location mLastLocation;
-    private ArrayList<LatLng> TrailLatLon = new ArrayList<>();
+    private ArrayList<LatLng> TrailLatLonLineString = new ArrayList<>();
+    private ArrayList<LatLng> TrailLatLonPoint = new ArrayList<>();
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
 
@@ -62,7 +62,6 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     // UI elements
     private TextView lblLocation;
     private ImageButton btnStartLocationUpdates;
-
     public static RecordingFragment newInstance() {
         RecordingFragment fragment = new RecordingFragment();
         return fragment;
@@ -78,8 +77,8 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recording_fragment, container, false);
         lblLocation = (TextView) view.findViewById(R.id.recordingmapinfo);
-        // btnShowLocation = (Button) view.findViewById(R.id.btnShowLocation);
         btnStartLocationUpdates = (ImageButton) view.findViewById(R.id.setRangeButton);
+        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording));
         mMapView = (MapView) view.findViewById(R.id.recordingmap);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
@@ -114,6 +113,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         return view;
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -123,7 +123,6 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         }
     }
 
-    @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
@@ -134,11 +133,18 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
             startLocationUpdates();
         }
     }
-
+    public void drawMap(){
+        if(TrailLatLonLineString.size()!=0) {
+            for (LatLng latlng : TrailLatLonLineString) {
+                mMap.addPolyline(new PolylineOptions().add(latlng));
+            }
+            mMap.addMarker(new MarkerOptions().position(TrailLatLonPoint.get(0)));
+        }
+    }
     @Override
     public void onStop() {
         super.onStop();
-        mMapView.onStop();
+        //mMapView.onStop();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -155,7 +161,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Method to display the location on UI
      * */
     private void displayLocation() {
-        Log.e("insdide display ln", "locattions");
+
 
         Log.e("insdide display ln", "locattions");
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -169,18 +175,18 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
             return;
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.e("insdide display ln", "after location services");
-        Log.e("insdide display ln", "locattions" + mLastLocation);
+
+
         if (mLastLocation != null) {
             LastLat= mLastLocation.getLatitude();
             LastLon = mLastLocation.getLongitude();
-
+            TrailLatLonPoint.add(new LatLng(LastLat,LastLon));
         } else {
 
             lblLocation
                     .setText("(Couldn't get the location. Make sure location is enabled on the device)");
         }
-        TrailLatLon.add(new LatLng(LastLat,LastLon));
+
 
         mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 12.0f) );
 
@@ -190,12 +196,16 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Method to toggle periodic location updates
      * */
     private void togglePeriodicLocationUpdates() {
-        if (!mRequestingLocationUpdates) {
-            // Changing the button text
-            btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.recording) );
-            mMap.addMarker(new MarkerOptions().position(new LatLng(LastLat,LastLon)));
-            mRequestingLocationUpdates = true;
 
+        Log.e(TAG,"inside toggle periodic");
+        if (!mRequestingLocationUpdates) {
+            Log.e(TAG,"insied start");
+            // Changing the button text
+
+            mMap.addMarker(new MarkerOptions().position(new LatLng(LastLat,LastLon)));
+            TrailLatLonPoint.add(new LatLng(LastLat,LastLon));
+            mRequestingLocationUpdates = true;
+            Log.e(TAG,"");
             // Starting the location updates
             startLocationUpdates();
 
@@ -203,8 +213,8 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
         } else {
             // Changing the button text
-            btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording) );
 
+            Log.e("inside stop","");
             mRequestingLocationUpdates = false;
 
             // Stopping the location updates
@@ -260,7 +270,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Starting the location updates
      * */
     protected void startLocationUpdates() {
-
+        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.recording) );
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -282,8 +292,9 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
                         LastLat=Latitude;
                         LastLon=Longtitude;
                         lblLocation.setText(LastLat + ", " + LastLon);
-                        TrailLatLon.add(new LatLng(LastLat,LastLon));
+                        TrailLatLonLineString.add(new LatLng(LastLat,LastLon));
                         mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 13.0f) );
+                        Log.e("inside periodic",""+new LatLng(LastLat,LastLon));
                     }
                 });
 
@@ -293,11 +304,13 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Stopping location updates
      */
     protected void stopLocationUpdates() {
+        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording) );
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, new com.google.android.gms.location.LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 location.getLatitude();
                 location.getLongitude();
+                Log.e("inside periodic stop",""+new LatLng( location.getLatitude(),location.getLongitude()));
             }
         });
     }
@@ -362,11 +375,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
     private void setUpMap() {
 
-      displayLocation();
-
-
-
-
+        drawMap();
 
 
     }

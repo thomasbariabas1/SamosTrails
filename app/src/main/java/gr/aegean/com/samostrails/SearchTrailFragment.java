@@ -64,8 +64,11 @@ public class SearchTrailFragment extends Fragment{
             lv.setVisibility(View.VISIBLE);
             nofoundimage.setVisibility(View.GONE);
             nointernetfound.setVisibility(View.GONE);
-            new GetTrails().execute();
-
+            if(TrailsArray.size()==0) {
+                new GetTrails().execute();
+            }else{
+                initiate();
+            }
         }else{
             lv.setVisibility(View.INVISIBLE);
             nofoundimage.setVisibility(View.VISIBLE);
@@ -93,8 +96,7 @@ public class SearchTrailFragment extends Fragment{
 
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url);
-            Log.e("jsonStr",jsonStr);
-            Log.e(TAG, "Response from url: " + jsonStr);
+
 
             if (jsonStr != null) try {
 
@@ -116,7 +118,7 @@ public class SearchTrailFragment extends Fragment{
                             Double.parseDouble(c.getString("Distance").replaceAll("\\D+", "")), c.getString("Title"),c.getString("CONNECTION TO OTHER TRAILS"),
                             c.getString("Description"),c.getString("MAIN SIGHTS"),c.getString("Other Transport"),c.getString("STARTING POINT"),c.getString("Tips"),c.getString("Video")));
 
-                    Log.e(TAG, i + "+" + c);
+
 
 
                 }
@@ -141,45 +143,50 @@ public class SearchTrailFragment extends Fragment{
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-            Log.e("I LIsta",TrailsArray.toString());
+            initiate();
 
 
-            AdapterTrails adbTrails;
+
+        }
+
+    }
+
+
+    public void initiate(){
+
+        AdapterTrails adbTrails;
 
 
 //then populate myListItems
 
 
-            adbTrails= new AdapterTrails (getActivity(),  TrailsArray);
+        adbTrails= new AdapterTrails (getActivity(),  TrailsArray);
 
-            lv.setAdapter(adbTrails);
+        lv.setAdapter(adbTrails);
 
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("trail",TrailsArray.get(position));
-                    Fragment fragment = TrailInfoFragment.newInstance();
-                    fragment.setArguments(bundle);
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content, fragment);
-                    transaction.commit();
-                Log.e("Gridviewclicked",""+TrailsArray.get(position).getTitle());
-                }
-            });
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("trail",TrailsArray.get(position));
+                Fragment fragment = TrailInfoFragment.newInstance();
+                fragment.setArguments(bundle);
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, fragment);
+                transaction.commit();
 
-        }
-
+            }
+        });
     }
     public void onResume() {
-        Log.e("DEBUG", "onResume of LoginFragment");
+        Log.e("DEBUG", "onResume of Search");
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        Log.e("DEBUG", "OnPause of loginFragment");
+        Log.e("DEBUG", "OnPause of Search");
         super.onPause();
     }
 }

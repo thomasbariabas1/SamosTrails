@@ -11,8 +11,10 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
-
-
+            SearchTrailFragment search = SearchTrailFragment.newInstance();
+            LocalTrailsFragment local =  LocalTrailsFragment.newInstance();
+            RecordingFragment recording = RecordingFragment.newInstance();
+            ProfilFragment profil = ProfilFragment.newInstance();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -22,16 +24,16 @@ public class MainActivity extends AppCompatActivity {
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    selectedFragment = SearchTrailFragment.newInstance();
+                    selectedFragment =  search;
                     break;
                 case R.id.navigation_dashboard:
-                    selectedFragment = LocalTrailsFragment.newInstance();
+                    selectedFragment = local;
                     break;
                 case R.id.recording:
-                    selectedFragment = RecordingFragment.newInstance();
+                    selectedFragment = recording;
                     break;
                 case R.id.profil:
-                    selectedFragment = ProfilFragment.newInstance();
+                    selectedFragment = profil;
                     break;
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

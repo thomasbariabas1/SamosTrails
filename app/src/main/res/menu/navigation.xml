@@ -25,7 +25,7 @@
 
     <item
         android:id="@+id/profil"
-        android:icon="@drawable/user"
+        android:icon="@drawable/moreicon"
         android:title="Profil"
         android:enabled="true"
         app:showAsAction="ifRoom" />
