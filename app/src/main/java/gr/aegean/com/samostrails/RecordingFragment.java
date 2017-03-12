@@ -87,19 +87,10 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
             // Building the GoogleApi client
             buildGoogleApiClient();
-
             createLocationRequest();
         }
 
-        // Show location button click listener
-        /*btnShowLocation.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                Log.e("inside on click", "Clicked");
-                displayLocation();
-            }
-        });*/
 
         // Toggling the periodic location updates
         btnStartLocationUpdates.setOnClickListener(new View.OnClickListener() {

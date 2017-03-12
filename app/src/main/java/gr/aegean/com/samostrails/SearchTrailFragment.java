@@ -1,11 +1,6 @@
 package gr.aegean.com.samostrails;
 
 
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.graphics.Movie;
-import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import  android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,12 +14,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -33,18 +26,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import gr.aegean.com.samostrails.API.GetTrails;
-import gr.aegean.com.samostrails.API.HttpHandler;
 import gr.aegean.com.samostrails.Adapters.AdapterSwipeRefresh;
-import gr.aegean.com.samostrails.Adapters.AdapterTrails;
 import gr.aegean.com.samostrails.Models.DifficultyLevel;
 import gr.aegean.com.samostrails.Models.DistanceLevel;
 import gr.aegean.com.samostrails.Models.KindOfTrail;
 import gr.aegean.com.samostrails.Models.Trail;
-import gr.aegean.com.samostrails.SQLDb.TrailDb;
-
-import static android.R.attr.fragment;
 import static android.content.ContentValues.TAG;
 
 
@@ -123,7 +109,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                 lv.setVisibility(View.VISIBLE);
                 nofoundimage.setVisibility(View.GONE);
                 nointernetfound.setVisibility(View.GONE);
-                
+
 
                     fetchTrails();
 
