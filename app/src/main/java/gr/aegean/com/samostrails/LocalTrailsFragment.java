@@ -95,7 +95,7 @@ public class LocalTrailsFragment extends Fragment {
 
 //then populate myListItems
 
-            Log.e("inside do Local",""+TrailsArray.get(0).getDownlImage());
+
             adbTrails= new AdapterTrailsOffline(getActivity(),  TrailsArray);
 
             lv.setAdapter(adbTrails);

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="gr.aegean.com.samostrails.MainActivity"
+    android:id="@+id/sv">
+
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#10191919">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/savetrailtitle"
+                android:text="Save Trail"
+                android:layout_gravity="center"
+                android:textSize="30dp"
+                android:textColor="#ffffff"
+                android:background="@color/downHeader"
+                />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/title_label"
+                android:text="Title:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/title_input"/>
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/description_label"
+                android:text="Description:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/descriptioninput"
+                />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/startingpoint_label"
+                android:text="Starting Point:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/startingpointinput"
+
+                />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/mainsights_label"
+                android:text="Main Sights:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/mainsightsinput"
+                />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tips_label"
+                android:text="Tips:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tipsinput"
+                />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/distance_label"
+                android:text="Distance:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/distanceinput"
+                />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/kindoftrail_label"
+                android:text="Kind Of Trail:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/kindoftrailinput">
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="One Way"
+                />
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Loop"
+                    />
+            </RadioGroup>
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/difficultylevel_label"
+                android:text="Difficulty Level:"
+                android:textSize="20dp"
+                android:textStyle="bold"/>
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/difficultylevelinput">
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Easy"
+                    />
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Moderate"
+                    />
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Experts Only"
+                    />
+            </RadioGroup>
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/childrenfriendly_label"
+                android:text="Children Friendly:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/childrenfriendlyinput">
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Yes"
+                    />
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="No"
+                    />
+            </RadioGroup>
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/other_transport_label"
+                android:text="Other Transports:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/othertransportinput"
+                />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/connectiontoothertrails_label"
+                android:text="Connection to other trails:"
+                android:textSize="20dp"
+                android:textStyle="bold"
+
+                />
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/connectiontoothertrailsinput"
+                />
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Send Trail"
+                android:id="@+id/sendtrail"/>
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Trail"
+                android:id="@+id/deletetrail"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</ScrollView>

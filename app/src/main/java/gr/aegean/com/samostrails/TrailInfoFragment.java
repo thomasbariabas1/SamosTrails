@@ -53,6 +53,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
     private TextView ConnectionToOtherTrails;
     private Trail trail;
     private Button SaveTrail;
+    private Button DeleteTrail;
     ScrollView hsv;
     public static TrailInfoFragment newInstance() {
         TrailInfoFragment fragment = new TrailInfoFragment();
@@ -83,7 +84,10 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
          OtherTransports=(TextView) view.findViewById(R.id.othertransport);
          ConnectionToOtherTrails=(TextView) view.findViewById(R.id.connectiontoothertrails);
         SaveTrail = (Button) view.findViewById(R.id.savetrail);
-        Bundle bundle = getArguments();
+        DeleteTrail = (Button) view.findViewById(R.id.deletetrail);
+        DeleteTrail.setVisibility(View.GONE);
+
+                Bundle bundle = getArguments();
          trail = (Trail) bundle.getParcelable("trail");
         //TrailImage.setImageBitmap(trail.getDownlImage());
         TrailTitle.setText(trail.getTitle());
@@ -100,16 +104,28 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         ConnectionToOtherTrails.setText(trail.getConnectionToOtherTrails());
         if (TrailDb.ifExists(trail,TrailDb.initiateDB(getActivity()))){
           SaveTrail.setVisibility(View.GONE);
+            DeleteTrail.setVisibility(View.VISIBLE);
         }
         SaveTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!TrailDb.ifExists(trail,TrailDb.initiateDB(getActivity()))){
+
                     TrailDb.insertIntoDb(trail, TrailDb.initiateDB(getActivity()));
+                    SaveTrail.setVisibility(View.GONE);
+                    DeleteTrail.setVisibility(View.VISIBLE);
             }else{
                     Toast.makeText(getActivity(),"Trail is already in your collection!!",Toast.LENGTH_LONG).show();
 
                 }
+            }
+        });
+        DeleteTrail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TrailDb.delete(trail,TrailDb.initiateDB(getActivity()));
+                SaveTrail.setVisibility(View.VISIBLE);
+                DeleteTrail.setVisibility(View.GONE);
             }
         });
         MapsInitializer.initialize(this.getActivity());

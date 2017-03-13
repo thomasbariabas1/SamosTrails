@@ -226,10 +226,22 @@ public class TrailDb {
         cursor.close();
         return exists;
     }
+    public static boolean delete(Trail trail, TrailDbHelper mDbHelper){
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+       // db.delete(TABLE_NAME,null,null);
+        String checkQuery = "DELETE  FROM " + TABLE_NAME + " WHERE " + TrailEntry.COLUMN_NAME_TRAILID + "= '"+trail.getTrailId()+ "'";
+        db.execSQL(checkQuery);
+        //db.execSQL("TRUNCATE table " + TABLE_NAME);
+        db.close();
+
+
+        return true;
+
+    }
     public static void deleteAll(TrailDbHelper mDbHelper)
     {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-         db.delete(TABLE_NAME,null,null);
+        db.delete(TABLE_NAME,null,null);
         db.execSQL("delete from " + TABLE_NAME);
         //db.execSQL("TRUNCATE table " + TABLE_NAME);
         db.close();

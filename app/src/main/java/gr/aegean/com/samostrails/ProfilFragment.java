@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat.Action;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,6 +16,7 @@ import android.support.v4.app.RemoteInput;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import gr.aegean.com.samostrails.Services.MyService;
@@ -22,7 +24,7 @@ import gr.aegean.com.samostrails.Services.MyService;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class ProfilFragment extends Fragment {
-
+Button login;
     public static ProfilFragment newInstance() {
         ProfilFragment fragment = new ProfilFragment();
         return fragment;
@@ -43,7 +45,17 @@ public class ProfilFragment extends Fragment {
       View view= inflater.inflate(R.layout.profil_fragment, container, false);
        // showNotification();
      //   view.getContext().stopService(new Intent( view.getContext(), MyService.class));
+login = (Button) view.findViewById(R.id.login);
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = LoginFragment.newInstance();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, fragment);
+                transaction.commit();
 
+            }
+        });
         return view;
     }
    /* public void showNotification() {
