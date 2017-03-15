@@ -1,5 +1,7 @@
 package gr.aegean.com.samostrails;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
@@ -20,18 +22,24 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpCookie;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.Header;
 import gr.aegean.com.samostrails.API.HttpHandler;
 import gr.aegean.com.samostrails.Adapters.AdapterSwipeRefresh;
+import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
+import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
+import gr.aegean.com.samostrails.DrupalDroid.UserServices;
 import gr.aegean.com.samostrails.Models.DifficultyLevel;
 import gr.aegean.com.samostrails.Models.DistanceLevel;
 import gr.aegean.com.samostrails.Models.KindOfTrail;
@@ -43,7 +51,7 @@ import static android.content.ContentValues.TAG;
  * Created by phantomas on 3/13/2017.
  */
 
-public class CreateTrailFragment extends Fragment{
+public class CreateTrailFragment extends Fragment {
     ArrayList<LatLng> Linestring;
     ArrayList<LatLng> Point;
     private TextInputEditText Title;
@@ -58,7 +66,9 @@ public class CreateTrailFragment extends Fragment{
     private RadioGroup DifficultyLevel;
     private RadioGroup ChildrenFriendly;
     private Button SendTrail;
-    String url="http://test.samostrails.com/api/node";
+    ServicesClient client = null;
+    SystemServices ss = null;
+
     public static CreateTrailFragment newInstance() {
         CreateTrailFragment fragment = new CreateTrailFragment();
         return fragment;
@@ -72,71 +82,76 @@ public class CreateTrailFragment extends Fragment{
     }
 
 
-
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.create_trail_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_trail_fragment, container, false);
         Bundle bundle = getArguments();
-
+        client = ((MainActivity) getActivity()).getServicesClient();
+        ss = new SystemServices(client);
         Linestring = bundle.getParcelableArrayList("linestring");
-        Log.e("Linestring:",""+Linestring);
+        Log.e("Linestring:", "" + Linestring);
         Title = (TextInputEditText) view.findViewById(R.id.title_input);
-        Description= (TextInputEditText) view.findViewById(R.id.descriptioninput);
-        StartingPoint= (TextInputEditText) view.findViewById(R.id.startingpointinput);
-        MainSights= (TextInputEditText) view.findViewById(R.id.mainsightsinput);
-        Tips= (TextInputEditText) view.findViewById(R.id.tipsinput);
-        Distance= (TextInputEditText) view.findViewById(R.id.distanceinput);
-        OtherTransports= (TextInputEditText) view.findViewById(R.id.othertransportinput);
-        ConnectionToOtherTrails= (TextInputEditText) view.findViewById(R.id.connectiontoothertrailsinput);
+        Description = (TextInputEditText) view.findViewById(R.id.descriptioninput);
+        StartingPoint = (TextInputEditText) view.findViewById(R.id.startingpointinput);
+        MainSights = (TextInputEditText) view.findViewById(R.id.mainsightsinput);
+        Tips = (TextInputEditText) view.findViewById(R.id.tipsinput);
+        Distance = (TextInputEditText) view.findViewById(R.id.distanceinput);
+        OtherTransports = (TextInputEditText) view.findViewById(R.id.othertransportinput);
+        ConnectionToOtherTrails = (TextInputEditText) view.findViewById(R.id.connectiontoothertrailsinput);
         KindOfTrail = (RadioGroup) view.findViewById(R.id.kindoftrailinput);
-        DifficultyLevel= (RadioGroup) view.findViewById(R.id.difficultylevelinput);
-        ChildrenFriendly= (RadioGroup) view.findViewById(R.id.childrenfriendlyinput);
+        DifficultyLevel = (RadioGroup) view.findViewById(R.id.difficultylevelinput);
+        ChildrenFriendly = (RadioGroup) view.findViewById(R.id.childrenfriendlyinput);
         SendTrail = (Button) view.findViewById(R.id.sendtrail);
         //KindOfTrail.getCheckedRadioButtonId();
+
         SendTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Button:","clicked");
-                sendtrail();
+
+
+                try {
+                    sendtrail();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         return view;
     }
 
-    public String getGeometryCollectionFormat(ArrayList<LatLng> linestring,ArrayList<LatLng> point){
+    public String getGeometryCollectionFormat(ArrayList<LatLng> linestring) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("GEOMETRYCOLLECTION (LINESTRING (");
-        for(int i =0;i<linestring.size();i++){
+        for (int i = 0; i < linestring.size(); i++) {
             LatLng l = linestring.get(i);
-            sb.append(l.latitude);
-            sb.append(" ");
             sb.append(l.longitude);
-            if(i!=linestring.size()-1)
-            sb.append(",");
-        }
-        sb.append("),");
-
-            sb.append("POINT (");
-            sb.append(linestring.get(0).latitude);
             sb.append(" ");
-            sb.append(linestring.get(0).longitude);
-            sb.append(")");
+            sb.append(l.latitude);
+            if (i != linestring.size() - 1)
+                sb.append(",");
+        }
+
+        sb.append("),");
+        sb.append("POINT (");
+        sb.append(linestring.get(0).longitude);
+        sb.append(" ");
+        sb.append(linestring.get(0).latitude);
+        sb.append(")");
         sb.append(",");
         sb.append("POINT (");
-        sb.append(linestring.get(linestring.size()-1).latitude);
+        sb.append(linestring.get(linestring.size() - 1).longitude);
         sb.append(" ");
-        sb.append(linestring.get(linestring.size()-1).longitude);
+        sb.append(linestring.get(linestring.size() - 1).latitude);
         sb.append(")");
 
 
         return sb.toString();
 
     }
-    public String req(){
+
+    public String req() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"title\":");
@@ -150,7 +165,7 @@ public class CreateTrailFragment extends Fragment{
         sb.append("\"");
         sb.append(",");
         sb.append("\"field_leaflet_\":{\"und\":[{\"geom\":\"");
-        sb.append(getGeometryCollectionFormat(Linestring,Point));
+        sb.append(getGeometryCollectionFormat(Linestring));
         sb.append("\",");
         sb.append("\"geo_type\":\"geometrycollection\",");
         sb.append("\t\"lat\":\"37.783025098369\",\n" +
@@ -198,8 +213,49 @@ public class CreateTrailFragment extends Fragment{
         return sb.toString();
     }
 
-    public void sendtrail(){
+    public void sendtrail() throws JSONException {
 
-        HttpHandler.makeServiceCallPostCreate(url,req(),getActivity());
+
+        ss.connect(new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                //Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                try {
+                    JSONObject jbo = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
+                    JSONObject js = jbo.getJSONObject("user");
+                    jbo = js.getJSONObject("roles");
+
+                    if (jbo.has("1")) {
+                        Toast.makeText(getActivity(), "You Must login first To Submit Trails", Toast.LENGTH_LONG).show();
+
+                    } else {
+                        JSONObject json = new JSONObject(req());
+                        client.post("node", json, new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                                Toast.makeText(getActivity(),"Submitted Trail with Title "+Title.getText(),Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                            }
+                        });
+                    }
+
+                } catch (JSONException e) {
+                    Log.e("JSON parse error: ", "" + e.getMessage());
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+
+            }
+        });
+
     }
 }

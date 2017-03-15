@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat.Action;
 import android.app.NotificationManager;
@@ -81,4 +82,15 @@ Button login;
         NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(0, notification);
     }*/
+   @Override
+   public void onSaveInstanceState(Bundle outState) {
+       super.onSaveInstanceState(outState);
+
+   }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+    }
 }

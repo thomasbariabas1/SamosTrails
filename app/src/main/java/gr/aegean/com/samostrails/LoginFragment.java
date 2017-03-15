@@ -3,7 +3,10 @@ package gr.aegean.com.samostrails;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,40 +16,30 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.voidberg.drupaldroid.ServicesClient;
-import com.voidberg.drupaldroid.UserServices;
+import com.loopj.android.http.PersistentCookieStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
+import java.nio.charset.StandardCharsets;
 
 import cz.msebera.android.httpclient.Header;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
+import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
+import gr.aegean.com.samostrails.DrupalDroid.UserServices;
 
 import static android.content.ContentValues.TAG;
 
-/**
- * Created by phantomas on 3/13/2017.
- */
 
 public class LoginFragment extends Fragment {
 
     EditText username;
     EditText password;
     Button login;
+    Button logout;
     Activity activity;
     ProgressDialog progressDialog;
-
+    ServicesClient client;
 
 
     public static LoginFragment newInstance() {
@@ -62,142 +55,117 @@ public class LoginFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.login_fragment, container, false);
-        final ServicesClient client;
-        client = new ServicesClient("http://test.samostrails.com", "api");
+        View view = inflater.inflate(R.layout.login_fragment, container, false);
+
+        client = ((MainActivity) getActivity()).getServicesClient();
         final UserServices us;
         us = new UserServices(client);
-
-
+        final SystemServices ss;
+        ss = new SystemServices(client);
+        //PersistentCookieStore myCookieStore = new PersistentCookieStore(getActivity());
+        // client.setCookieStore(myCookieStore);
         // showNotification();
-        username = (EditText)view.findViewById(R.id.editUsername);
-        password = (EditText)view.findViewById(R.id.editPassword);
+        username = (EditText) view.findViewById(R.id.editUsername);
+        password = (EditText) view.findViewById(R.id.editPassword);
         login = (Button) view.findViewById(R.id.buttonlogin);
-        final String[] response = new String[1];
+        logout = (Button) view.findViewById(R.id.buttonlogout);
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*try {
-                    response[0] =  makeServiceCallPost("http://test.samostrails.com/api/user/login",username.getText().toString(),password.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                SharedPreferences sp = getActivity().getSharedPreferences("prefs", Activity.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                try {
-                    editor.putString("Token",   getToken(response[0]));
-                    editor.putString("Session", getSession(response[0]));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
-                editor.commit();*/
                 login(us);
+
             }
         });
 
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout(us);
+            }
+        });
 
 
         return view;
     }
 
-public void login(UserServices us){
-    activity = getActivity();
+    public void login(UserServices us) {
+        activity = getActivity();
+        final String[] token = new String[1];
 
 
+        progressDialog = ProgressDialog.show(activity, "", "Logging you in", true, false);
+        us.login(username.getText().toString(), password.getText().toString(), new AsyncHttpResponseHandler() {
 
 
-    progressDialog = ProgressDialog.show(activity, "", "Logging you in", true, false);
-    us.login(username.getText().toString(), password.getText().toString(), new AsyncHttpResponseHandler() {
+            @Override
+            public void onFinish() {
+                progressDialog.hide();
+                progressDialog.dismiss();
+            }
 
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                try {
+                    JSONObject jsonObject = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
+                    token[0] = jsonObject.getString("token");
+                    client.setToken(token[0]);
 
-
-
-        @Override
-        public void onFinish() {
-            progressDialog.hide();
-            progressDialog.dismiss();
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-            Log.v(TAG, responseBody.toString());
-
-            new AlertDialog.Builder(activity).setMessage("Login was successful.").setPositiveButton("OK", null).setCancelable(true).create().show();
-        }
-
-        @Override
-        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-            Log.v(TAG, error.getMessage());
-            Log.v(TAG, responseBody.toString());
-
-            new AlertDialog.Builder(activity).setMessage("Login failed.").setPositiveButton("OK", null).setCancelable(true).create().show();
-        }
-    });
-
-}
-
-    public static String  makeServiceCallPost(String reqUrl,String username,String password) throws JSONException, IOException {
-        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        final MediaType JSON
-                = MediaType.parse("application/json; charset=utf-8");
-        OkHttpClient client = new OkHttpClient();
-
-        String json = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
-        final String[] res = new String[1];
-
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(reqUrl)
-                .post(body)
-                .build();
-        client.newCall(request)
-                .enqueue(new Callback() {
-                    @Override
-                    public void onFailure(final Call call, IOException e) {
-                        // Error
-
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                // For the example, you can show an error dialog or a toast
-                                // on the main UI thread
-                            }
-                        };
-                    }
-
-                    @Override
-                    public void onResponse(Call call, final Response response) throws IOException {
-                         res[0] = response.body().string();
-                        Log.e("Response", "" + res[0]);
-
-
-                    }
-                });
-                return res[0];
-
+                    Log.e(TAG, token[0]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                new AlertDialog.Builder(activity).setMessage("Login was successful.").setPositiveButton("OK", null).setCancelable(true).create().show();
+                username.setText("");
+                password.setText("");
+            }
 
-    public static String getToken(String response) throws JSONException {
-        JSONObject jbo = new JSONObject(response);
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e(TAG, error.getMessage());
+                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+
+                new AlertDialog.Builder(activity).setMessage("Login failed. For:" + new String(responseBody, StandardCharsets.UTF_8)).setPositiveButton("OK", null).setCancelable(true).create().show();
+            }
+        });
 
 
-        return  jbo.getString("token");
     }
-    public static String getSession(String response) throws JSONException {
-        JSONObject jbo = new JSONObject(response);
-        return  jbo.getString("session_name")+jbo.getString("sessid");
+
+    public void logout(UserServices us) {
+
+        us.logout(new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+            }
+        });
     }
 
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("username", username.getText().toString());
+        outState.putString("password", password.getText().toString());
+    }
 
-
-
-
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState!=null) {
+            username.setText(savedInstanceState.getString("username"));
+            password.setText(savedInstanceState.getString("password"));
+        }
+    }
 }

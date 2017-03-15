@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import gr.aegean.com.samostrails.API.HttpHandler;
 import gr.aegean.com.samostrails.Adapters.AdapterTrailList;
+import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 import gr.aegean.com.samostrails.Models.Trail;
 
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
             RecordingFragment recording = RecordingFragment.newInstance();
             ProfilFragment profil = ProfilFragment.newInstance();
 
+            ServicesClient client=null;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -61,9 +63,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        client = new ServicesClient("http://test.samostrails.com", "api");
 
-
-
+        if(savedInstanceState!=null){
+            profil = (ProfilFragment) getSupportFragmentManager().getFragment(savedInstanceState, "ProfilFragment");
+        }
 
 
         //Manually displaying the first fragment - one time only
@@ -78,5 +82,25 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+    public void setServiceClient(ServicesClient servicesclient){
+        this.client=servicesclient;
 
+    }
+
+    public ServicesClient getServicesClient(){
+        return this.client;
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+    }
 }

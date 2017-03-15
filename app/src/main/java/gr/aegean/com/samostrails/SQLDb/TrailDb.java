@@ -134,7 +134,7 @@ public class TrailDb {
 // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(TABLE_NAME, null, values);
         Log.e("InsertedRow","WithId"+newRowId);
-
+        db.close();
     }
 
     public static ArrayList<Trail> readFromDb(TrailDbHelper mDbHelper) {
@@ -212,7 +212,7 @@ public class TrailDb {
             itemIds.add(trail);
         }
         cursor.close();
-
+        db.close();
         return itemIds;
     }
 
@@ -224,6 +224,7 @@ public class TrailDb {
         cursor= db.rawQuery(checkQuery,null);
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
+        db.close();
         return exists;
     }
     public static boolean delete(Trail trail, TrailDbHelper mDbHelper){

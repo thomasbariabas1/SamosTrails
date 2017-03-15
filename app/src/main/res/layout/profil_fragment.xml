@@ -9,6 +9,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/login"
-        android:text="Login"/>
+        android:text="Login"
+        android:layout_above="@+id/register"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="17dp" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/register"
+        android:text="register"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/login" />
 
 </RelativeLayout>
