@@ -1,12 +1,24 @@
 package gr.aegean.com.samostrails;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+
+import gr.aegean.com.samostrails.API.HttpHandler;
+import gr.aegean.com.samostrails.Adapters.AdapterTrailList;
+import gr.aegean.com.samostrails.Models.Trail;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, SearchTrailFragment.newInstance());
@@ -63,5 +77,6 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
+
 
 }

@@ -50,22 +50,25 @@ public class AdapterTrailsOffline extends BaseAdapter {
         final ImageView picture;
         TextView name;
         TextView trailid;
-
+        final ImageView favorite;
         if (v == null) {
             v = mInflater.inflate(R.layout.mobile, viewGroup, false);
             v.setTag(R.id.picture, v.findViewById(R.id.picture));
             v.setTag(R.id.text, v.findViewById(R.id.text));
             v.setTag(R.id.trailid,v.findViewById(R.id.trailid));
+            v.setTag(R.id.favorite,v.findViewById(R.id.favorite));
         }
         picture = (ImageView) v.getTag(R.id.picture);
         name = (TextView) v.getTag(R.id.text);
         trailid = (TextView)v.getTag(R.id.trailid);
+        favorite = (ImageView)v.getTag(R.id.favorite);
         Item item = getItem(i);
         final Bitmap[] bmp = new Bitmap[1];
         picture.setImageBitmap(trails.get(i).getDownlImage());
         trailid.setVisibility(View.GONE);
         name.setText(item.name);
         trailid.setText(String.valueOf(item.trailid));
+        favorite.setVisibility(View.GONE);
         return v;
     }
 

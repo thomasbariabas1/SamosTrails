@@ -11,23 +11,32 @@
     tools:context="gr.aegean.com.samostrails.MainActivity">
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_centerHorizontal="true"
         android:text="Current Available Trails"
         android:textSize="30sp"
         android:gravity="center"
         android:background="@color/downHeader"
         android:textColor="#FFFFFF"
+        android:id="@+id/currentavailabletrails"
+
         />
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/searchview"
+        android:layout_marginTop="40dp"
+        android:queryHint="Search Trail"
+
+
+       />
     <GridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:verticalSpacing="3dp"
-        android:horizontalSpacing="3dp"
         android:stretchMode="columnWidth"
         android:numColumns="2"
-        android:paddingTop="40dp"
+        android:layout_marginTop="80dp"
 
 
         />

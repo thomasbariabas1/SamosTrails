@@ -19,13 +19,13 @@
 
     </FrameLayout>
 
+
     <android.support.design.widget.BottomNavigationView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true"
-        android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
 
 </LinearLayout>

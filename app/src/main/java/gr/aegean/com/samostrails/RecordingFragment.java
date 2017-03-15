@@ -61,7 +61,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     private LocationRequest mLocationRequest;
 
     // Location updates intervals in sec
-    private static int UPDATE_INTERVAL = 10000; // 10 sec
+    private static int UPDATE_INTERVAL = 5000; // 5 sec
     private static int FATEST_INTERVAL = 5000; // 5 sec
     private static int DISPLACEMENT = 0; // 10 meters
     private MapView mMapView;
@@ -162,7 +162,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         super.onResume();
         mMapView.onResume();
         checkPlayServices();
-
+        drawMap();
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
             startLocationUpdates();
@@ -225,7 +225,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         }
 
 
-        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 12.0f) );
+        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 18.0f) );
 
     }
 
@@ -322,7 +322,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
                         LastLon=Longtitude;
                         lblLocation.setText(LastLat + ", " + LastLon);
                         TrailLatLonLineString.add(new LatLng(LastLat,LastLon));
-                        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 13.0f) );
+                        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 18.0f) );
                        // Log.d("inside periodic",""+new LatLng(LastLat,LastLon));
                     }
                 });

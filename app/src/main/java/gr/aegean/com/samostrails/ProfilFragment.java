@@ -43,13 +43,13 @@ Button login;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
       View view= inflater.inflate(R.layout.profil_fragment, container, false);
-       // showNotification();
+        final Fragment fragment = LoginFragment.newInstance();
      //   view.getContext().stopService(new Intent( view.getContext(), MyService.class));
-login = (Button) view.findViewById(R.id.login);
+        login = (Button) view.findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragment = LoginFragment.newInstance();
+
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content, fragment);
                 transaction.commit();

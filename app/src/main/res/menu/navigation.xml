@@ -12,21 +12,21 @@
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_dashboard"
+        android:title="@string/your_trails"
         android:enabled="true"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/recording"
         android:icon="@drawable/recording"
-        android:title="Recording"
+        android:title="@string/recording"
         android:enabled="true"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/profil"
         android:icon="@drawable/moreicon"
-        android:title="Profil"
+        android:title="@string/more"
         android:enabled="true"
         app:showAsAction="ifRoom" />
 </menu>

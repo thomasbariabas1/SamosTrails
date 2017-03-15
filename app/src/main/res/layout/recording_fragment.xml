@@ -23,36 +23,59 @@
     </RelativeLayout>
 
 
-
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/downHeader"
         android:id="@+id/buttoncontainer"
         android:layout_alignParentBottom="true">
+
+        <ImageButton
+            android:id="@+id/savetrail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/statelist"
+            android:src="@drawable/saveicon"
+            android:contentDescription="@string/save" />
+        <ImageButton
+            android:id="@+id/maplayers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/statelist"
+            android:src="@drawable/layersicon"
+            android:contentDescription="@string/test" />
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:keepScreenOn="false"
+        android:background="@drawable/shadow_record"
+        android:measureWithLargestChild="false"
+        android:orientation="vertical">
+
         <ImageButton
             android:id="@+id/setRangeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:background="@color/downHeader"/>
-        <ImageButton
-            android:id="@+id/savetrail"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:background="@color/downHeader"
-            android:src="@drawable/saveicon"/>
-        <ImageButton
-            android:id="@+id/maplayers"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
-            android:background="@color/downHeader"
-            android:src="@drawable/layersicon"/>
+            android:background="@drawable/transparent_back"
+            android:contentDescription="@string/record"
+            android:layout_marginLeft="5dp"
 
-    </RelativeLayout>
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginBottom="2dp"
+            android:text="Record" />
+    </LinearLayout>
 </RelativeLayout>

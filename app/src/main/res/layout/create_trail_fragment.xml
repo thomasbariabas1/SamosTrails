@@ -214,13 +214,9 @@
             <android.support.v7.widget.AppCompatButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Send Trail"
+                android:text="Submit Trail"
                 android:id="@+id/sendtrail"/>
-            <android.support.v7.widget.AppCompatButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Delete Trail"
-                android:id="@+id/deletetrail"/>
+
 
         </LinearLayout>
 

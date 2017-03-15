@@ -95,7 +95,7 @@ public class CreateTrailFragment extends Fragment{
         DifficultyLevel= (RadioGroup) view.findViewById(R.id.difficultylevelinput);
         ChildrenFriendly= (RadioGroup) view.findViewById(R.id.childrenfriendlyinput);
         SendTrail = (Button) view.findViewById(R.id.sendtrail);
-
+        //KindOfTrail.getCheckedRadioButtonId();
         SendTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,7 +199,7 @@ public class CreateTrailFragment extends Fragment{
     }
 
     public void sendtrail(){
-        HttpHandler http = new HttpHandler();
-        http.makeServiceCallPostCreate(url,req());
+
+        HttpHandler.makeServiceCallPostCreate(url,req(),getActivity());
     }
 }
