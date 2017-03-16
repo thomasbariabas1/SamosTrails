@@ -2,6 +2,7 @@ package gr.aegean.com.samostrails;
 
 
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import  android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +52,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     private static String url = "http://test.samostrails.com/trail-webservice";
     ArrayList<Trail> TrailsArray = new ArrayList<>();
     int i=0;
+
     public static SearchTrailFragment newInstance() {
         SearchTrailFragment fragment = new SearchTrailFragment();
         return fragment;
@@ -63,6 +66,8 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.explore, container, false);
+
+
         // Inflate the layout for this fragment
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         lv = (GridView) view.findViewById (R.id.gridview);
@@ -97,6 +102,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                search(newText);
                 return false;
             }
         });
@@ -224,7 +230,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                                     }
 
 
-                                    lv.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray));
+                                    lv.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray,((MainActivity)getActivity()).getCache()));
 
 
                                 }
@@ -285,7 +291,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
         }
         i=i+1;
-        lv.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails));
+        lv.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails,((MainActivity)getActivity()).getCache()));
         lv.invalidateViews();
     }
 }

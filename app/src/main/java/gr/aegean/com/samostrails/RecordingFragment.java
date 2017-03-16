@@ -1,12 +1,7 @@
 package gr.aegean.com.samostrails;
 
-/**
- * Created by phantomas on 3/7/2017.
- */
-
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -15,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +17,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,7 +29,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -51,7 +41,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
     private Location mLastLocation;
     private ArrayList<LatLng> TrailLatLonLineString = new ArrayList<>();
-    private ArrayList<LatLng> TrailLatLonPoint = new ArrayList<>();
+
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
     Animation animation = null;
@@ -68,6 +58,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     GoogleMap mMap;
     private double LastLat;
     private double LastLon;
+
     // UI elements
     private TextView lblLocation;
     private ImageButton btnStartLocationUpdates;
@@ -200,10 +191,10 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     public void onStop() {
         super.onStop();
         mMapView.onStop();
-        stopLocationUpdates();
+       stopLocationUpdates();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
-        }
+      }
     }
 
     @Override
@@ -236,7 +227,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         if (mLastLocation != null) {
             LastLat= mLastLocation.getLatitude();
             LastLon = mLastLocation.getLongitude();
-            TrailLatLonPoint.add(new LatLng(LastLat,LastLon));
+
         } else {
 
             lblLocation

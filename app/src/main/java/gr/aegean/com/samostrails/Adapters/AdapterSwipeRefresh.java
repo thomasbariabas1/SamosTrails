@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import gr.aegean.com.samostrails.MainActivity;
 import gr.aegean.com.samostrails.Models.Trail;
 import gr.aegean.com.samostrails.R;
 import gr.aegean.com.samostrails.SQLDb.TrailDb;
@@ -31,13 +33,14 @@ public class AdapterSwipeRefresh extends BaseAdapter {
     private final List<Item> mItems = new ArrayList<>();
     private  LayoutInflater mInflater = null;
     ArrayList<Trail> trails;
+    LruCache<Integer, Bitmap> bitmapCache ;
 
-
-    public AdapterSwipeRefresh(Context context,ArrayList<Trail> trails) {
+    public AdapterSwipeRefresh(Context context,ArrayList<Trail> trails ,LruCache<Integer, Bitmap> bitmapCache ) {
           if (context != null) {
             mInflater = LayoutInflater.from(context);
         }
         this.trails=trails;
+        this.bitmapCache=bitmapCache;
         //Log.e("test","view");
         for(Trail trail:trails){
             //Log.e("test","view"+trail);
@@ -88,10 +91,15 @@ public class AdapterSwipeRefresh extends BaseAdapter {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    if(Utilities.isNetworkAvailable(mInflater.getContext())) {
-                        InputStream in = new URL(trails.get(i).getImage()).openStream();
-                        bmp[0] = BitmapFactory.decodeStream(in);
-                        trails.get(i).setDownlImage(bmp[0]);
+                    if(bitmapCache.get(trails.get(i).getTrailId())==null) {
+                        if (Utilities.isNetworkAvailable(mInflater.getContext())) {
+                            InputStream in = new URL(trails.get(i).getImage()).openStream();
+                            bmp[0] = BitmapFactory.decodeStream(in);
+                            trails.get(i).setDownlImage(bmp[0]);
+                            bitmapCache.put(trails.get(i).getTrailId(),bmp[0]);
+                        }
+                    }else{
+                        trails.get(i).setDownlImage(bitmapCache.get(trails.get(i).getTrailId()));
                     }
 
                 } catch (Exception e) {

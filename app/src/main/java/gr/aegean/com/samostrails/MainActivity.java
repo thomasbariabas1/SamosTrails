@@ -1,25 +1,17 @@
 package gr.aegean.com.samostrails;
 
-import android.app.SearchManager;
+import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.util.LruCache;
 import android.view.MenuItem;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-
-import gr.aegean.com.samostrails.API.HttpHandler;
-import gr.aegean.com.samostrails.Adapters.AdapterTrailList;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
-import gr.aegean.com.samostrails.Models.Trail;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,8 +20,9 @@ public class MainActivity extends AppCompatActivity {
             LocalTrailsFragment local =  LocalTrailsFragment.newInstance();
             RecordingFragment recording = RecordingFragment.newInstance();
             ProfilFragment profil = ProfilFragment.newInstance();
-
+            LruCache<Integer, Bitmap> bitmapCache ;
             ServicesClient client=null;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -65,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         client = new ServicesClient("http://test.samostrails.com", "api");
 
+
+        int memClass = ( (ActivityManager) this.getSystemService( Context.ACTIVITY_SERVICE ) ).getMemoryClass();
+        int cacheSize = 1024 * 1024 * memClass / 8;
+        bitmapCache= new LruCache<Integer, Bitmap>(cacheSize);
         if(savedInstanceState!=null){
             profil = (ProfilFragment) getSupportFragmentManager().getFragment(savedInstanceState, "ProfilFragment");
         }
@@ -90,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
     public ServicesClient getServicesClient(){
         return this.client;
     }
-
+public  LruCache<Integer, Bitmap> getCache(){
+        return this.bitmapCache;
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
