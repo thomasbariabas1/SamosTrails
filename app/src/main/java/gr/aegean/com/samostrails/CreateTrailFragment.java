@@ -1,8 +1,5 @@
 package gr.aegean.com.samostrails;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -14,36 +11,18 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpCookie;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
-import gr.aegean.com.samostrails.API.HttpHandler;
-import gr.aegean.com.samostrails.Adapters.AdapterSwipeRefresh;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
-import gr.aegean.com.samostrails.DrupalDroid.UserServices;
-import gr.aegean.com.samostrails.Models.DifficultyLevel;
-import gr.aegean.com.samostrails.Models.DistanceLevel;
-import gr.aegean.com.samostrails.Models.KindOfTrail;
-import gr.aegean.com.samostrails.Models.Trail;
 
 import static android.content.ContentValues.TAG;
 

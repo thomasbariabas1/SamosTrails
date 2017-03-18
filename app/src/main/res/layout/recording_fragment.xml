@@ -2,33 +2,82 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
+
     <com.google.android.gms.maps.MapView
         android:id="@+id/recordingmap"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/downHeader"
-        android:layout_alignParentTop="true">
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/recordingmapinfo"
-            android:layout_centerHorizontal="true"/>
+        android:layout_alignParentTop="true"
+        android:background="@color/downHeader">
 
-    </RelativeLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:orientation="vertical"
+            android:weightSum="1">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".40"
+                android:text="@string/distance_klm" />
+
+            <TextView
+                android:id="@+id/distancerecording"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".60"
+                android:text="0.0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".40"
+                android:text="@string/time" />
+
+            <Chronometer
+                android:id="@+id/timerecording"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".60" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/buttoncontainer"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/clearmap"
+        android:background="@drawable/statelist"
+        android:id="@+id/clearbuttonrecording"
+
+        />
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/downHeader"
         android:id="@+id/buttoncontainer"
-        android:layout_alignParentBottom="true">
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/downHeader">
 
         <ImageButton
             android:id="@+id/savetrail"
@@ -37,8 +86,9 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="10dp"
             android:background="@drawable/statelist"
-            android:src="@drawable/saveicon"
-            android:contentDescription="@string/save" />
+            android:contentDescription="@string/save"
+            android:src="@drawable/saveicon" />
+
         <ImageButton
             android:id="@+id/maplayers"
             android:layout_width="wrap_content"
@@ -46,18 +96,19 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
             android:background="@drawable/statelist"
-            android:src="@drawable/layersicon"
-            android:contentDescription="@string/test" />
+            android:contentDescription="@string/test"
+            android:src="@drawable/layersicon" />
 
     </RelativeLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:keepScreenOn="false"
         android:background="@drawable/shadow_record"
+        android:keepScreenOn="false"
         android:measureWithLargestChild="false"
         android:orientation="vertical">
 
@@ -65,17 +116,17 @@
             android:id="@+id/setRangeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:background="@drawable/transparent_back"
             android:contentDescription="@string/record"
-            android:layout_marginLeft="5dp"
 
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
             android:layout_marginBottom="2dp"
+            android:layout_marginLeft="6dp"
             android:text="Record" />
     </LinearLayout>
 </RelativeLayout>

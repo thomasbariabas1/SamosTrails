@@ -14,4 +14,6 @@
     <string name="recording">Recording</string>
     <string name="profil">Profil</string>
     <string name="more">More</string>
+    <string name="distance_klm">Distance(m):</string>
+    <string name="time">Time:</string>
 </resources>

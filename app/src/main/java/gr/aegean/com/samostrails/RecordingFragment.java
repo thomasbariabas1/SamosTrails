@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +33,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
@@ -45,40 +48,57 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
     Animation animation = null;
-    // boolean flag to toggle periodic location updates
-    private boolean mRequestingLocationUpdates=false;
+    TextView distance;
+    Chronometer time;
 
+    // boolean flag to toggle periodic location updates
+    private boolean mRequestingLocationUpdates = false;
     private LocationRequest mLocationRequest;
 
     // Location updates intervals in sec
     private static int UPDATE_INTERVAL = 5000; // 5 sec
     private static int FATEST_INTERVAL = 5000; // 5 sec
-    private static int DISPLACEMENT = 0; // 10 meters
+    private static int DISPLACEMENT = 0; // 10 meters//100metre is the best for better
     private MapView mMapView;
     GoogleMap mMap;
     private double LastLat;
     private double LastLon;
-
-    // UI elements
-    private TextView lblLocation;
+    private double distancesum = 0;
     private ImageButton btnStartLocationUpdates;
     private ImageButton layers;
     private ImageButton savebutton;
+    private ImageButton clear;
 
-
-    com.google.android.gms.location.LocationListener Locationlistener= new com.google.android.gms.location.LocationListener() {
+    com.google.android.gms.location.LocationListener Locationlistener = new com.google.android.gms.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             double Latitude = location.getLatitude();
             double Longtitude = location.getLongitude();
-            mMap.addPolyline(new PolylineOptions().add(new LatLng(LastLat,LastLon)).add(new LatLng(Latitude,Longtitude)).width(5).color(Color.BLUE).geodesic(true));
-            LastLat=Latitude;
-            LastLon=Longtitude;
-            lblLocation.setText(LastLat + ", " + LastLon);
-            TrailLatLonLineString.add(new LatLng(LastLat,LastLon));
-            mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 18.0f) );
+            PolylineOptions pl = new PolylineOptions().add(new LatLng(LastLat, LastLon)).add(new LatLng(Latitude, Longtitude)).width(5).color(Color.BLUE).geodesic(true);
+            Log.e("width:", "" + CalculationByDistance(new LatLng(LastLat, LastLon), new LatLng(Latitude, Longtitude)));
+            mMap.addPolyline(pl);
+            distancesum = distancesum + CalculationByDistance(new LatLng(LastLat, LastLon), new LatLng(Latitude, Longtitude));
+            distance.setText(String.valueOf(round(distancesum, 2)));
+            LastLat = Latitude;
+            LastLon = Longtitude;
+            TrailLatLonLineString.add(new LatLng(LastLat, LastLon));
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+            mMap.getUiSettings().setRotateGesturesEnabled(true);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat, LastLon), 18.0f));
         }
     };
+
     public static RecordingFragment newInstance() {
         RecordingFragment fragment = new RecordingFragment();
         return fragment;
@@ -93,14 +113,25 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recording_fragment, container, false);
-        lblLocation = (TextView) view.findViewById(R.id.recordingmapinfo);
         btnStartLocationUpdates = (ImageButton) view.findViewById(R.id.setRangeButton);
-        layers=(ImageButton) view.findViewById(R.id.maplayers) ;
-        savebutton=(ImageButton) view.findViewById(R.id.savetrail);
+        layers = (ImageButton) view.findViewById(R.id.maplayers);
+        savebutton = (ImageButton) view.findViewById(R.id.savetrail);
         btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording));
         mMapView = (MapView) view.findViewById(R.id.recordingmap);
+        distance = (TextView) view.findViewById(R.id.distancerecording);
+        time = (Chronometer) view.findViewById(R.id.timerecording);
+        clear = (ImageButton) view.findViewById(R.id.clearbuttonrecording);
+        clear.setVisibility(View.GONE);
+
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initiateMap();
+            }
+        });
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
+
         // First we need to check availability of play services
         if (checkPlayServices()) {
 
@@ -116,7 +147,6 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         animation.setRepeatMode(Animation.REVERSE); // Reverse animation at the end so the button will fade back in
 
 
-
         // Toggling the periodic location updates
         btnStartLocationUpdates.setOnClickListener(new View.OnClickListener() {
 
@@ -130,14 +160,14 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
             @Override
             public void onClick(View v) {
                 FragmentManager fm = getFragmentManager();
-                PopUpFragment dialogFragment = new PopUpFragment ();
+                PopUpFragment dialogFragment = new PopUpFragment();
                 dialogFragment.show(fm, "Sample Fragment");
             }
         });
         savebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(TrailLatLonLineString.size()>0) {
+                if (TrailLatLonLineString.size() > 0) {
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("linestring", TrailLatLonLineString);
                     Fragment fragment = CreateTrailFragment.newInstance();
@@ -145,13 +175,12 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.content, fragment);
                     transaction.commit();
-                }else
-                    Toast.makeText(getActivity(),"Nothing to Save",Toast.LENGTH_LONG).show();
+                } else
+                    Toast.makeText(getActivity(), "Nothing to Save", Toast.LENGTH_LONG).show();
             }
         });
         return view;
     }
-
 
     @Override
     public void onStart() {
@@ -170,31 +199,36 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         mMapView.onResume();
         checkPlayServices();
         drawMap();
+
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
             startLocationUpdates();
         }
     }
-    public void drawMap(){
+
+    public void drawMap() {
         PolylineOptions polyline = new PolylineOptions();
-        if(TrailLatLonLineString.size()>0) {
+
+        if (TrailLatLonLineString.size() > 0) {
+
             for (LatLng latlng : TrailLatLonLineString) {
                 polyline.add(latlng);
             }
             polyline.width(5).color(Color.BLUE).geodesic(true);
             mMap.addPolyline(polyline);
-            //mMap.addMarker(new MarkerOptions().position(TrailLatLonPoint.get(0)));
+
 
         }
     }
+
     @Override
     public void onStop() {
         super.onStop();
         mMapView.onStop();
-       stopLocationUpdates();
+        stopLocationUpdates();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
-      }
+        }
     }
 
     @Override
@@ -206,11 +240,9 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
     /**
      * Method to display the location on UI
-     * */
+     */
     private void displayLocation() {
 
-
-        Log.e("insdide display ln", "locattions");
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -222,49 +254,37 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
             return;
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-
         if (mLastLocation != null) {
-            LastLat= mLastLocation.getLatitude();
+            LastLat = mLastLocation.getLatitude();
             LastLon = mLastLocation.getLongitude();
-
         } else {
-
-            lblLocation
-                    .setText("(Couldn't get the location. Make sure location is enabled on the device)");
+            Toast.makeText(getActivity(), "Couldn't get the location. Make sure location is enabled on the device", Toast.LENGTH_LONG).show();
         }
-
-
-        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat,LastLon)  , 18.0f) );
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat, LastLon), 18.0f));
     }
 
     /**
      * Method to toggle periodic location updates
-     * */
+     */
     private void togglePeriodicLocationUpdates() {
-
-
         if (!mRequestingLocationUpdates) {
-
-
             mRequestingLocationUpdates = true;
+
             // Starting the location updates
             startLocationUpdates();
-
             Log.d(TAG, "Periodic location updates started!");
+        } else {
 
-        } else { // Stopping the location updates
+            // Stopping the location updates
             mRequestingLocationUpdates = false;
             stopLocationUpdates();
             Log.d(TAG, "Periodic location updates stopped!");
         }
-
     }
 
     /**
      * Creating google api client object
-     * */
+     */
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
@@ -274,7 +294,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
     /**
      * Creating location request object
-     * */
+     */
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -285,7 +305,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
     /**
      * Method to verify google play services on the device
-     * */
+     */
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil
                 .isGooglePlayServicesAvailable(getActivity());
@@ -297,7 +317,6 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
                 Toast.makeText(getActivity(),
                         "This device is not supported.", Toast.LENGTH_LONG)
                         .show();
-
             }
             return false;
         }
@@ -306,11 +325,12 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
     /**
      * Starting the location updates
-     * */
+     */
     protected void startLocationUpdates() {
-
+        time.start();
+        clear.setVisibility(View.GONE);
         btnStartLocationUpdates.startAnimation(animation);
-        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.recording) );
+        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.recording));
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -323,18 +343,17 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, Locationlistener);
-
     }
 
     /**
      * Stopping location updates
      */
     protected void stopLocationUpdates() {
-
+        time.stop();
+        clear.setVisibility(View.VISIBLE);
         btnStartLocationUpdates.clearAnimation();
-        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording) );
+        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording));
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, Locationlistener);
-
     }
 
     /**
@@ -396,13 +415,8 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     }
 
     private void setUpMap() {
-
         drawMap();
-
-
     }
-
-
 
     @Override
     public void onDestroy() {
@@ -416,5 +430,64 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         mMapView.onLowMemory();
     }
 
+    public double CalculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius = 6371;// radius of earth in Km
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                + " Meter   " + meterInDec);
+        return Radius * c * 1000;
+    }
 
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+
+    public void initiateMap(){
+        TrailLatLonLineString.clear();
+        distancesum=0;
+        distance.setText(String.valueOf(distancesum));
+        time.setBase(SystemClock.elapsedRealtime());
+        mMap.clear();
+        clear.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            //Restore the fragment's state here
+            Locationlistener = (com.google.android.gms.location.LocationListener)savedInstanceState.get("locationlistener");
+
+
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //Save the fragment's state here
+        outState.putParcelable("locationlistener", (Parcelable) Locationlistener);
+    }
 }

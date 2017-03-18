@@ -13,29 +13,16 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
-import gr.aegean.com.samostrails.API.GetTrails;
-import gr.aegean.com.samostrails.API.HttpHandler;
-import gr.aegean.com.samostrails.Adapters.AdapterTrails;
 import gr.aegean.com.samostrails.Adapters.AdapterTrailsOffline;
-import gr.aegean.com.samostrails.Models.DifficultyLevel;
-import gr.aegean.com.samostrails.Models.DistanceLevel;
-import gr.aegean.com.samostrails.Models.KindOfTrail;
 import gr.aegean.com.samostrails.Models.Trail;
 import gr.aegean.com.samostrails.SQLDb.TrailDb;
-
-import static android.content.ContentValues.TAG;
 
 public class LocalTrailsFragment extends Fragment {
 
     private ProgressDialog pDialog;
     private GridView lv;
-    private ImageView nofoundimage;
     ArrayList<Trail> TrailsArray = new ArrayList<>();
     public static LocalTrailsFragment newInstance() {
         LocalTrailsFragment fragment = new LocalTrailsFragment();
@@ -53,7 +40,6 @@ public class LocalTrailsFragment extends Fragment {
         View view= inflater.inflate(R.layout.local_trails_fragment, container, false);
 
         lv = (GridView) view.findViewById (R.id.gridview2);
-        nofoundimage = (ImageView) view.findViewById(R.id.nofoundimage);
         new GetTrails().execute();
 
         return view;
@@ -118,4 +104,5 @@ public class LocalTrailsFragment extends Fragment {
         }
 
     }
+
 }

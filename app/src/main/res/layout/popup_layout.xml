@@ -19,6 +19,12 @@
         android:text="Lorem ipsum dolor sit amet..."
         android:textSize="20dp" />
 
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
     <Button
         android:id="@+id/dismiss"
         android:layout_width="match_parent"
