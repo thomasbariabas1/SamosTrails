@@ -294,4 +294,11 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
         lv.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails,((MainActivity)getActivity()).getCache()));
         lv.invalidateViews();
     }
+
+    public void onStart(){
+        super.onStart();
+    }
+    public void onStop(){
+        super.onStop();
+    }
 }

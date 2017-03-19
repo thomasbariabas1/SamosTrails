@@ -5,11 +5,18 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
 
 import java.util.ArrayList;
+
+import gr.aegean.com.samostrails.R;
+
+import static gr.aegean.com.samostrails.Models.DifficultyLevel.Easy;
+import static gr.aegean.com.samostrails.Models.DistanceLevel.Long;
+import static gr.aegean.com.samostrails.Models.KindOfTrail.OneWay;
 
 public class Trail implements Parcelable {
 
@@ -52,6 +59,26 @@ public class Trail implements Parcelable {
         this.StrartingPoin=StrartingPoin;
         this.Tips=Tips;
         this.Video=Video;
+    }
+    public Trail(Context context) {
+        Children_Friedly = false;
+        TrailId = 0;
+        DifficultyLevel =Easy;
+        DistanceLevel = Long;
+        KindOfTrail = OneWay;
+        this.image = "";
+        GeometryCollection = "";
+        Distance = 0;
+        Title = "";
+        this.ConnectionToOtherTrails="";
+        this.Description="";
+        this.MainSights = "";
+        this.OtherTransport="";
+        this.StrartingPoin="";
+        this.Tips="";
+        this.Video="";
+        this.downlImage=  BitmapFactory.decodeResource(context.getResources(), R.drawable.default_trail_image);
+
     }
 
     public boolean getChildrenFriendly(){return this.Children_Friedly;}

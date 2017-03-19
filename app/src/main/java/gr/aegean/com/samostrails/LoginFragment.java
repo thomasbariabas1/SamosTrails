@@ -8,12 +8,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
@@ -36,7 +38,6 @@ public class LoginFragment extends Fragment {
     EditText username;
     EditText password;
     Button login;
-    Button logout;
     Activity activity;
     ProgressDialog progressDialog;
     ServicesClient client;
@@ -71,7 +72,7 @@ public class LoginFragment extends Fragment {
         username = (EditText) view.findViewById(R.id.editUsername);
         password = (EditText) view.findViewById(R.id.editPassword);
         login = (Button) view.findViewById(R.id.buttonlogin);
-        logout = (Button) view.findViewById(R.id.buttonlogout);
+
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,12 +83,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout(us);
-            }
-        });
+
 
 
         return view;
@@ -96,61 +92,53 @@ public class LoginFragment extends Fragment {
     public void login(UserServices us) {
         activity = getActivity();
         final String[] token = new String[1];
+        final Fragment fragment = ProfilFragment.newInstance();
+        if(!username.getText().toString().equals("")&&!password.getText().toString().equals("")) {
+            progressDialog = ProgressDialog.show(activity, "", "Logging you in", true, false);
+            us.login(username.getText().toString(), password.getText().toString(), new AsyncHttpResponseHandler() {
 
 
-        progressDialog = ProgressDialog.show(activity, "", "Logging you in", true, false);
-        us.login(username.getText().toString(), password.getText().toString(), new AsyncHttpResponseHandler() {
-
-
-            @Override
-            public void onFinish() {
-                progressDialog.hide();
-                progressDialog.dismiss();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-                try {
-                    JSONObject jsonObject = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
-                    token[0] = jsonObject.getString("token");
-                    client.setToken(token[0]);
-
-                    Log.e(TAG, token[0]);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                @Override
+                public void onFinish() {
+                    progressDialog.hide();
+                    progressDialog.dismiss();
                 }
-                new AlertDialog.Builder(activity).setMessage("Login was successful.").setPositiveButton("OK", null).setCancelable(true).create().show();
-                username.setText("");
-                password.setText("");
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.e(TAG, error.getMessage());
-                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                    try {
+                        JSONObject jsonObject = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
+                        token[0] = jsonObject.getString("token");
+                        client.setToken(token[0]);
+                        Log.e(TAG, token[0]);
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.content, fragment);
+                        transaction.commit();
 
-                new AlertDialog.Builder(activity).setMessage("Login failed. For:" + new String(responseBody, StandardCharsets.UTF_8)).setPositiveButton("OK", null).setCancelable(true).create().show();
-            }
-        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    new AlertDialog.Builder(activity).setMessage("Login was successful.").setPositiveButton("OK", null).setCancelable(true).create().show();
+                    username.setText("");
+                    password.setText("");
+                }
 
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    Log.e(TAG, error.getMessage());
+                    Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
 
+                    new AlertDialog.Builder(activity).setMessage("Login failed. For:" + new String(responseBody, StandardCharsets.UTF_8)).setPositiveButton("OK", null).setCancelable(true).create().show();
+                }
+            });
+
+        }else{
+            Toast.makeText(getActivity(),"Please Fill All the Fields",Toast.LENGTH_LONG).show();
+        }
     }
 
-    public void logout(UserServices us) {
 
-        us.logout(new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-            }
-        });
-    }
 
 
     @Override
@@ -167,5 +155,17 @@ public class LoginFragment extends Fragment {
             username.setText(savedInstanceState.getString("username"));
             password.setText(savedInstanceState.getString("password"));
         }
+    }
+    public void onPause(){
+        super.onPause();
+    }
+    public void onStart(){
+        super.onStart();
+    }
+    public void onResume(){
+        super.onResume();
+    }
+    public void onStop(){
+        super.onStop();
     }
 }

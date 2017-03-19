@@ -40,7 +40,7 @@ import java.util.ArrayList;
 
 
 public class RecordingFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback,PopUpFragment.EditNameDialogListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
 
@@ -58,9 +58,9 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     private LocationRequest mLocationRequest;
 
     // Location updates intervals in sec
-    private static int UPDATE_INTERVAL = 5000; // 5 sec
+    private  int UPDATE_INTERVAL = 6000; // 5 sec
     private static int FATEST_INTERVAL = 5000; // 5 sec
-    private static int DISPLACEMENT = 0; // 10 meters//100metre is the best for better
+    private  int DISPLACEMENT = 0; // 10 meters//100metre is the best for better
     private MapView mMapView;
     GoogleMap mMap;
     private double LastLat;
@@ -182,7 +182,9 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
             public void onClick(View v) {
                 FragmentManager fm = getFragmentManager();
                 PopUpFragment dialogFragment = new PopUpFragment();
+                dialogFragment.setTargetFragment(RecordingFragment.this, 300);
                 dialogFragment.show(fm, "Sample Fragment");
+
             }
         });
         savebutton.setOnClickListener(new View.OnClickListener() {
@@ -492,6 +494,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         time.setBase(SystemClock.elapsedRealtime());
         mMap.clear();
         clear.setVisibility(View.GONE);
+        stoppedtime=0;
     }
 
     @Override
@@ -508,5 +511,12 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         super.onSaveInstanceState(outState);
         //Save the fragment's state here
        // outState.putParcelable("locationlistener", (Parcelable)Locationlistener);
+    }
+
+    @Override
+    public void onFinishEditDialog(int displacement,int interval) {
+        DISPLACEMENT=displacement;
+        UPDATE_INTERVAL=interval;
+        Log.e("popupresult",""+DISPLACEMENT);
     }
 }

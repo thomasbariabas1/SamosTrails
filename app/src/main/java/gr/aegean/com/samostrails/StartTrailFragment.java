@@ -203,4 +203,5 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback {
         long tmp = Math.round(value);
         return (double) tmp / factor;
     }
+
 }

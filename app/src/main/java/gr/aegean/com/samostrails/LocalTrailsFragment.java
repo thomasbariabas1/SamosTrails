@@ -79,7 +79,7 @@ public class LocalTrailsFragment extends Fragment {
             AdapterTrailsOffline adbTrails;
 
 
-//then populate myListItems
+
 
 
             adbTrails= new AdapterTrailsOffline(getActivity(),  TrailsArray);
@@ -104,5 +104,15 @@ public class LocalTrailsFragment extends Fragment {
         }
 
     }
+    public void onPause(){
+        super.onPause();
+    }
+    public void onStart(){
+        super.onStart();
+    }
+    public void onResume(){
+        super.onResume();
+    }
+    public void onStop(){super.onStop();}
 
 }

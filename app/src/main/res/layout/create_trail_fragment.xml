@@ -222,12 +222,13 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/connectiontoothertrailsinput"
                 />
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight=".5"
                 android:text="Submit Trail"
                 android:id="@+id/sendtrail"
                 android:layout_centerInParent="true"
@@ -238,7 +239,21 @@
                 android:shadowDx="0"
                 android:shadowDy="0"
                 android:shadowRadius="5"/>
-            </RelativeLayout>
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="Save Trail"
+                    android:id="@+id/savetraillocally"
+                    android:layout_centerInParent="true"
+                    android:drawableStart="@drawable/upload"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/buttonshape"
+                    android:shadowColor="#A8A8A8"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="5"/>
+            </LinearLayout>
 
         </LinearLayout>
 

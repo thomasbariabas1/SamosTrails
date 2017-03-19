@@ -3,6 +3,7 @@ package gr.aegean.com.samostrails;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
+import gr.aegean.com.samostrails.Models.Trail;
+import gr.aegean.com.samostrails.SQLDb.TrailDb;
 
 import static android.content.ContentValues.TAG;
 
@@ -45,6 +48,7 @@ public class CreateTrailFragment extends Fragment {
     private RadioGroup DifficultyLevel;
     private RadioGroup ChildrenFriendly;
     private Button SendTrail;
+    private Button SaveTrail;
     ServicesClient client = null;
     SystemServices ss = null;
 
@@ -82,6 +86,13 @@ public class CreateTrailFragment extends Fragment {
         DifficultyLevel = (RadioGroup) view.findViewById(R.id.difficultylevelinput);
         ChildrenFriendly = (RadioGroup) view.findViewById(R.id.childrenfriendlyinput);
         SendTrail = (Button) view.findViewById(R.id.sendtrail);
+        SaveTrail=(Button) view.findViewById(R.id.savetraillocally);
+        SaveTrail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveTrail();
+            }
+        });
         //KindOfTrail.getCheckedRadioButtonId();
 
         SendTrail.setOnClickListener(new View.OnClickListener() {
@@ -236,5 +247,28 @@ public class CreateTrailFragment extends Fragment {
             }
         });
 
+    }
+    public void saveTrail(){
+        Trail trail = new Trail(getActivity());
+        trail.setGeometryCollection(getGeometryCollectionFormat(Linestring));
+        TrailDb.insertIntoDb(trail,TrailDb.initiateDB(getActivity()));
+        Toast.makeText(getActivity(),"Your Trail have been saved Locally",Toast.LENGTH_LONG).show();
+        Fragment fragment = RecordingFragment.newInstance();
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content, fragment);
+        transaction.commit();
+
+    }
+    public void onPause(){
+        super.onPause();
+    }
+    public void onStart(){
+        super.onStart();
+    }
+    public void onResume(){
+        super.onResume();
+    }
+    public void onStop(){
+        super.onStop();
     }
 }
