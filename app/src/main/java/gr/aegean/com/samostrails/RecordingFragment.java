@@ -1,5 +1,6 @@
 package gr.aegean.com.samostrails;
 
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -11,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +70,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     private ImageButton layers;
     private ImageButton savebutton;
     private ImageButton clear;
-
+    private long stoppedtime=0;
     com.google.android.gms.location.LocationListener Locationlistener = new com.google.android.gms.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -126,7 +128,26 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initiateMap();
+
+
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Delete map")
+                        .setMessage("Are you sure you want to delete this map?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                initiateMap();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+
+
             }
         });
         mMapView.onCreate(savedInstanceState);
@@ -272,13 +293,13 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
 
             // Starting the location updates
             startLocationUpdates();
-            Log.d(TAG, "Periodic location updates started!");
+            Log.e(TAG, "Periodic location updates started!");
         } else {
 
             // Stopping the location updates
             mRequestingLocationUpdates = false;
             stopLocationUpdates();
-            Log.d(TAG, "Periodic location updates stopped!");
+            Log.e(TAG, "Periodic location updates stopped!");
         }
     }
 
@@ -327,6 +348,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Starting the location updates
      */
     protected void startLocationUpdates() {
+        time.setBase(SystemClock.elapsedRealtime()+stoppedtime);
         time.start();
         clear.setVisibility(View.GONE);
         btnStartLocationUpdates.startAnimation(animation);
@@ -349,6 +371,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Stopping location updates
      */
     protected void stopLocationUpdates() {
+        stoppedtime=time.getBase() - SystemClock.elapsedRealtime();
         time.stop();
         clear.setVisibility(View.VISIBLE);
         btnStartLocationUpdates.clearAnimation();
@@ -474,20 +497,16 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         if (savedInstanceState != null) {
             //Restore the fragment's state here
-            Locationlistener = (com.google.android.gms.location.LocationListener)savedInstanceState.get("locationlistener");
-
-
+          //  Locationlistener = (com.google.android.gms.location.LocationListener)savedInstanceState.get("locationlistener");
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         //Save the fragment's state here
-        outState.putParcelable("locationlistener", (Parcelable) Locationlistener);
+       // outState.putParcelable("locationlistener", (Parcelable)Locationlistener);
     }
 }

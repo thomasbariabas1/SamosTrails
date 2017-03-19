@@ -10,8 +10,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.MenuItem;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
             RecordingFragment recording = RecordingFragment.newInstance();
             ProfilFragment profil = ProfilFragment.newInstance();
             LruCache<Integer, Bitmap> bitmapCache ;
+            String TAG="";
             ServicesClient client=null;
               int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -31,23 +34,30 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     selectedFragment =  search;
+                    TAG="search";
                     break;
                 case R.id.navigation_dashboard:
                     selectedFragment = local;
+                    TAG="local";
                     break;
                 case R.id.recording:
                     selectedFragment = recording;
+                    TAG="recording";
                     break;
                 case R.id.profil:
                     selectedFragment = profil;
+                    TAG="profil";
                     break;
             }
+
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content, selectedFragment);
+            transaction.replace(R.id.content, selectedFragment,TAG);
+            transaction.addToBackStack(TAG);
             transaction.commit();
             return true;
         }
@@ -142,4 +152,5 @@ public  LruCache<Integer, Bitmap> getCache(){
             // permissions this app might request
         }
     }
+
 }

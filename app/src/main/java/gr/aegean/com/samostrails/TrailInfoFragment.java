@@ -3,6 +3,7 @@ package gr.aegean.com.samostrails;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -54,6 +55,9 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
     private Trail trail;
     private Button SaveTrail;
     private Button DeleteTrail;
+    private Button StartTrail;
+    ArrayList<LatLng> fullline = new ArrayList<>();
+    ArrayList<LatLng> fullpoints = new ArrayList<>();
     ScrollView hsv;
     public static TrailInfoFragment newInstance() {
         TrailInfoFragment fragment = new TrailInfoFragment();
@@ -86,9 +90,21 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         SaveTrail = (Button) view.findViewById(R.id.savetrail);
         DeleteTrail = (Button) view.findViewById(R.id.deletetrail);
         DeleteTrail.setVisibility(View.GONE);
-
-                Bundle bundle = getArguments();
+        StartTrail = (Button) view.findViewById(R.id.start_trail);
+                final Bundle bundle = getArguments();
          trail = (Trail) bundle.getParcelable("trail");
+        StartTrail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bundle.putParcelableArrayList("lines",fullline);
+                bundle.putParcelableArrayList("points",fullpoints);
+                Fragment fragment = StartTrailFragment.newInstance();
+                fragment.setArguments(bundle);
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, fragment);
+                transaction.commit();
+            }
+        });
         //TrailImage.setImageBitmap(trail.getDownlImage());
         TrailTitle.setText(trail.getTitle());
 
@@ -204,8 +220,7 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         }
         ArrayList<Double> filtredlinestring=filter(linestring);
         ArrayList<Double> filteredpoints=filter(point);
-        ArrayList<LatLng> fullline = new ArrayList<>();
-        ArrayList<LatLng> fullpoints = new ArrayList<>();
+
         for(int i=0;i<filtredlinestring.size();i++){
             fullline.add(new LatLng(filtredlinestring.get(i+1),filtredlinestring.get(i))); filtredlinestring.get(i);
             i++;

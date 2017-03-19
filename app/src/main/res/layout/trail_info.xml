@@ -2,10 +2,10 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sv"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="gr.aegean.com.samostrails.MainActivity"
-    android:id="@+id/sv">
+    tools:context="gr.aegean.com.samostrails.MainActivity">
 
 
     <FrameLayout
@@ -14,275 +14,316 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#10191919">
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#10191919"
+            android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/contenttrailinfo">
+            <LinearLayout
+                android:id="@+id/contenttrailinfo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:orientation="vertical">
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/trail_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/trail_title"
-                    android:textSize="30dp"
-                    android:textColor="#ffffff"
                     android:background="@color/downHeader"
-                    />
+                    android:textColor="#ffffff"
+                    android:textSize="30dp" />
 
-                    <com.google.android.gms.maps.MapView
+                <com.google.android.gms.maps.MapView
                     android:id="@+id/map"
                     android:layout_width="match_parent"
                     android:layout_height="200dp" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/description_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/description_label"
+                    android:paddingLeft="10dp"
                     android:text="Description:"
                     android:textSize="20dp"
                     android:textStyle="bold"
-                    android:paddingLeft="10dp"
 
                     />
 
-                    <android.support.v7.widget.AppCompatTextView
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/description"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
 
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/startingpoint_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/startingpoint_label"
+                    android:paddingLeft="10dp"
                     android:text="Starting Point:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/startingpoint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/startingpoint"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/mainsights_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/mainsights_label"
+                    android:paddingLeft="10dp"
                     android:text="Main Sights:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/mainsights"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/mainsights"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/tips_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tips_label"
+                    android:paddingLeft="10dp"
                     android:text="Tips:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/tips"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tips"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/distance_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/distance_label"
+                    android:paddingLeft="10dp"
                     android:text="Distance:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/distance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/distance"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/kindoftrail_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/kindoftrail_label"
+                    android:paddingLeft="10dp"
                     android:text="Kind Of Trail:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/kindoftrail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/kindoftrail"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/difficultylevel_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/difficultylevel_label"
+                    android:paddingLeft="10dp"
                     android:text="Difficulty Level:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/difficultylevel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/difficultylevel"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/childrenfriendly_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/childrenfriendly_label"
+                    android:paddingLeft="10dp"
                     android:text="Children Friendly:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/childrenfriendly"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/childrenfriendly"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/other_transport_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/other_transport_label"
+                    android:paddingLeft="10dp"
                     android:text="Other Transports:"
                     android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    />
+                    android:textStyle="bold" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/othertransport"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/othertransport"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/connectiontoothertrails_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/connectiontoothertrails_label"
+                    android:paddingLeft="10dp"
                     android:text="Connection to other trails:"
                     android:textSize="20dp"
                     android:textStyle="bold"
-                    android:paddingLeft="10dp"
 
                     />
+
                 <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/connectiontoothertrails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/connectiontoothertrails"
                     android:background="@drawable/drop_shadow_test"
                     android:clickable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="1"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
 
-                </LinearLayout>
+            </LinearLayout>
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/savetrail"
-                    style="@style/Base.Widget.AppCompat.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_below="@+id/contenttrailinfo"
-                    android:layout_centerHorizontal="true"
-                    android:text="Save Trail" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/deletetrail"
-                    style="@style/Base.Widget.AppCompat.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_below="@+id/contenttrailinfo"
-                    android:layout_centerHorizontal="true"
-                    android:text="Delete Trail" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/contenttrailinfo"
+                android:orientation="horizontal">
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight=".5"
+                    >
 
-            </RelativeLayout>
+                    <Button
+                        android:id="@+id/deletetrail"
+                        android:drawableStart="@drawable/delete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="Delete Trail"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/buttonshape"
+                        android:shadowColor="#A8A8A8"
+                        android:shadowDx="0"
+                        android:shadowDy="0"
+                        android:shadowRadius="5"/>
+
+                    <Button
+                        android:id="@+id/savetrail"
+                        android:drawableStart="@drawable/saveicon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:text="Save Trail"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/buttonshape"
+                        android:shadowColor="#A8A8A8"
+                        android:shadowDx="0"
+                        android:shadowDy="0"
+                        android:shadowRadius="5"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.5">
+
+                    <Button
+
+
+                        android:drawableStart="@drawable/start_pressed"
+                        android:id="@+id/start_trail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="Start Trail"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/buttonshape"
+                        android:shadowColor="#A8A8A8"
+                        android:shadowDx="0"
+                        android:shadowDy="0"
+                        android:shadowRadius="5" />
+                </RelativeLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
 
     </FrameLayout>
 

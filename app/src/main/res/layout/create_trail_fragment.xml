@@ -157,10 +157,21 @@
                 <RadioButton
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Experts Only"
+                    android:text="Challenging"
                     />
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Sport"
+                    />
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Extreme"
+                    />
+
             </RadioGroup>
-            <android.support.v7.widget.AppCompatTextView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/childrenfriendly_label"
@@ -211,12 +222,23 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/connectiontoothertrailsinput"
                 />
-            <android.support.v7.widget.AppCompatButton
+            <RelativeLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <Button
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Submit Trail"
-                android:id="@+id/sendtrail"/>
-
+                android:id="@+id/sendtrail"
+                android:layout_centerInParent="true"
+                android:drawableStart="@drawable/upload"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/buttonshape"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"/>
+            </RelativeLayout>
 
         </LinearLayout>
 
