@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -26,8 +27,8 @@ public class TrailService extends Service {
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 0;
     private static final String LOG_TAG = "ForegroundService";
-    private MyBroadcastReceiver mBroadcastReceiver;
-
+    private boolean mRequestingLocationUpdates = true;
+    private final IBinder mIBinder = new LocalBinder();
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
@@ -39,6 +40,10 @@ public class TrailService extends Service {
         @Override
         public void onLocationChanged(Location location) {
             Log.e(TAG, "onLocationChanged: " + location);
+
+            if(mOnServiceListener != null){
+                mOnServiceListener.onDataReceived(location);
+            }
             mLastLocation.set(location);
 
         }
@@ -70,64 +75,52 @@ public class TrailService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
-        mBroadcastReceiver = new MyBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        // set the custom action
-        intentFilter.addAction("do_something");
 
-        if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
-            registerReceiver(mBroadcastReceiver, intentFilter);
-            Log.i(LOG_TAG, "Received Start Foreground Intent ");
-            Intent notificationIntent = new Intent(this, MainActivity.class);
-            notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
            /* PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                     notificationIntent, 0);*/
 
-            Intent previousIntent = new Intent(this, TrailService.class);
-            previousIntent.setAction(Constants.ACTION.PREV_ACTION);
-            PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
-                    previousIntent, 0);
+        Intent previousIntent = new Intent(this, TrailService.class);
+        previousIntent.setAction(Constants.ACTION.PREV_ACTION);
+        PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
+                previousIntent, 0);
         // While making notification
-            Intent i = new Intent("do_something");
+        Intent i = new Intent("do_something");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
 
-            Intent playIntent = new Intent(this, TrailService.class);
-            playIntent.setAction(Constants.ACTION.PLAY_ACTION);
-            PendingIntent pplayIntent = PendingIntent.getService(this, 0,
-                    playIntent, 0);
+        Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                R.drawable.white_0);
+        if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
 
-            Intent nextIntent = new Intent(this, TrailService.class);
-            nextIntent.setAction(Constants.ACTION.NEXT_ACTION);
-            PendingIntent pnextIntent = PendingIntent.getService(this, 0,
-                    nextIntent, 0);
+            Log.i(LOG_TAG, "Received Start Foreground Intent ");
 
-            Bitmap icon = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.settings);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+
             Notification notification = new NotificationCompat.Builder(this)
                     .setContentTitle("Trail Recording")
                     .setTicker("Trail Recording")
                     .setContentText("Trail Recording")
-                    .setSmallIcon(R.drawable.settings)
+                    .setSmallIcon(R.drawable.white_0)
+                    .setOngoing(mRequestingLocationUpdates)
                     .setLargeIcon(
                             Bitmap.createScaledBitmap(icon, 128, 128, false))
                     .setContentIntent(pendingIntent)
                     .setOngoing(true)
-                    .addAction(R.drawable.recording,
-                            "Previous", ppreviousIntent)
-                    .addAction(android.R.drawable.ic_media_play, "Play",
-                            pplayIntent)
-                    .addAction(android.R.drawable.ic_media_next, "Next",
-                            pnextIntent).build();
-
+                    .addAction(mRequestingLocationUpdates ? R.drawable.norecording
+                                    : R.drawable.recording,
+                            mRequestingLocationUpdates ? "Stop"
+                                    : "Start", ppreviousIntent)
+                    .build();
 
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,
                     notification);
-            unregisterReceiver(mBroadcastReceiver);
+
         } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
-            Log.i(LOG_TAG, "Clicked Previous");
+            tongleLocationUpdates();
+            updateNotification(pendingIntent,ppreviousIntent,icon);
+            Log.i(LOG_TAG, "Clicked Start");
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
             Log.i(LOG_TAG, "Clicked Play");
         } else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
@@ -141,7 +134,27 @@ public class TrailService extends Service {
 
         return Service.START_STICKY;
     }
+public void updateNotification( PendingIntent pendingIntent ,PendingIntent ppreviousIntent,  Bitmap icon){
 
+    Notification notification = new NotificationCompat.Builder(this)
+            .setContentTitle("Trail Recording")
+            .setTicker("Trail Recording")
+            .setContentText("Trail Recording")
+            .setSmallIcon(R.drawable.white_0)
+            .setOngoing(mRequestingLocationUpdates)
+            .setLargeIcon(
+                    Bitmap.createScaledBitmap(icon, 128, 128, false))
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .addAction(mRequestingLocationUpdates ? R.drawable.norecording
+                            : R.drawable.recording,
+                    mRequestingLocationUpdates ? "Stop"
+                            : "Start", ppreviousIntent)
+            .build();
+
+    startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,
+            notification);
+}
     @Override
     public void onCreate() {
         Log.e(TAG, "onCreate");
@@ -183,19 +196,18 @@ public class TrailService extends Service {
         }
     }
 
-    public class MyBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                case "Previous":
-                    stopLocationUpdates();
-                    break;
-            }
+
+    public void tongleLocationUpdates(){
+
+        if(mRequestingLocationUpdates){
+            stopLocationUpdates();
+        }else{
+            startLocationUpdates();
         }
     }
 
     public void stopLocationUpdates() {
+        mRequestingLocationUpdates=false;
         Log.e(TAG,"stoped updates");
         if (mLocationManager != null) {
             for (int i = 0; i < mLocationListeners.length; i++) {
@@ -207,7 +219,27 @@ public class TrailService extends Service {
             }
         }
     }
-
+public void startLocationUpdates(){
+ mRequestingLocationUpdates=true;
+    try {
+        mLocationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                mLocationListeners[1]);
+    } catch (java.lang.SecurityException ex) {
+        Log.i(TAG, "fail to request location update, ignore", ex);
+    } catch (IllegalArgumentException ex) {
+        Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+    }
+    try {
+        mLocationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                mLocationListeners[0]);
+    } catch (java.lang.SecurityException ex) {
+        Log.i(TAG, "fail to request location update, ignore", ex);
+    } catch (IllegalArgumentException ex) {
+        Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+    }
+}
     private void initializeLocationManager() {
         Log.e(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
@@ -216,10 +248,25 @@ public class TrailService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-
-        return null;
+    public IBinder onBind(Intent intent)
+    {
+        return mIBinder;
     }
 
+    public class LocalBinder extends Binder
+    {
+        public TrailService getInstance()
+        {
+            return TrailService.this;
+        }
+    }
 
+    public interface OnServiceListener{
+        public void onDataReceived(Location data);
+    }
+    private OnServiceListener mOnServiceListener = null;
+
+    public void setOnServiceListener(OnServiceListener serviceListener){
+        mOnServiceListener = serviceListener;
+    }
 }

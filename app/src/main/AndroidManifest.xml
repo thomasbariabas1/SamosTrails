@@ -34,7 +34,7 @@
             </meta-data>
         </activity>
 
-        <service android:name="gr.aegean.com.samostrails.Services.TrailService" android:process=":trailservice" />
+        <service android:name="gr.aegean.com.samostrails.Services.TrailService"  />
     </application>
 
 
