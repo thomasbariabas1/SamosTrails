@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sv"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="gr.aegean.com.samostrails.MainActivity"
-    android:id="@+id/sv">
+    tools:context="gr.aegean.com.samostrails.MainActivity">
 
 
     <FrameLayout
@@ -13,246 +13,252 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#10191919">
+            android:background="#10191919"
+            android:orientation="vertical">
 
             <android.support.v7.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/savetrailtitle"
-                android:text="Save Trail"
-                android:layout_gravity="center"
-                android:textSize="30dp"
-                android:textColor="#ffffff"
-                android:background="@color/downHeader"
-                />
-            <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/downHeader"
+                android:text="Save Trail"
+                android:textColor="#ffffff"
+                android:textSize="30dp" />
+
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/title_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Title:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputEditText
+                android:id="@+id/title_input"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/title_input"/>
+                android:layout_height="wrap_content" />
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/description_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/description_label"
                 android:text="Description:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/descriptioninput"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/startingpoint_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/startingpoint_label"
                 android:text="Starting Point:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputEditText
+                android:id="@+id/startingpointinput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/startingpointinput"
 
                 />
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/mainsights_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/mainsights_label"
                 android:text="Main Sights:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/mainsightsinput"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/tips_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tips_label"
                 android:text="Tips:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/tipsinput"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/distance_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/distance_label"
                 android:text="Distance:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/distanceinput"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/kindoftrail_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/kindoftrail_label"
                 android:text="Kind Of Trail:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <RadioGroup
+                android:id="@+id/kindoftrailinput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/kindoftrailinput">
+                android:layout_height="wrap_content">
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="One Way"
-                />
+                    android:layout_height="wrap_content"
+                    android:text="One Way" />
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Loop"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="Loop" />
             </RadioGroup>
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/difficultylevel_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/difficultylevel_label"
                 android:text="Difficulty Level:"
                 android:textSize="20dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
+
             <RadioGroup
+                android:id="@+id/difficultylevelinput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/difficultylevelinput">
+                android:layout_height="wrap_content">
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Easy"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="Easy" />
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Moderate"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="Moderate" />
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Challenging"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="Challenging" />
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Sport"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="Sport" />
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Extreme"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="Extreme" />
 
             </RadioGroup>
+
             <TextView
+                android:id="@+id/childrenfriendly_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/childrenfriendly_label"
                 android:text="Children Friendly:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
             <RadioGroup
+                android:id="@+id/childrenfriendlyinput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/childrenfriendlyinput">
+                android:layout_height="wrap_content">
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="Yes"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="Yes" />
+
                 <RadioButton
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text="No"
-                    />
+                    android:layout_height="wrap_content"
+                    android:text="No" />
             </RadioGroup>
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/other_transport_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/other_transport_label"
                 android:text="Other Transports:"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/othertransportinput"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/connectiontoothertrails_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/connectiontoothertrails_label"
                 android:text="Connection to other trails:"
                 android:textSize="20dp"
                 android:textStyle="bold"
 
                 />
+
             <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/connectiontoothertrailsinput"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:text="Submit Trail"
-                android:id="@+id/sendtrail"
-                android:layout_centerInParent="true"
-                android:drawableStart="@drawable/upload"
-                android:textColor="#FFFFFF"
-                android:background="@drawable/buttonshape"
-                android:shadowColor="#A8A8A8"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="5"/>
+
                 <Button
+                    android:id="@+id/sendtrail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".5"
-                    android:text="Save Trail"
-                    android:id="@+id/savetraillocally"
                     android:layout_centerInParent="true"
-                    android:drawableStart="@drawable/upload"
-                    android:textColor="#FFFFFF"
+                    android:layout_weight=".5"
                     android:background="@drawable/buttonshape"
+                    android:drawableStart="@drawable/upload"
                     android:shadowColor="#A8A8A8"
                     android:shadowDx="0"
                     android:shadowDy="0"
-                    android:shadowRadius="5"/>
+                    android:shadowRadius="5"
+                    android:text="Submit Trail"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/savetraillocally"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_weight=".5"
+                    android:background="@drawable/buttonshape"
+                    android:drawableStart="@drawable/saveicon"
+                    android:shadowColor="#A8A8A8"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="5"
+                    android:text="Save Trail"
+                    android:textColor="#FFFFFF" />
             </LinearLayout>
 
         </LinearLayout>

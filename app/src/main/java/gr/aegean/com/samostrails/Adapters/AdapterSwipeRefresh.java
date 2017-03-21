@@ -41,9 +41,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
         }
         this.trails=trails;
         this.bitmapCache=bitmapCache;
-        //Log.e("test","view");
         for(Trail trail:trails){
-            //Log.e("test","view"+trail);
             mItems.add(new Item(trail.getTitle(),trail.getImage(),trail.getTrailId()));
         }
     }
@@ -78,15 +76,13 @@ public class AdapterSwipeRefresh extends BaseAdapter {
             v.setTag(R.id.trailid,v.findViewById(R.id.trailid));
             v.setTag(R.id.favorite,v.findViewById(R.id.favorite));
         }
-        // Log.e("test","view"+v);
+
         picture = (ImageView) v.getTag(R.id.picture);
         name = (TextView) v.getTag(R.id.text);
         trailid = (TextView)v.getTag(R.id.trailid);
         favorite = (ImageView)v.getTag(R.id.favorite);
-        // Log.e("test","view"+v);
         Item item = getItem(i);
         final Bitmap[] bmp = new Bitmap[1];
-        //Log.e("test","view"+v);
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -103,6 +99,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
                     }
 
                 } catch (Exception e) {
+
                     // log error
                 }
                 return null;
@@ -120,7 +117,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
         trailid.setVisibility(View.GONE);
         name.setText(item.name);
         trailid.setText(String.valueOf(item.trailid));
-        if (TrailDb.ifExists(trails.get(i),TrailDb.initiateDB(v.getContext()))){
+        if (TrailDb.ifExists(trails.get(i),TrailDb.initiateDB(v.getContext()))&&!trails.get(i).isEditable()){
             favorite.setImageDrawable(v.getResources().getDrawable(R.drawable.heart_filled));
         }
 
@@ -128,8 +125,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
         favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TrailDb.ifExists(trails.get(i),TrailDb.initiateDB(v.getContext()))){
-
+                if (!TrailDb.ifExists(trails.get(i),TrailDb.initiateDB(v.getContext()))&&!trails.get(i).isEditable()){
                     TrailDb.insertIntoDb(trails.get(i), TrailDb.initiateDB(v.getContext()));
                     favorite.setImageDrawable(v.getResources().getDrawable(R.drawable.heart_filled));
 

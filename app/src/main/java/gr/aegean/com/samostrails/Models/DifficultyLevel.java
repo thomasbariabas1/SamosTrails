@@ -7,6 +7,6 @@ import java.io.Serializable;
  */
 
 public enum DifficultyLevel  implements Serializable {
-    Moderate,  Easy,  ExpertsOnly
+    Moderate,  Easy,  ExpertsOnly , NotSelected
 
 }

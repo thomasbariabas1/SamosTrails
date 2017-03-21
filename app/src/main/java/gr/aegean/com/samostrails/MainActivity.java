@@ -1,6 +1,5 @@
 package gr.aegean.com.samostrails;
 
-import android.*;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -10,25 +9,24 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.MenuItem;
+
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
-            SearchTrailFragment search = SearchTrailFragment.newInstance();
-            LocalTrailsFragment local =  LocalTrailsFragment.newInstance();
-            RecordingFragment recording = RecordingFragment.newInstance();
-            ProfilFragment profil = ProfilFragment.newInstance();
-            LruCache<Integer, Bitmap> bitmapCache ;
-            String TAG="";
-            ServicesClient client=null;
-              int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
+    SearchTrailFragment search = SearchTrailFragment.newInstance();
+    LocalTrailsFragment local = LocalTrailsFragment.newInstance();
+    RecordingFragment recording = RecordingFragment.newInstance();
+    ProfilFragment profil = ProfilFragment.newInstance();
+    LruCache<Integer, Bitmap> bitmapCache;
+    String TAG = "";
+    ServicesClient client = null;
+    int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -38,25 +36,25 @@ public class MainActivity extends AppCompatActivity {
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    selectedFragment =  search;
-                    TAG="search";
+                    selectedFragment = search;
+                    TAG = "search";
                     break;
                 case R.id.navigation_dashboard:
                     selectedFragment = local;
-                    TAG="local";
+                    TAG = "local";
                     break;
                 case R.id.recording:
                     selectedFragment = recording;
-                    TAG="recording";
+                    TAG = "recording";
                     break;
                 case R.id.profil:
                     selectedFragment = profil;
-                    TAG="profil";
+                    TAG = "profil";
                     break;
             }
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content, selectedFragment,TAG);
+            transaction.replace(R.id.content, selectedFragment, TAG);
             transaction.commit();
             return true;
         }
@@ -66,10 +64,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        client = new ServicesClient("http://test.samostrails.com", "api");
 
+        client = new ServicesClient("http://test.samostrails.com", "api");
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -84,35 +81,30 @@ public class MainActivity extends AppCompatActivity {
                     MY_PERMISSIONS_REQUEST_READ_CONTACTS);
 
         }
-        int memClass = ( (ActivityManager) this.getSystemService( Context.ACTIVITY_SERVICE ) ).getMemoryClass();
+        int memClass = ((ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
         int cacheSize = 1024 * 1024 * memClass / 8;
-        bitmapCache= new LruCache<Integer, Bitmap>(cacheSize);
-        if(savedInstanceState!=null){
+        bitmapCache = new LruCache<Integer, Bitmap>(cacheSize);
+        if (savedInstanceState != null) {
             profil = (ProfilFragment) getSupportFragmentManager().getFragment(savedInstanceState, "ProfilFragment");
         }
-
-
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, SearchTrailFragment.newInstance());
         transaction.commit();
-
-
-
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    public void setServiceClient(ServicesClient servicesclient){
-        this.client=servicesclient;
+    public void setServiceClient(ServicesClient servicesclient) {
+        this.client = servicesclient;
 
     }
 
-    public ServicesClient getServicesClient(){
+    public ServicesClient getServicesClient() {
         return this.client;
     }
-public  LruCache<Integer, Bitmap> getCache(){
+
+    public LruCache<Integer, Bitmap> getCache() {
         return this.bitmapCache;
     }
 
@@ -127,6 +119,7 @@ public  LruCache<Integer, Bitmap> getCache(){
         super.onRestoreInstanceState(savedInstanceState);
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -152,4 +145,15 @@ public  LruCache<Integer, Bitmap> getCache(){
         }
     }
 
+
+
+
+
+
+
+
+    @Override
+    public void onStop(){
+        super.onStop();
+    }
 }

@@ -18,7 +18,6 @@ import static android.content.ContentValues.TAG;
 
 public class Utilities {
 
-
     public static boolean hasActiveInternetConnection(Context context) {
         final boolean[] results = {false};
         final Context contexts=context;
@@ -54,6 +53,5 @@ public class Utilities {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
-
 
 }

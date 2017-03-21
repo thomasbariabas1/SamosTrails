@@ -32,10 +32,8 @@ import cz.msebera.android.httpclient.Header;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
 import gr.aegean.com.samostrails.DrupalDroid.UserServices;
-import gr.aegean.com.samostrails.Services.MyService;
 
 import static android.content.ContentValues.TAG;
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class ProfilFragment extends Fragment {
     Button login;
@@ -56,13 +54,11 @@ public class ProfilFragment extends Fragment {
 
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.profil_fragment, container, false);
         final Fragment fragment = LoginFragment.newInstance();
-        //   view.getContext().stopService(new Intent( view.getContext(), MyService.class));
 
         client = ((MainActivity) getActivity()).getServicesClient();
         ss = new SystemServices(client);

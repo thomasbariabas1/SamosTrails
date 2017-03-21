@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 
@@ -22,8 +21,10 @@ import gr.aegean.com.samostrails.SQLDb.TrailDb;
 public class LocalTrailsFragment extends Fragment {
 
     private ProgressDialog pDialog;
-    private GridView lv;
+    private GridView favoritetrails;
+    private GridView recordedtrails;
     ArrayList<Trail> TrailsArray = new ArrayList<>();
+
     public static LocalTrailsFragment newInstance() {
         LocalTrailsFragment fragment = new LocalTrailsFragment();
         return fragment;
@@ -37,13 +38,15 @@ public class LocalTrailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.local_trails_fragment, container, false);
-
-        lv = (GridView) view.findViewById (R.id.gridview2);
+        View view = inflater.inflate(R.layout.local_trails_fragment, container, false);
+        favoritetrails = (GridView) view.findViewById(R.id.gridview2);
+        recordedtrails = (GridView) view.findViewById(R.id.gridview3);
+        TrailsArray.clear();
         new GetTrails().execute();
 
         return view;
     }
+
     private class GetTrails extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -60,7 +63,7 @@ public class LocalTrailsFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... arg0) {
 
-            TrailsArray= TrailDb.readFromDb(TrailDb.initiateDB(getActivity()));
+            TrailsArray = TrailDb.readFromDb(TrailDb.initiateDB(getActivity()));
 
 
             return null;
@@ -72,47 +75,73 @@ public class LocalTrailsFragment extends Fragment {
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
+            final ArrayList<Trail> recordedtrailsarray = new ArrayList<>();
+            final ArrayList<Trail> favoritetrailsarray = new ArrayList<>();
+            int size = TrailsArray.size();
+            for (int i = 0; i < size; i++) {
+                Trail trail = TrailsArray.get(i);
+                Log.e("is EDITABLE", "" + trail.isEditable());
+                Log.e("TrailsArray", "" + TrailsArray.size());
+                if (trail.isEditable())
+                    recordedtrailsarray.add(TrailsArray.get(i));
+                else
+                    favoritetrailsarray.add(TrailsArray.get(i));
+            }
 
-            Log.e("I LIsta",TrailsArray.toString());
+            AdapterTrailsOffline favoritetrailadapter;
+            favoritetrailadapter = new AdapterTrailsOffline(getActivity(), favoritetrailsarray);
+            AdapterTrailsOffline recordedtrailadapter;
+            recordedtrailadapter = new AdapterTrailsOffline(getActivity(), recordedtrailsarray);
 
-
-            AdapterTrailsOffline adbTrails;
-
-
-
-
-
-            adbTrails= new AdapterTrailsOffline(getActivity(),  TrailsArray);
-
-            lv.setAdapter(adbTrails);
-
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            recordedtrails.setAdapter(recordedtrailadapter);
+            recordedtrails.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("trail",TrailsArray.get(position));
+                    bundle.putParcelable("trail", recordedtrailsarray.get(position));
                     Fragment fragment = TrailInfoFragment.newInstance();
                     fragment.setArguments(bundle);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.content, fragment);
                     transaction.commit();
-                    Log.e("Gridviewclicked",""+TrailsArray.get(position).getTitle());
+                    // Log.e("Gridviewclicked",""+recordedtrailsarray.get(position).getTitle());
+                }
+            });
+            favoritetrails.setAdapter(favoritetrailadapter);
+            favoritetrails.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("trail", favoritetrailsarray.get(position));
+                    Fragment fragment = TrailInfoFragment.newInstance();
+                    fragment.setArguments(bundle);
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content, fragment);
+                    transaction.commit();
+                    //Log.e("Gridviewclicked",""+TrailsArray.get(position).getTitle());
                 }
             });
 
         }
 
     }
-    public void onPause(){
+
+    public void onPause() {
         super.onPause();
     }
-    public void onStart(){
+
+    public void onStart() {
         super.onStart();
     }
-    public void onResume(){
+
+    public void onResume() {
         super.onResume();
     }
-    public void onStop(){super.onStop();}
+
+    public void onStop() {
+        super.onStop();
+    }
 
 }

@@ -14,7 +14,7 @@ import android.widget.TextView;
  */
 
 public class PopUpFragment extends DialogFragment {
-       SeekBar seek;
+    SeekBar seek;
     TextView seekbarprogress;
     SeekBar seekinternal;
     TextView seekbarprogressinternal;
@@ -77,15 +77,11 @@ public class PopUpFragment extends DialogFragment {
 
 
     // Call this method to send the data back to the parent fragment
-
     public void sendBackResult() {
 
         // Notice the use of `getTargetFragment` which will be set when the dialog is displayed
-
         EditNameDialogListener listener = (EditNameDialogListener) getTargetFragment();
-
         listener.onFinishEditDialog(seek.getProgress(),seekinternal.getProgress());
-
         dismiss();
 
     }

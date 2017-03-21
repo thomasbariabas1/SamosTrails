@@ -3,27 +3,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="gr.aegean.com.samostrails.MainActivity">
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Favorite Trails"
-        android:textSize="30sp"
-        android:gravity="center"
-        android:background="@color/downHeader"
-        android:textColor="#FFFFFF"
-        />
-    <GridView
-        android:id="@+id/gridview2"
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:verticalSpacing="3dp"
-        android:horizontalSpacing="3dp"
-        android:stretchMode="columnWidth"
-        android:numColumns="2"
-        android:paddingTop="40dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7"
+            android:orientation="vertical">
 
-        />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/downHeader"
+                android:gravity="center"
+                android:text="Favorite Trails"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp" />
+
+            <GridView
+                android:id="@+id/gridview2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:horizontalSpacing="3dp"
+                android:numColumns="2"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="3dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/downHeader"
+                android:gravity="center"
+                android:text="Recorded Trails"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp" />
+
+            <GridView
+                android:id="@+id/gridview3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:horizontalSpacing="3dp"
+                android:numColumns="2"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="3dp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
 
 </RelativeLayout>

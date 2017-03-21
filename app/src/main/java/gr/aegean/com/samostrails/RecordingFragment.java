@@ -1,12 +1,16 @@
 package gr.aegean.com.samostrails;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -24,6 +28,7 @@ import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -35,15 +40,17 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import gr.aegean.com.samostrails.Services.Constants;
+import gr.aegean.com.samostrails.Services.TrailService;
 
 public class RecordingFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback,PopUpFragment.EditNameDialogListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback, PopUpFragment.EditNameDialogListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-
     private Location mLastLocation;
     private ArrayList<LatLng> TrailLatLonLineString = new ArrayList<>();
 
@@ -52,15 +59,14 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     Animation animation = null;
     TextView distance;
     Chronometer time;
-
-    // boolean flag to toggle periodic location updates
+    // booean flag to toggle periodic location updates
     private boolean mRequestingLocationUpdates = false;
     private LocationRequest mLocationRequest;
 
     // Location updates intervals in sec
-    private  int UPDATE_INTERVAL = 6000; // 5 sec
+    private int UPDATE_INTERVAL = 6000; // 5 sec
     private static int FATEST_INTERVAL = 5000; // 5 sec
-    private  int DISPLACEMENT = 0; // 10 meters//100metre is the best for better
+    private int DISPLACEMENT = 0; // 10 meters//100metre is the best for better
     private MapView mMapView;
     GoogleMap mMap;
     private double LastLat;
@@ -70,7 +76,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     private ImageButton layers;
     private ImageButton savebutton;
     private ImageButton clear;
-    private long stoppedtime=0;
+    private long stoppedtime = 0;
     com.google.android.gms.location.LocationListener Locationlistener = new com.google.android.gms.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -109,6 +115,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -124,6 +131,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         time = (Chronometer) view.findViewById(R.id.timerecording);
         clear = (ImageButton) view.findViewById(R.id.clearbuttonrecording);
         clear.setVisibility(View.GONE);
+
 
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +153,6 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-
 
 
             }
@@ -221,7 +228,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         super.onResume();
         mMapView.onResume();
         checkPlayServices();
-        drawMap();
+        setUpMap();
 
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
@@ -229,26 +236,11 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         }
     }
 
-    public void drawMap() {
-        PolylineOptions polyline = new PolylineOptions();
-
-        if (TrailLatLonLineString.size() > 0) {
-
-            for (LatLng latlng : TrailLatLonLineString) {
-                polyline.add(latlng);
-            }
-            polyline.width(5).color(Color.BLUE).geodesic(true);
-            mMap.addPolyline(polyline);
-
-
-        }
-    }
 
     @Override
     public void onStop() {
         super.onStop();
         mMapView.onStop();
-        stopLocationUpdates();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -258,7 +250,7 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-        stopLocationUpdates();
+
     }
 
     /**
@@ -350,9 +342,13 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Starting the location updates
      */
     protected void startLocationUpdates() {
-        time.setBase(SystemClock.elapsedRealtime()+stoppedtime);
+        time.setBase(SystemClock.elapsedRealtime() + stoppedtime);
         time.start();
         clear.setVisibility(View.GONE);
+        Intent startIntent = new Intent(getActivity(), TrailService.class);
+        startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+        getActivity().startService(startIntent);
+
         btnStartLocationUpdates.startAnimation(animation);
         btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.recording));
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -373,7 +369,11 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
      * Stopping location updates
      */
     protected void stopLocationUpdates() {
-        stoppedtime=time.getBase() - SystemClock.elapsedRealtime();
+
+        Intent stopIntent = new Intent(getActivity(), TrailService.class);
+        stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        getActivity().startService(stopIntent);
+        stoppedtime = time.getBase() - SystemClock.elapsedRealtime();
         time.stop();
         clear.setVisibility(View.VISIBLE);
         btnStartLocationUpdates.clearAnimation();
@@ -440,14 +440,20 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
     }
 
     private void setUpMap() {
-        drawMap();
+        PolylineOptions polyline = new PolylineOptions();
+
+        if (TrailLatLonLineString.size() > 0) {
+
+            for (LatLng latlng : TrailLatLonLineString) {
+                polyline.add(latlng);
+            }
+            polyline.width(5).color(Color.BLUE).geodesic(true);
+            mMap.addPolyline(polyline);
+
+
+        }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mMapView.onDestroy();
-    }
 
     @Override
     public void onLowMemory() {
@@ -487,36 +493,47 @@ public class RecordingFragment extends Fragment implements GoogleApiClient.Conne
         return (double) tmp / factor;
     }
 
-    public void initiateMap(){
+    public void initiateMap() {
         TrailLatLonLineString.clear();
-        distancesum=0;
+        distancesum = 0;
         distance.setText(String.valueOf(distancesum));
         time.setBase(SystemClock.elapsedRealtime());
         mMap.clear();
         clear.setVisibility(View.GONE);
-        stoppedtime=0;
+        stoppedtime = 0;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            //Restore the fragment's state here
-          //  Locationlistener = (com.google.android.gms.location.LocationListener)savedInstanceState.get("locationlistener");
+
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //Save the fragment's state here
-       // outState.putParcelable("locationlistener", (Parcelable)Locationlistener);
     }
 
     @Override
-    public void onFinishEditDialog(int displacement,int interval) {
-        DISPLACEMENT=displacement;
-        UPDATE_INTERVAL=interval;
-        Log.e("popupresult",""+DISPLACEMENT);
+    public void onFinishEditDialog(int displacement, int interval) {
+        DISPLACEMENT = displacement;
+        UPDATE_INTERVAL = interval * 1000;
+        Log.e("popupresult", "" + DISPLACEMENT);
     }
+
+
+
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+
+    }
+
+
+
 }

@@ -64,16 +64,13 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback {
         lines = bundle.getParcelableArrayList("lines");
         points = bundle.getParcelableArrayList("points");
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
-
         mMapView.onCreate(savedInstanceState);
-
         starttrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tonggleStart();
             }
         });
-
         mMapView.getMapAsync(this);
         return view;
     }
@@ -147,21 +144,17 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback {
         PolylineOptions polyline = new PolylineOptions();
 
         if (lines.size() > 0) {
-
             for (LatLng latlng : lines) {
                 polyline.add(latlng);
             }
             polyline.width(5).color(Color.BLUE).geodesic(true);
             mMap.addPolyline(polyline);
-
-
         }
         if(points.size()>0){
             for(LatLng latLng:points){
                 mMap.addMarker(new MarkerOptions().position(latLng));
             }
         }
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 14.0f));
     }
 

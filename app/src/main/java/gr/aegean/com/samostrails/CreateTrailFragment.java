@@ -34,6 +34,7 @@ import static android.content.ContentValues.TAG;
  */
 
 public class CreateTrailFragment extends Fragment {
+
     ArrayList<LatLng> Linestring;
     ArrayList<LatLng> Point;
     private TextInputEditText Title;
@@ -60,10 +61,7 @@ public class CreateTrailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,7 +71,6 @@ public class CreateTrailFragment extends Fragment {
         client = ((MainActivity) getActivity()).getServicesClient();
         ss = new SystemServices(client);
         Linestring = bundle.getParcelableArrayList("linestring");
-        Log.e("Linestring:", "" + Linestring);
         Title = (TextInputEditText) view.findViewById(R.id.title_input);
         Description = (TextInputEditText) view.findViewById(R.id.descriptioninput);
         StartingPoint = (TextInputEditText) view.findViewById(R.id.startingpointinput);
@@ -86,20 +83,16 @@ public class CreateTrailFragment extends Fragment {
         DifficultyLevel = (RadioGroup) view.findViewById(R.id.difficultylevelinput);
         ChildrenFriendly = (RadioGroup) view.findViewById(R.id.childrenfriendlyinput);
         SendTrail = (Button) view.findViewById(R.id.sendtrail);
-        SaveTrail=(Button) view.findViewById(R.id.savetraillocally);
+        SaveTrail = (Button) view.findViewById(R.id.savetraillocally);
         SaveTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveTrail();
             }
         });
-        //KindOfTrail.getCheckedRadioButtonId();
-
         SendTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 try {
                     sendtrail();
                 } catch (JSONException e) {
@@ -107,6 +100,7 @@ public class CreateTrailFragment extends Fragment {
                 }
             }
         });
+
         return view;
     }
 
@@ -122,7 +116,6 @@ public class CreateTrailFragment extends Fragment {
             if (i != linestring.size() - 1)
                 sb.append(",");
         }
-
         sb.append("),");
         sb.append("POINT (");
         sb.append(linestring.get(0).longitude);
@@ -135,8 +128,6 @@ public class CreateTrailFragment extends Fragment {
         sb.append(" ");
         sb.append(linestring.get(linestring.size() - 1).latitude);
         sb.append(")");
-
-
         return sb.toString();
 
     }
@@ -200,16 +191,15 @@ public class CreateTrailFragment extends Fragment {
         sb.append(Tips.getText());
         sb.append("\"}]},\n" +
                 "\"field_img_gal\":[]}");
+
         return sb.toString();
     }
 
     public void sendtrail() throws JSONException {
-
-
         ss.connect(new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                //Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+
                 try {
                     JSONObject jbo = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
                     JSONObject js = jbo.getJSONObject("user");
@@ -224,7 +214,7 @@ public class CreateTrailFragment extends Fragment {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                                 Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-                                Toast.makeText(getActivity(),"Submitted Trail with Title "+Title.getText(),Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Submitted Trail with Title " + Title.getText(), Toast.LENGTH_LONG).show();
                             }
 
                             @Override
@@ -243,32 +233,36 @@ public class CreateTrailFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-
             }
         });
 
     }
-    public void saveTrail(){
+
+    public void saveTrail() {
         Trail trail = new Trail(getActivity());
         trail.setGeometryCollection(getGeometryCollectionFormat(Linestring));
-        TrailDb.insertIntoDb(trail,TrailDb.initiateDB(getActivity()));
-        Toast.makeText(getActivity(),"Your Trail have been saved Locally",Toast.LENGTH_LONG).show();
+        TrailDb.insertIntoDb(trail, TrailDb.initiateDB(getActivity()));
+        Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
         Fragment fragment = RecordingFragment.newInstance();
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
         transaction.commit();
 
     }
-    public void onPause(){
+
+    public void onPause() {
         super.onPause();
     }
-    public void onStart(){
+
+    public void onStart() {
         super.onStart();
     }
-    public void onResume(){
+
+    public void onResume() {
         super.onResume();
     }
-    public void onStop(){
+
+    public void onStop() {
         super.onStop();
     }
 }

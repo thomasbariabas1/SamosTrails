@@ -6,5 +6,5 @@ import java.io.Serializable;
  * Created by phantomas on 3/7/2017.
  */
 public enum KindOfTrail implements Serializable{
-    OneWay,  Loop
+    OneWay,  Loop , NotSelected
 }

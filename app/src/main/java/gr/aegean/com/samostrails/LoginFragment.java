@@ -66,14 +66,9 @@ public class LoginFragment extends Fragment {
         us = new UserServices(client);
         final SystemServices ss;
         ss = new SystemServices(client);
-        //PersistentCookieStore myCookieStore = new PersistentCookieStore(getActivity());
-        // client.setCookieStore(myCookieStore);
-        // showNotification();
         username = (EditText) view.findViewById(R.id.editUsername);
         password = (EditText) view.findViewById(R.id.editPassword);
         login = (Button) view.findViewById(R.id.buttonlogin);
-
-
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,9 +77,6 @@ public class LoginFragment extends Fragment {
 
             }
         });
-
-
-
 
         return view;
     }
@@ -137,9 +129,6 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getActivity(),"Please Fill All the Fields",Toast.LENGTH_LONG).show();
         }
     }
-
-
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

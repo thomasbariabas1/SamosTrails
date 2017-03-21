@@ -2,29 +2,20 @@ package gr.aegean.com.samostrails.Models;
 
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.provider.BaseColumns;
-
-import java.util.ArrayList;
-
 import gr.aegean.com.samostrails.R;
-
-import static gr.aegean.com.samostrails.Models.DifficultyLevel.Easy;
-import static gr.aegean.com.samostrails.Models.DistanceLevel.Long;
-import static gr.aegean.com.samostrails.Models.KindOfTrail.OneWay;
 
 public class Trail implements Parcelable {
 
-    private boolean Children_Friedly=false;
+    public long DBId=0;
+    private boolean Children_Friedly = false;
     private int TrailId;
     public DifficultyLevel DifficultyLevel;
     public DistanceLevel DistanceLevel;
-    public  KindOfTrail KindOfTrail;
+    public KindOfTrail KindOfTrail;
     private String image;
     private String GeometryCollection;
     private double Distance;
@@ -37,12 +28,14 @@ public class Trail implements Parcelable {
     private String StrartingPoin;
     private String Tips;
     private String Video;
+    private boolean editable;
+
     public Trail(boolean children_Friedly, int tailid, DifficultyLevel difficultyLevel,
                  gr.aegean.com.samostrails.Models.DistanceLevel distanceLevel,
                  gr.aegean.com.samostrails.Models.KindOfTrail kindOfTrail,
                  String image, String geometryCollection,
-                 double distance, String title,String ConnectionToOtherTrails,String Description,String MainSights,String OtherTransport,
-                 String StrartingPoin,String Tips,String Video) {
+                 double distance, String title, String ConnectionToOtherTrails, String Description, String MainSights, String OtherTransport,
+                 String StrartingPoin, String Tips, String Video) {
         Children_Friedly = children_Friedly;
         TrailId = tailid;
         DifficultyLevel = difficultyLevel;
@@ -52,38 +45,76 @@ public class Trail implements Parcelable {
         GeometryCollection = geometryCollection;
         Distance = distance;
         Title = title;
-        this.ConnectionToOtherTrails=ConnectionToOtherTrails;
-        this.Description=Description;
+        this.ConnectionToOtherTrails = ConnectionToOtherTrails;
+        this.Description = Description;
         this.MainSights = MainSights;
-        this.OtherTransport=OtherTransport;
-        this.StrartingPoin=StrartingPoin;
-        this.Tips=Tips;
-        this.Video=Video;
+        this.OtherTransport = OtherTransport;
+        this.StrartingPoin = StrartingPoin;
+        this.Tips = Tips;
+        this.Video = Video;
+        this.editable=false;
+    }
+    public Trail(boolean children_Friedly, int tailid, DifficultyLevel difficultyLevel,
+                 gr.aegean.com.samostrails.Models.DistanceLevel distanceLevel,
+                 gr.aegean.com.samostrails.Models.KindOfTrail kindOfTrail,
+                 String image, String geometryCollection,
+                 double distance, String title, String ConnectionToOtherTrails, String Description, String MainSights, String OtherTransport,
+                 String StrartingPoin, String Tips, String Video,boolean editable) {
+        Children_Friedly = children_Friedly;
+        TrailId = tailid;
+        DifficultyLevel = difficultyLevel;
+        DistanceLevel = distanceLevel;
+        KindOfTrail = kindOfTrail;
+        this.image = image;
+        GeometryCollection = geometryCollection;
+        Distance = distance;
+        Title = title;
+        this.ConnectionToOtherTrails = ConnectionToOtherTrails;
+        this.Description = Description;
+        this.MainSights = MainSights;
+        this.OtherTransport = OtherTransport;
+        this.StrartingPoin = StrartingPoin;
+        this.Tips = Tips;
+        this.Video = Video;
+        this.editable=editable;
     }
     public Trail(Context context) {
         Children_Friedly = false;
         TrailId = 0;
-        DifficultyLevel =Easy;
-        DistanceLevel = Long;
-        KindOfTrail = OneWay;
+        DifficultyLevel = gr.aegean.com.samostrails.Models.DifficultyLevel.NotSelected;
+        DistanceLevel =  gr.aegean.com.samostrails.Models.DistanceLevel.NotSelected;
+        KindOfTrail =  gr.aegean.com.samostrails.Models.KindOfTrail.NotSelected;
         this.image = "";
         GeometryCollection = "";
         Distance = 0;
         Title = "";
-        this.ConnectionToOtherTrails="";
-        this.Description="";
+        this.ConnectionToOtherTrails = "";
+        this.Description = "";
         this.MainSights = "";
-        this.OtherTransport="";
-        this.StrartingPoin="";
-        this.Tips="";
-        this.Video="";
-        this.downlImage=  BitmapFactory.decodeResource(context.getResources(), R.drawable.default_trail_image);
-
+        this.OtherTransport = "";
+        this.StrartingPoin = "";
+        this.Tips = "";
+        this.Video = "";
+        this.downlImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_trail_image);
+        this.editable=true;
     }
 
-    public boolean getChildrenFriendly(){return this.Children_Friedly;}
+    public boolean getChildrenFriendly() {
+        return this.Children_Friedly;
+    }
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
     public void setConnectionToOtherTrails(String connectionToOtherTrails) {
         ConnectionToOtherTrails = connectionToOtherTrails;
+    }
+
+    public long getDBId() {
+        return DBId;
+    }
+
+    public void setDBId(long DBId) {
+        this.DBId = DBId;
     }
 
     public void setDescription(String description) {
@@ -143,6 +174,10 @@ public class Trail implements Parcelable {
         return Title;
     }
 
+
+    public boolean isEditable() {
+        return editable;
+    }
     public void setDownlImage(Bitmap downlImage) {
         this.downlImage = downlImage;
     }
@@ -220,8 +255,6 @@ public class Trail implements Parcelable {
     }
 
 
-
-
     //Parceble----
 
     protected Trail(Parcel in) {
@@ -237,9 +270,7 @@ public class Trail implements Parcelable {
         downlImage = (Bitmap) in.readValue(Bitmap.class.getClassLoader());
         ConnectionToOtherTrails = in.readString();
         Description = in.readString();
-
-            MainSights = in.readString();
-
+        MainSights = in.readString();
         OtherTransport = in.readString();
         StrartingPoin = in.readString();
         Tips = in.readString();
