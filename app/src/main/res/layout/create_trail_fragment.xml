@@ -30,6 +30,11 @@
                 android:textColor="#ffffff"
                 android:textSize="30dp" />
 
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapcreatetable"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/title_label"
                 android:layout_width="match_parent"

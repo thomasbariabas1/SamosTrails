@@ -1,6 +1,7 @@
 package gr.aegean.com.samostrails.Services;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -14,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -29,6 +31,11 @@ public class TrailService extends Service {
     private static final String LOG_TAG = "ForegroundService";
     private boolean mRequestingLocationUpdates = true;
     private final IBinder mIBinder = new LocalBinder();
+    private int statechange=0;
+    long starttime=0;
+    long stoppedtime=0;
+    NotificationCompat.Builder  notification=null;
+    NotificationManager mNotificationManager;
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
@@ -43,6 +50,7 @@ public class TrailService extends Service {
 
             if(mOnServiceListener != null){
                 mOnServiceListener.onDataReceived(location);
+                statechange=0;
             }
             mLastLocation.set(location);
 
@@ -93,12 +101,15 @@ public class TrailService extends Service {
 
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                 R.drawable.white_0);
+
+
+
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
-
             Log.i(LOG_TAG, "Received Start Foreground Intent ");
-
-
-            Notification notification = new NotificationCompat.Builder(this)
+            notification = new NotificationCompat.Builder(this)
                     .setContentTitle("Trail Recording")
                     .setTicker("Trail Recording")
                     .setContentText("Trail Recording")
@@ -112,29 +123,27 @@ public class TrailService extends Service {
                                     : R.drawable.recording,
                             mRequestingLocationUpdates ? "Stop"
                                     : "Start", ppreviousIntent)
-                    .build();
+                    .setUsesChronometer(true);
+            starttime= System.currentTimeMillis();
 
-            startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,
-                    notification);
+            startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,notification.build());
 
         } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
             tongleLocationUpdates();
+
             updateNotification(pendingIntent,ppreviousIntent,icon);
-            Log.i(LOG_TAG, "Clicked Start");
-        } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
-            Log.i(LOG_TAG, "Clicked Play");
-        } else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
-            Log.i(LOG_TAG, "Clicked Next");
         } else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
-            Log.i(LOG_TAG, "Received Stop Foreground Intent");
+            Log.e(LOG_TAG, "Received Stop Foreground Intent");
             stopForeground(true);
             stopSelf();
         }
 
         return Service.START_STICKY;
     }
-public void updateNotification( PendingIntent pendingIntent ,PendingIntent ppreviousIntent,  Bitmap icon){
+public void updateNotification( PendingIntent pendingIntent ,PendingIntent ppreviousIntent,  Bitmap icon ){
+
+
 
     Notification notification = new NotificationCompat.Builder(this)
             .setContentTitle("Trail Recording")
@@ -150,10 +159,11 @@ public void updateNotification( PendingIntent pendingIntent ,PendingIntent pprev
                             : R.drawable.recording,
                     mRequestingLocationUpdates ? "Stop"
                             : "Start", ppreviousIntent)
+            .setUsesChronometer(mRequestingLocationUpdates)
+            .setWhen(starttime)
             .build();
 
-    startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,
-            notification);
+    startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,   notification);
 }
     @Override
     public void onCreate() {
@@ -198,16 +208,21 @@ public void updateNotification( PendingIntent pendingIntent ,PendingIntent pprev
 
 
     public void tongleLocationUpdates(){
-
+        mOnServiceListener.onChangeState(mRequestingLocationUpdates);
         if(mRequestingLocationUpdates){
+
             stopLocationUpdates();
         }else{
+
             startLocationUpdates();
         }
     }
 
     public void stopLocationUpdates() {
+
         mRequestingLocationUpdates=false;
+
+        //mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,notification.build());
         Log.e(TAG,"stoped updates");
         if (mLocationManager != null) {
             for (int i = 0; i < mLocationListeners.length; i++) {
@@ -221,6 +236,7 @@ public void updateNotification( PendingIntent pendingIntent ,PendingIntent pprev
     }
 public void startLocationUpdates(){
  mRequestingLocationUpdates=true;
+   // mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,notification.build());
     try {
         mLocationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -262,7 +278,8 @@ public void startLocationUpdates(){
     }
 
     public interface OnServiceListener{
-        public void onDataReceived(Location data);
+        public void onDataReceived(Location data );
+        public void onChangeState(boolean statechange);
     }
     private OnServiceListener mOnServiceListener = null;
 

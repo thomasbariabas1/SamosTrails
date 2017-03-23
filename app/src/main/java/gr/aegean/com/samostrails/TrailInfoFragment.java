@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +22,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -97,7 +94,13 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         EditTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                bundle.putParcelableArrayList("linestring",fullline);
+                bundle.putParcelable("trail",trail);
+                Fragment fragment = CreateTrailFragment.newInstance();
+                fragment.setArguments(bundle);
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, fragment);
+                transaction.commit();
             }
         });
 

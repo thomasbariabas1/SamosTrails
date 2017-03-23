@@ -150,8 +150,13 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             @Override
             public void onClick(View v) {
                 if (TrailLatLonLineString.size() > 0) {
+                    Intent stopIntent = new Intent(getActivity(), TrailService.class);
+                    stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+                    getActivity().startService(stopIntent);
+                    doUnbindService();
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("linestring", TrailLatLonLineString);
+                    bundle.putBoolean("local",false);
                     Fragment fragment = CreateTrailFragment.newInstance();
                     fragment.setArguments(bundle);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -235,10 +240,8 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
      */
     protected void stopLocationUpdates() {
 
-        Intent stopIntent = new Intent(getActivity(), TrailService.class);
-        stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
-        getActivity().startService(stopIntent);
-        doUnbindService();
+
+
         stoppedtime = time.getBase() - SystemClock.elapsedRealtime();
         time.stop();
         clear.setVisibility(View.VISIBLE);
@@ -377,7 +380,8 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     public void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
-
+        if(mConnection!=null)
+        doUnbindService();
     }
 
 
@@ -413,7 +417,12 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             LastLon = Longtitude;
         }
 
+    }
 
+    @Override
+    public void onChangeState(boolean statechange) {
+        mRequestingLocationUpdates=statechange;
+        togglePeriodicLocationUpdates();
     }
 
 

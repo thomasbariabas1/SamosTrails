@@ -141,11 +141,49 @@ public class TrailDb {
 
 // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(TABLE_NAME, null, values);
-        Log.e("InsertedRow", "WithId" + newRowId);
+
         db.close();
         return newRowId;
     }
+    public static boolean updateDb(Trail trail, TrailDbHelper mDbHelper){
+        byte[] data = getBitmapAsByteArray(trail.getDownlImage());
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        Log.e("ttitleindb",""+trail.getTrailId());
+        ContentValues values = new ContentValues();
 
+        values.put(TrailEntry.COLUMN_NAME_CHILDRENFRIENDLY, trail.getChildrenFriendly());
+        values.put(TrailEntry.COLUMN_NAME_DIFFICULTYLEVEL, trail.getDifficultyLevel().toString());
+        values.put(TrailEntry.COLUMN_NAME_DISTANCELEVEL, trail.getDistanceLevel().toString());
+        values.put(TrailEntry.COLUMN_NAME_KINDOFTRAIL, trail.getKindOfTrail().toString());
+        values.put(TrailEntry.COLUMN_NAME_IMAGE, trail.getImage());
+        values.put(TrailEntry.COLUMN_NAME_GEOMETRYCOLLECTION, trail.getGeometryCollection());
+        values.put(TrailEntry.COLUMN_NAME_DISTANCE, trail.getDistance());
+        values.put(TrailEntry.COLUMN_NAME_TITLE, trail.getTitle());
+        values.put(TrailEntry.COLUMN_NAME_DOWNLIMAGE, data);
+        values.put(TrailEntry.COLUMN_NAME_CONNECTIONTOOTHERTRAILS, trail.getConnectionToOtherTrails());
+        values.put(TrailEntry.COLUMN_NAME_DESCRIPTION, trail.getDescription());
+        values.put(TrailEntry.COLUMN_NAME_MAINSIGHTS, trail.getMainSights());
+        values.put(TrailEntry.COLUMN_NAME_OTHERTRANSPORT, trail.getOtherTransport());
+        values.put(TrailEntry.COLUMN_NAME_STARTINGPOINT, trail.getStrartingPoin());
+        values.put(TrailEntry.COLUMN_NAME_TIPS, trail.getTips());
+        values.put(TrailEntry.COLUMN_NAME_VIDEO, trail.getVideo());
+
+
+
+
+        /**
+         * This is the normal SQL query for UPDATE
+         UPDATE table_name
+         SET column1=value, column2=value2,...
+         WHERE some_column=some_value
+         */
+
+
+        int what= db.update(TABLE_NAME, values,  "trailid='"+trail.getTrailId()+"' AND editabletrail = 1", null);
+        Log.e("what",""+what);
+        db.close();
+        return true;
+    }
     public static ArrayList<Trail> readFromDb(TrailDbHelper mDbHelper) {
 
         SQLiteDatabase db = mDbHelper.getReadableDatabase();

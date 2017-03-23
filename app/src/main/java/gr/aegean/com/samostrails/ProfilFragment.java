@@ -93,7 +93,7 @@ public class ProfilFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+
 
             }
         });

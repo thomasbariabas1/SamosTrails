@@ -20,7 +20,7 @@ import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 public class MainActivity extends AppCompatActivity  {
 
     SearchTrailFragment search = SearchTrailFragment.newInstance();
-    LocalTrailsFragment local = LocalTrailsFragment.newInstance();
+
     RecordingFragment recording = RecordingFragment.newInstance();
     ProfilFragment profil = ProfilFragment.newInstance();
     LruCache<Integer, Bitmap> bitmapCache;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity  {
                     TAG = "search";
                     break;
                 case R.id.navigation_dashboard:
-                    selectedFragment = local;
+                    selectedFragment = LocalTrailsFragment.newInstance();
                     TAG = "local";
                     break;
                 case R.id.recording:

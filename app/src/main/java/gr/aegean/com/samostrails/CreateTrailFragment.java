@@ -1,5 +1,6 @@
 package gr.aegean.com.samostrails;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,13 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
@@ -33,10 +40,11 @@ import static android.content.ContentValues.TAG;
  * Created by phantomas on 3/13/2017.
  */
 
-public class CreateTrailFragment extends Fragment {
+public class CreateTrailFragment extends Fragment implements OnMapReadyCallback {
 
     ArrayList<LatLng> Linestring;
-    ArrayList<LatLng> Point;
+    private GoogleMap mMap;
+    MapView mMapView;
     private TextInputEditText Title;
     private TextInputEditText Description;
     private TextInputEditText StartingPoint;
@@ -52,7 +60,8 @@ public class CreateTrailFragment extends Fragment {
     private Button SaveTrail;
     ServicesClient client = null;
     SystemServices ss = null;
-
+    Trail  trail;
+    boolean local;
     public static CreateTrailFragment newInstance() {
         CreateTrailFragment fragment = new CreateTrailFragment();
         return fragment;
@@ -68,8 +77,11 @@ public class CreateTrailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_trail_fragment, container, false);
         Bundle bundle = getArguments();
+
         client = ((MainActivity) getActivity()).getServicesClient();
         ss = new SystemServices(client);
+        local=bundle.getBoolean("local");
+        trail=bundle.getParcelable("trail");
         Linestring = bundle.getParcelableArrayList("linestring");
         Title = (TextInputEditText) view.findViewById(R.id.title_input);
         Description = (TextInputEditText) view.findViewById(R.id.descriptioninput);
@@ -94,13 +106,19 @@ public class CreateTrailFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    sendtrail();
+                    if (Utilities.isNetworkAvailable(getActivity())) {
+                        sendtrail();
+                    }else{
+                        Toast.makeText(getActivity(),"No Internet Connection",Toast.LENGTH_LONG).show();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-
+        mMapView = (MapView) view.findViewById(R.id.mapcreatetable);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.getMapAsync(this);
         return view;
     }
 
@@ -137,7 +155,7 @@ public class CreateTrailFragment extends Fragment {
         sb.append("{");
         sb.append("\"title\":");
         sb.append("\"");
-        sb.append(Title.getText());
+        sb.append(Title.getText().toString());
         sb.append("\"");
         sb.append(",");
         sb.append("\"type\":");
@@ -232,37 +250,81 @@ public class CreateTrailFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+               // Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
             }
         });
 
     }
 
     public void saveTrail() {
-        Trail trail = new Trail(getActivity());
-        trail.setGeometryCollection(getGeometryCollectionFormat(Linestring));
-        TrailDb.insertIntoDb(trail, TrailDb.initiateDB(getActivity()));
-        Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
-        Fragment fragment = RecordingFragment.newInstance();
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, fragment);
-        transaction.commit();
+
+        if(!local) {
+            Trail trail2 = new Trail(getActivity());
+            trail2.setTitle(Title.getText().toString());
+            trail2.setGeometryCollection(getGeometryCollectionFormat(Linestring));
+            TrailDb.insertIntoDb(trail2, TrailDb.initiateDB(getActivity()));
+            Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
+            Fragment fragment = RecordingFragment.newInstance();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content, fragment);
+            transaction.commit();
+        }else{
+            trail.setTitle(Title.getText().toString());
+            Log.e("title",trail.getTitle());
+            TrailDb.updateDb(trail, TrailDb.initiateDB(getActivity()));
+            Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
+            Fragment fragment = LocalTrailsFragment.newInstance();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content, fragment);
+            transaction.commit();
+        }
+
 
     }
 
     public void onPause() {
         super.onPause();
+        mMapView.onPause();
     }
 
     public void onStart() {
         super.onStart();
+        mMapView.onStart();
     }
 
     public void onResume() {
         super.onResume();
+        mMapView.onResume();
     }
 
     public void onStop() {
         super.onStop();
+        mMapView.onStop();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        mMap = googleMap;
+        setUpMap();
+    }
+
+    private void setUpMap() {
+
+
+        // list of latlng
+        for (int i = 0; i < Linestring.size() - 1; i++) {
+            LatLng src = Linestring.get(i);
+            LatLng dest = Linestring.get(i + 1);
+            // mMap is the Map Object
+            mMap.addPolyline(new PolylineOptions().add(
+                    new LatLng(src.latitude, src.longitude),
+                    new LatLng(dest.latitude,dest.longitude)
+            ).width(5).color(Color.BLUE).geodesic(true));
+        }
+
+            mMap.addMarker(new MarkerOptions().position(Linestring.get(0)).position(Linestring.get(Linestring.size()-1)));
+
+        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(Linestring.get(0) , 14.0f) );
     }
 }
