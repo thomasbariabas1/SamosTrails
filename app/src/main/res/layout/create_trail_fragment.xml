@@ -10,8 +10,7 @@
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -28,7 +27,7 @@
                 android:background="@color/downHeader"
                 android:text="Save Trail"
                 android:textColor="#ffffff"
-                android:textSize="30dp" />
+                android:textSize="30sp" />
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapcreatetable"
@@ -39,8 +38,8 @@
                 android:id="@+id/title_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Title:"
-                android:textSize="20dp"
+                android:text="@string/title"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <android.support.design.widget.TextInputEditText
@@ -52,8 +51,8 @@
                 android:id="@+id/description_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Description:"
-                android:textSize="20dp"
+                android:text="@string/description"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <android.support.design.widget.TextInputEditText
@@ -65,8 +64,8 @@
                 android:id="@+id/startingpoint_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Starting Point:"
-                android:textSize="20dp"
+                android:text="@string/starting_point"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <android.support.design.widget.TextInputEditText
@@ -80,8 +79,8 @@
                 android:id="@+id/mainsights_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Main Sights:"
-                android:textSize="20dp"
+                android:text="@string/main_sights"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <android.support.design.widget.TextInputEditText
@@ -93,8 +92,8 @@
                 android:id="@+id/tips_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tips:"
-                android:textSize="20dp"
+                android:text="@string/tips"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <android.support.design.widget.TextInputEditText
@@ -106,8 +105,8 @@
                 android:id="@+id/distance_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Distance:"
-                android:textSize="20dp"
+                android:text="@string/distance"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <android.support.design.widget.TextInputEditText
@@ -119,8 +118,8 @@
                 android:id="@+id/kindoftrail_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kind Of Trail:"
-                android:textSize="20dp"
+                android:text="@string/kind_of_trail"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <RadioGroup
@@ -129,22 +128,24 @@
                 android:layout_height="wrap_content">
 
                 <RadioButton
+                    android:id="@+id/oneway"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="One Way" />
+                    android:text="@string/one_way" />
 
                 <RadioButton
+                    android:id="@+id/loop"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Loop" />
+                    android:text="@string/loop" />
             </RadioGroup>
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/difficultylevel_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Difficulty Level:"
-                android:textSize="20dp"
+                android:text="@string/difficulty_level"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <RadioGroup
@@ -153,29 +154,34 @@
                 android:layout_height="wrap_content">
 
                 <RadioButton
+                    android:id="@+id/easy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Easy" />
+                    android:text="@string/easy" />
 
                 <RadioButton
+                    android:id="@+id/moderate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Moderate" />
+                    android:text="@string/moderate" />
 
                 <RadioButton
+                    android:id="@+id/challenging"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Challenging" />
+                    android:text="@string/challenging" />
 
                 <RadioButton
+                    android:id="@+id/sport"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sport" />
+                    android:text="@string/sport" />
 
                 <RadioButton
+                    android:id="@+id/extreme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Extreme" />
+                    android:text="@string/extreme" />
 
             </RadioGroup>
 
@@ -183,8 +189,8 @@
                 android:id="@+id/childrenfriendly_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Children Friendly:"
-                android:textSize="20dp"
+                android:text="@string/children_friendly"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <RadioGroup
@@ -193,22 +199,24 @@
                 android:layout_height="wrap_content">
 
                 <RadioButton
+                    android:id="@+id/yes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Yes" />
+                    android:text="@string/yes" />
 
                 <RadioButton
+                    android:id="@+id/no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No" />
+                    android:text="@string/no" />
             </RadioGroup>
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/other_transport_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Other Transports:"
-                android:textSize="20dp"
+                android:text="@string/other_transports"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <android.support.design.widget.TextInputEditText
@@ -220,8 +228,8 @@
                 android:id="@+id/connectiontoothertrails_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Connection to other trails:"
-                android:textSize="20dp"
+                android:text="@string/connection_to_other_trails"
+                android:textSize="20sp"
                 android:textStyle="bold"
 
                 />
@@ -239,7 +247,6 @@
                     android:id="@+id/sendtrail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
                     android:layout_weight=".5"
                     android:background="@drawable/buttonshape"
                     android:drawableStart="@drawable/upload"
@@ -247,14 +254,13 @@
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="5"
-                    android:text="Submit Trail"
+                    android:text="@string/submit_trail"
                     android:textColor="#FFFFFF" />
 
                 <Button
                     android:id="@+id/savetraillocally"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
                     android:layout_weight=".5"
                     android:background="@drawable/buttonshape"
                     android:drawableStart="@drawable/saveicon"
@@ -262,7 +268,7 @@
                     android:shadowDx="0"
                     android:shadowDy="0"
                     android:shadowRadius="5"
-                    android:text="Save Trail"
+                    android:text="@string/save_trail"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 

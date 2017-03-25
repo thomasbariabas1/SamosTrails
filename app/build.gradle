@@ -39,4 +39,5 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
     compile 'org.apache.httpcomponents:httpcore:4.4.6'
     compile 'cz.msebera.android:httpclient:4.4.1'
+    compile 'com.android.support:multidex:1.0.1'
 }

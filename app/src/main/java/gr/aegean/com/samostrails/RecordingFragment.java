@@ -27,12 +27,14 @@ import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -47,6 +49,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     Animation animation = null;
     TextView distance;
     Chronometer time;
+
     // booean flag to toggle periodic location updates
     private boolean mRequestingLocationUpdates = false;
 
@@ -73,12 +76,18 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recording_fragment, container, false);
+        Intent startIntent = new Intent(getActivity(), TrailService.class);
+        startIntent.putExtra("interval", UPDATE_INTERVAL);
+        startIntent.putExtra("distance", DISPLACEMENT);
+        startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+        getActivity().startService(startIntent);
         btnStartLocationUpdates = (ImageButton) view.findViewById(R.id.setRangeButton);
         layers = (ImageButton) view.findViewById(R.id.maplayers);
         savebutton = (ImageButton) view.findViewById(R.id.savetrail);
@@ -88,12 +97,9 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         time = (Chronometer) view.findViewById(R.id.timerecording);
         clear = (ImageButton) view.findViewById(R.id.clearbuttonrecording);
         clear.setVisibility(View.GONE);
-
-
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                 new AlertDialog.Builder(getActivity())
                         .setTitle("Delete map")
@@ -111,22 +117,15 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
 
-
             }
         });
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
-
-        // First we need to check availability of play services
-
-
         animation = new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
         animation.setDuration(500); //duration - half a second
         animation.setInterpolator(new LinearInterpolator()); //do not alter animation rate
         animation.setRepeatCount(Animation.INFINITE); //Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE); //Reverse animation at the end so the button will fade back in
-
-
         // Toggling the periodic location updates
         btnStartLocationUpdates.setOnClickListener(new View.OnClickListener() {
 
@@ -136,6 +135,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
                 togglePeriodicLocationUpdates();
             }
         });
+        doBindService();
         layers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,7 +156,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
                     doUnbindService();
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("linestring", TrailLatLonLineString);
-                    bundle.putBoolean("local",false);
+                    bundle.putBoolean("local", false);
                     Fragment fragment = CreateTrailFragment.newInstance();
                     fragment.setArguments(bundle);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -184,7 +184,6 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     }
 
-
     @Override
     public void onStop() {
         super.onStop();
@@ -206,12 +205,18 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     private void togglePeriodicLocationUpdates() {
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
-
+            Intent startIntent = new Intent(getActivity(), TrailService.class);
+            startIntent.putExtra("interval", UPDATE_INTERVAL);
+            startIntent.putExtra("distance", DISPLACEMENT);
+            startIntent.setAction(Constants.ACTION.PLAY_ACTION);
+            getActivity().startService(startIntent);
             // Starting the location updates
             startLocationUpdates();
             Log.e(TAG, "Periodic location updates started!");
         } else {
-
+            Intent startIntent = new Intent(getActivity(), TrailService.class);
+            startIntent.setAction(Constants.ACTION.NEXT_ACTION);
+            getActivity().startService(startIntent);
             // Stopping the location updates
             mRequestingLocationUpdates = false;
             stopLocationUpdates();
@@ -227,26 +232,34 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         time.setBase(SystemClock.elapsedRealtime() + stoppedtime);
         time.start();
         clear.setVisibility(View.GONE);
-        Intent startIntent = new Intent(getActivity(), TrailService.class);
-        startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-        getActivity().startService(startIntent);
-        doBindService();
+
+
         btnStartLocationUpdates.startAnimation(animation);
         btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.recording));
+        layers.setClickable(false);
+        savebutton.setClickable(false);
+        getActivity().findViewById(R.id.navigation_home).setClickable(false);
+        getActivity().findViewById(R.id.navigation_dashboard).setClickable(false);
+        getActivity().findViewById(R.id.recording).setClickable(false);
+        getActivity().findViewById(R.id.profil).setClickable(false);
     }
 
     /**
      * Stopping location updates
      */
     protected void stopLocationUpdates() {
-
-
-
         stoppedtime = time.getBase() - SystemClock.elapsedRealtime();
         time.stop();
         clear.setVisibility(View.VISIBLE);
         btnStartLocationUpdates.clearAnimation();
         btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording));
+        layers.setClickable(true);
+        savebutton.setClickable(true);
+        getActivity().findViewById(R.id.navigation_home).setClickable(true);
+        getActivity().findViewById(R.id.navigation_dashboard).setClickable(true);
+        getActivity().findViewById(R.id.recording).setClickable(true);
+        getActivity().findViewById(R.id.profil).setClickable(true);
+
     }
 
 
@@ -327,13 +340,14 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-
+            TrailLatLonLineString= savedInstanceState.getParcelableArrayList("trailarray");
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("trailarray",TrailLatLonLineString);
     }
 
     @Override
@@ -342,8 +356,6 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         UPDATE_INTERVAL = interval * 1000;
         Log.e("popupresult", "" + DISPLACEMENT);
     }
-
-
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -369,6 +381,9 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     private void doUnbindService() {
         if (mIsBound) {
+            Intent startIntent = new Intent(getActivity(), TrailService.class);
+            startIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+            getActivity().startService(startIntent);
             // Detach our existing connection.
             getActivity().unbindService(mConnection);
             mIsBound = false;
@@ -380,8 +395,9 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     public void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
-        if(mConnection!=null)
-        doUnbindService();
+        if (mConnection != null)
+
+            doUnbindService();
     }
 
 
@@ -421,9 +437,12 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     @Override
     public void onChangeState(boolean statechange) {
-        mRequestingLocationUpdates=statechange;
-        togglePeriodicLocationUpdates();
-    }
+        mRequestingLocationUpdates = statechange;
+        if(mRequestingLocationUpdates)
+            startLocationUpdates();
+            else
+            stopLocationUpdates();
 
+    }
 
 }

@@ -16,4 +16,46 @@
     <string name="more">More</string>
     <string name="distance_klm">Distance(m):</string>
     <string name="time">Time:</string>
+    <string name="title">Title:</string>
+    <string name="description">Description:</string>
+    <string name="starting_point">Starting Point:</string>
+    <string name="main_sights">Main Sights:</string>
+    <string name="tips">Tips:</string>
+    <string name="distance">Distance:</string>
+    <string name="kind_of_trail">Kind Of Trail:</string>
+    <string name="one_way">One Way</string>
+    <string name="loop">Loop</string>
+    <string name="difficulty_level">Difficulty Level:</string>
+    <string name="easy">Easy</string>
+    <string name="moderate">Moderate</string>
+    <string name="challenging">Challenging</string>
+    <string name="sport">Sport</string>
+    <string name="extreme">Extreme</string>
+    <string name="children_friendly">Children Friendly:</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="other_transports">Other Transports:</string>
+    <string name="connection_to_other_trails">Connection to other trails:</string>
+    <string name="submit_trail">Submit Trail</string>
+    <string name="save_trail">Save Trail</string>
+
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+
+    <string name="slide_1_title">Hello Food!</string>
+    <string name="slide_1_desc">The easiest way to order food from your favourite restaurant!</string>
+
+    <string name="slide_2_title">Movie Tickets</string>
+    <string name="slide_2_desc">Book movie tickets for your family and friends!</string>
+
+    <string name="slide_3_title">Great Discounts</string>
+    <string name="slide_3_desc">Best discounts on every single service we offer!</string>
+
+    <string name="slide_4_title">World Travel</string>
+    <string name="slide_4_desc">Book tickets of any transportation and travel the world!</string>
+
+    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
+    <string name="play_again">Play Again</string>
 </resources>

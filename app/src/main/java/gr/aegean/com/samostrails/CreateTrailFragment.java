@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -21,13 +20,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-
 import cz.msebera.android.httpclient.Header;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
@@ -36,9 +32,6 @@ import gr.aegean.com.samostrails.SQLDb.TrailDb;
 
 import static android.content.ContentValues.TAG;
 
-/**
- * Created by phantomas on 3/13/2017.
- */
 
 public class CreateTrailFragment extends Fragment implements OnMapReadyCallback {
 
@@ -56,15 +49,12 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     private RadioGroup KindOfTrail;
     private RadioGroup DifficultyLevel;
     private RadioGroup ChildrenFriendly;
-    private Button SendTrail;
-    private Button SaveTrail;
     ServicesClient client = null;
     SystemServices ss = null;
     Trail  trail;
     boolean local;
     public static CreateTrailFragment newInstance() {
-        CreateTrailFragment fragment = new CreateTrailFragment();
-        return fragment;
+        return new CreateTrailFragment();
     }
 
     @Override
@@ -94,15 +84,31 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
         KindOfTrail = (RadioGroup) view.findViewById(R.id.kindoftrailinput);
         DifficultyLevel = (RadioGroup) view.findViewById(R.id.difficultylevelinput);
         ChildrenFriendly = (RadioGroup) view.findViewById(R.id.childrenfriendlyinput);
-        SendTrail = (Button) view.findViewById(R.id.sendtrail);
-        SaveTrail = (Button) view.findViewById(R.id.savetraillocally);
-        SaveTrail.setOnClickListener(new View.OnClickListener() {
+        Button sendTrail = (Button) view.findViewById(R.id.sendtrail);
+        Button saveTrail = (Button) view.findViewById(R.id.savetraillocally);
+        if(local){
+            Title.setText(trail.getTitle());
+            Description.setText(trail.getDescription());
+            StartingPoint.setText(trail.getStrartingPoin());
+            MainSights.setText(trail.getMainSights());
+            Tips.setText(trail.getTips());
+            Distance.setText(String.valueOf(trail.getDistance()));
+            OtherTransports.setText(trail.getOtherTransport());
+            ConnectionToOtherTrails.setText(trail.getConnectionToOtherTrails());
+            KindOfTrail.check(trail.getKindOfTrail()==gr.aegean.com.samostrails.Models.KindOfTrail.Loop?R.id.oneway:R.id.loop);
+            DifficultyLevel.check(trail.getDifficultyLevel()==gr.aegean.com.samostrails.Models.DifficultyLevel.Easy?R.id.easy:
+                    trail.getDifficultyLevel()==gr.aegean.com.samostrails.Models.DifficultyLevel.Moderate?R.id.moderate:
+                            trail.getDifficultyLevel()==gr.aegean.com.samostrails.Models.DifficultyLevel.Challenging?R.id.challenging:
+                                    trail.getDifficultyLevel()==gr.aegean.com.samostrails.Models.DifficultyLevel.Sport?R.id.sport:R.id.extreme);
+            ChildrenFriendly.check(trail.getChildrenFriendly()?R.id.yes:R.id.no);
+        }
+        saveTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveTrail();
             }
         });
-        SendTrail.setOnClickListener(new View.OnClickListener() {
+        sendTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -151,66 +157,64 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public String req() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"title\":");
-        sb.append("\"");
-        sb.append(Title.getText().toString());
-        sb.append("\"");
-        sb.append(",");
-        sb.append("\"type\":");
-        sb.append("\"");
-        sb.append("trailstobechecked");
-        sb.append("\"");
-        sb.append(",");
-        sb.append("\"field_leaflet_\":{\"und\":[{\"geom\":\"");
-        sb.append(getGeometryCollectionFormat(Linestring));
-        sb.append("\",");
-        sb.append("\"geo_type\":\"geometrycollection\",");
-        sb.append("\t\"lat\":\"37.783025098369\",\n" +
+
+        return "{" +
+                "\"title\":" +
+                "\"" +
+                Title.getText().toString() +
+                "\"" +
+                "," +
+                "\"type\":" +
+                "\"" +
+                "trailstobechecked" +
+                "\"" +
+                "," +
+                "\"field_leaflet_\":{\"und\":[{\"geom\":\"" +
+                getGeometryCollectionFormat(Linestring) +
+                "\"," +
+                "\"geo_type\":\"geometrycollection\"," +
+                "\t\"lat\":\"37.783025098369\",\n" +
                 "\t\t\t\t\t\"lon\":\"26.653555554974\",\n" +
                 "\t\t\t\t\t\"left\":\"26.646817177534\",\n" +
                 "\t\t\t\t\t\"top\":\"37.789154873322\",\n" +
                 "\t\t\t\t\t\"right\":\"26.660293936729\",\n" +
-                "\t\t\t\t\t\"bottom\":\"37.776895329526\",");
-        sb.append("\t\"geohash\":\"swdyy\"}]},");
-        sb.append("\"field_distance\":{\"und\":[{\"value\":\"");
-        sb.append(Distance.getText());
-        sb.append("\",\"format\":null,\"safe_value\":\"");
-        sb.append(Distance.getText());
-        sb.append("\"}]},");
-        sb.append("\"field_starting_point\":{\"und\":[{\"value\":\"");
-        sb.append(StartingPoint.getText());
-        sb.append("\",\"format\":null,\"safe_value\":\"");
-        sb.append(StartingPoint.getText());
-        sb.append("\"}]},\n" +
-                "\"field_main_sights\":{\"und\":[{\"value\":\"");
-        sb.append(MainSights.getText());
-        sb.append("\",\"format\":null,\"safe_value\":\"");
-        sb.append(MainSights.getText());
-        sb.append("\"}]},\n" +
-                "\"field_connection_to_other_trails\":{\"und\":[{\"value\":\"");
-        sb.append(ConnectionToOtherTrails.getText());
-        sb.append("\",\"format\":null,\"safe_value\":\"");
-        sb.append(ConnectionToOtherTrails.getText());
-        sb.append("\"}]},");
-        sb.append("\"field_other_transport\":{\"und\":[{\"value\":\"");
-        sb.append(OtherTransports.getText());
-        sb.append("\",\"format\":null,\"safe_value\":\"");
-        sb.append(OtherTransports.getText());
-        sb.append("\"}]},");
-        sb.append("\"field_discription\":{\"und\":[{\"value\":\"");
-        sb.append(Description.getText());
-        sb.append("\",\"format\":null,\"safe_value\":\"");
-        sb.append(Description.getText());
-        sb.append("\"}]},\"field_tips\":{\"und\":[{\"value\":\"");
-        sb.append(Tips.getText());
-        sb.append("\",\"format\":null,\"safe_value\":\"");
-        sb.append(Tips.getText());
-        sb.append("\"}]},\n" +
-                "\"field_img_gal\":[]}");
-
-        return sb.toString();
+                "\t\t\t\t\t\"bottom\":\"37.776895329526\"," +
+                "\t\"geohash\":\"swdyy\"}]}," +
+                "\"field_distance\":{\"und\":[{\"value\":\"" +
+                Distance.getText() +
+                "\",\"format\":null,\"safe_value\":\"" +
+                Distance.getText() +
+                "\"}]}," +
+                "\"field_starting_point\":{\"und\":[{\"value\":\"" +
+                StartingPoint.getText() +
+                "\",\"format\":null,\"safe_value\":\"" +
+                StartingPoint.getText() +
+                "\"}]},\n" +
+                "\"field_main_sights\":{\"und\":[{\"value\":\"" +
+                MainSights.getText() +
+                "\",\"format\":null,\"safe_value\":\"" +
+                MainSights.getText() +
+                "\"}]},\n" +
+                "\"field_connection_to_other_trails\":{\"und\":[{\"value\":\"" +
+                ConnectionToOtherTrails.getText() +
+                "\",\"format\":null,\"safe_value\":\"" +
+                ConnectionToOtherTrails.getText() +
+                "\"}]}," +
+                "\"field_other_transport\":{\"und\":[{\"value\":\"" +
+                OtherTransports.getText() +
+                "\",\"format\":null,\"safe_value\":\"" +
+                OtherTransports.getText() +
+                "\"}]}," +
+                "\"field_discription\":{\"und\":[{\"value\":\"" +
+                Description.getText() +
+                "\",\"format\":null,\"safe_value\":\"" +
+                Description.getText() +
+                "\"}]},\"field_tips\":{\"und\":[{\"value\":\"" +
+                Tips.getText() +
+                "\",\"format\":null,\"safe_value\":\"" +
+                Tips.getText() +
+                "\"}]},\n" +
+                "\"field_img_gal\":[]}";
     }
 
     public void sendtrail() throws JSONException {
@@ -257,11 +261,34 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public void saveTrail() {
+        int radioButtonID = ChildrenFriendly.getCheckedRadioButtonId();
+        View radioButton = ChildrenFriendly.findViewById(radioButtonID);
+        int ChildrenFriendlyin = ChildrenFriendly.indexOfChild(radioButton);
+        int radioButtonIDDi= DifficultyLevel.getCheckedRadioButtonId();
+        View radioButtonDif = DifficultyLevel.findViewById(radioButtonIDDi);
+        int Diff = DifficultyLevel.indexOfChild(radioButtonDif);
 
+        int radioButtonIDkind= KindOfTrail.getCheckedRadioButtonId();
+        View radioButtonkind = KindOfTrail.findViewById(radioButtonIDkind);
+        int kind = KindOfTrail.indexOfChild(radioButtonkind);
         if(!local) {
             Trail trail2 = new Trail(getActivity());
             trail2.setTitle(Title.getText().toString());
             trail2.setGeometryCollection(getGeometryCollectionFormat(Linestring));
+            trail2.setEditable(true);
+            trail2.setChildren_Friedly(ChildrenFriendlyin==0);
+            trail2.setConnectionToOtherTrails(ConnectionToOtherTrails.getText().toString());
+            trail2.setDescription(Description.getText().toString());
+            trail2.setDifficultyLevel(Diff==0? gr.aegean.com.samostrails.Models.DifficultyLevel.Easy:
+                    Diff==1?gr.aegean.com.samostrails.Models.DifficultyLevel.Moderate:
+                            Diff==2?gr.aegean.com.samostrails.Models.DifficultyLevel.Challenging:
+                                    Diff==3?gr.aegean.com.samostrails.Models.DifficultyLevel.Sport:gr.aegean.com.samostrails.Models.DifficultyLevel.Extreme);
+            trail2.setDistance(Distance.getText().toString().equals("")?0:Double.parseDouble(Distance.getText().toString()));
+            trail2.setKindOfTrail(kind==0?gr.aegean.com.samostrails.Models.KindOfTrail.OneWay:gr.aegean.com.samostrails.Models.KindOfTrail.Loop);
+            trail2.setMainSights(MainSights.getText().toString());
+            trail2.setOtherTransport(OtherTransports.getText().toString());
+            trail2.setStrartingPoin(StartingPoint.getText().toString());
+            trail2.setTips(Tips.getText().toString());
             TrailDb.insertIntoDb(trail2, TrailDb.initiateDB(getActivity()));
             Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
             Fragment fragment = RecordingFragment.newInstance();
@@ -270,7 +297,19 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
             transaction.commit();
         }else{
             trail.setTitle(Title.getText().toString());
-            Log.e("title",trail.getTitle());
+            trail.setChildren_Friedly(ChildrenFriendlyin==0);
+            trail.setConnectionToOtherTrails(ConnectionToOtherTrails.getText().toString());
+            trail.setDescription(Description.getText().toString());
+            trail.setDifficultyLevel(Diff==0? gr.aegean.com.samostrails.Models.DifficultyLevel.Easy:
+                    Diff==1?gr.aegean.com.samostrails.Models.DifficultyLevel.Moderate:
+                            Diff==2?gr.aegean.com.samostrails.Models.DifficultyLevel.Challenging:
+                                    Diff==3?gr.aegean.com.samostrails.Models.DifficultyLevel.Sport:gr.aegean.com.samostrails.Models.DifficultyLevel.Extreme);
+            trail.setDistance(Distance.getText().toString().equals("")?0:Double.parseDouble(Distance.getText().toString()));
+            trail.setKindOfTrail(kind==0?gr.aegean.com.samostrails.Models.KindOfTrail.OneWay:gr.aegean.com.samostrails.Models.KindOfTrail.Loop);
+            trail.setMainSights(MainSights.getText().toString());
+            trail.setOtherTransport(OtherTransports.getText().toString());
+            trail.setStrartingPoin(StartingPoint.getText().toString());
+            trail.setTips(Tips.getText().toString());
             TrailDb.updateDb(trail, TrailDb.initiateDB(getActivity()));
             Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
             Fragment fragment = LocalTrailsFragment.newInstance();
