@@ -58,4 +58,8 @@
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
+    <string name="about_us">Authors: \nBariampas Lintion-Thomas \nBaggelis Zoukas
+    \n\nCopyrights:\nUnivercity of Aegean, \nDepartment of Information and Communication Systems Engineering
+        \n\nLocation:\nSamos\n\nWhy:\n Is our thesis.It can be used for helping hiker to have a better hiking experience.
+    </string>
 </resources>

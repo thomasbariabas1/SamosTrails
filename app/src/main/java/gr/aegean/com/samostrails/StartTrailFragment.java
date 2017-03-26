@@ -120,7 +120,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         hasStarted = true;
         timer.setBase(SystemClock.elapsedRealtime() + stoppedtime);
         timer.start();
-        starttrail.setImageDrawable(getResources().getDrawable(R.drawable.start_pressed));
+        starttrail.setImageDrawable(getResources().getDrawable(R.drawable.pause));
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -139,7 +139,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         hasStarted = false;
         stoppedtime = timer.getBase() - SystemClock.elapsedRealtime();
         timer.stop();
-        starttrail.setImageDrawable(getResources().getDrawable(R.drawable.start_unpressed));
+        starttrail.setImageDrawable(getResources().getDrawable(R.drawable.start_pressed));
         LocationServices.FusedLocationApi.removeLocationUpdates( mGoogleApiClient, Locationlistener);
     }
 

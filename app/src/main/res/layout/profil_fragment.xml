@@ -3,12 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="gr.aegean.com.samostrails.MainActivity">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignParentStart="true">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:text="About Us:"/>
+    <ScrollView
+        android:id="@+id/aboutussv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:text="@string/about_us"/>
+    </ScrollView>
+    </LinearLayout>
 
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true">
+    android:layout_alignParentBottom="true"
+    android:id="@+id/linearLayout">
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,10 +40,6 @@
         android:drawableStart="@drawable/logout"
         android:textColor="#FFFFFF"
         android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
         android:visibility="gone"/>
     <Button
         android:layout_width="wrap_content"
@@ -31,11 +49,7 @@
         android:layout_weight=".5"
         android:drawableStart="@drawable/login"
         android:textColor="#FFFFFF"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"/>
+        android:background="@drawable/buttonshape"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,10 +59,6 @@
         android:drawableStart="@drawable/register"
         android:textColor="#FFFFFF"
         android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
 
         />
 

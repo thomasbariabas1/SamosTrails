@@ -1,6 +1,8 @@
 package gr.aegean.com.samostrails;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -23,6 +28,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
@@ -51,6 +57,8 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     private RadioGroup ChildrenFriendly;
     ServicesClient client = null;
     SystemServices ss = null;
+    Button sendTrail;
+    private ProgressDialog pDialog;
     Trail  trail;
     boolean local;
     public static CreateTrailFragment newInstance() {
@@ -84,7 +92,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
         KindOfTrail = (RadioGroup) view.findViewById(R.id.kindoftrailinput);
         DifficultyLevel = (RadioGroup) view.findViewById(R.id.difficultylevelinput);
         ChildrenFriendly = (RadioGroup) view.findViewById(R.id.childrenfriendlyinput);
-        Button sendTrail = (Button) view.findViewById(R.id.sendtrail);
+         sendTrail = (Button) view.findViewById(R.id.sendtrail);
         Button saveTrail = (Button) view.findViewById(R.id.savetraillocally);
         if(local){
             Title.setText(trail.getTitle());
@@ -101,6 +109,9 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
                             trail.getDifficultyLevel()==gr.aegean.com.samostrails.Models.DifficultyLevel.Challenging?R.id.challenging:
                                     trail.getDifficultyLevel()==gr.aegean.com.samostrails.Models.DifficultyLevel.Sport?R.id.sport:R.id.extreme);
             ChildrenFriendly.check(trail.getChildrenFriendly()?R.id.yes:R.id.no);
+        }else{
+            DecimalFormat df = new DecimalFormat("#.##");
+            Distance.setText(String.valueOf(df.format(bundle.getDouble("distance"))));
         }
         saveTrail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +142,11 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     public String getGeometryCollectionFormat(ArrayList<LatLng> linestring) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("GEOMETRYCOLLECTION (LINESTRING (");
+        if (linestring.size()>1)
+            sb.append("GEOMETRYCOLLECTION (LINESTRING (");
+        else
+            sb.append("GEOMETRYCOLLECTION (POINT (");
+
         for (int i = 0; i < linestring.size(); i++) {
             LatLng l = linestring.get(i);
             sb.append(l.longitude);
@@ -157,7 +172,16 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public String req() {
+        int radioButtonID = ChildrenFriendly.getCheckedRadioButtonId();
+        View radioButton = ChildrenFriendly.findViewById(radioButtonID);
+        int ChildrenFriendlyin = ChildrenFriendly.indexOfChild(radioButton);
+        int radioButtonIDDi= DifficultyLevel.getCheckedRadioButtonId();
+        View radioButtonDif = DifficultyLevel.findViewById(radioButtonIDDi);
+        int Diff = DifficultyLevel.indexOfChild(radioButtonDif);
 
+        int radioButtonIDkind= KindOfTrail.getCheckedRadioButtonId();
+        View radioButtonkind = KindOfTrail.findViewById(radioButtonIDkind);
+        int kind = KindOfTrail.indexOfChild(radioButtonkind);
         return "{" +
                 "\"title\":" +
                 "\"" +
@@ -214,49 +238,66 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
                 "\",\"format\":null,\"safe_value\":\"" +
                 Tips.getText() +
                 "\"}]},\n" +
-                "\"field_img_gal\":[]}";
+                "\"field_img_gal\":[],\"field_difficulty_level\":{\"und\":{\"value\":\""+(Diff+1)+"\"}},\"field_kind_of_trail\":{\"und\":{\"value\":\""+(kind+1)+"\"}},\"field_children_friedly\":{\"und\":{\"value\":\""+(ChildrenFriendlyin+1)+"\"}}}";
     }
 
     public void sendtrail() throws JSONException {
-        ss.connect(new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+        sendTrail.setEnabled(false);
+                ss.connect(new AsyncHttpResponseHandler() {
+                                       @Override
+                                       public void onSuccess ( int statusCode, Header[] headers,byte[] responseBody){
 
-                try {
-                    JSONObject jbo = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
-                    JSONObject js = jbo.getJSONObject("user");
-                    jbo = js.getJSONObject("roles");
+                                           try {
+                                               JSONObject jbo = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
+                                               JSONObject js = jbo.getJSONObject("user");
+                                               jbo = js.getJSONObject("roles");
 
-                    if (jbo.has("1")) {
-                        Toast.makeText(getActivity(), "You Must login first To Submit Trails", Toast.LENGTH_LONG).show();
+                                               if (jbo.has("1")) {
+                                                   sendTrail.setEnabled(true);
+                                                   Toast.makeText(getActivity(), "You Must login first To Submit Trails", Toast.LENGTH_LONG).show();
 
-                    } else {
-                        JSONObject json = new JSONObject(req());
-                        client.post("node", json, new AsyncHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-                                Toast.makeText(getActivity(), "Submitted Trail with Title " + Title.getText(), Toast.LENGTH_LONG).show();
-                            }
+                                               } else {
+                                                   JSONObject json = new JSONObject(req());
+                                                   Log.e("json", "" + json);
+                                                   client.post("node", json, new AsyncHttpResponseHandler() {
+                                                       @Override
+                                                       public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                                           Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                                                           sendTrail.setEnabled(true);
+                                                           Toast.makeText(getActivity(), "Submitted Trail with Title " + Title.getText(), Toast.LENGTH_LONG).show();
+                                                           if(!local) {
+                                                               Fragment fragment = RecordingFragment.newInstance();
+                                                               FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                                               transaction.replace(R.id.content, fragment);
+                                                               transaction.commit();
+                                                           }else{
+                                                               Fragment fragment = LocalTrailsFragment.newInstance();
+                                                               FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                                               transaction.replace(R.id.content, fragment);
+                                                               transaction.commit();
+                                                           }
+                                                       }
 
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-                            }
-                        });
-                    }
+                                                       @Override
+                                                       public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                                           Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                                                       }
+                                                   });
+                                               }
 
-                } catch (JSONException e) {
-                    Log.e("JSON parse error: ", "" + e.getMessage());
-                }
+                                           } catch (JSONException e) {
+                                               Log.e("JSON parse error: ", "" + e.getMessage());
+                                           }
 
-            }
+                                       }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-               // Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
-            }
-        });
+                                       @Override
+                                       public void onFailure ( int statusCode, Header[] headers,
+                                                               byte[] responseBody, Throwable error){
+                                           // Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                                       }
+                                   });
+        sendTrail.setEnabled(true);
 
     }
 

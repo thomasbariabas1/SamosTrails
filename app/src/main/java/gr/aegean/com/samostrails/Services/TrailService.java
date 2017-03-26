@@ -162,7 +162,7 @@ public void updateNotification( PendingIntent pendingIntent ,PendingIntent pprev
             .setTicker("Trail Recording")
             .setContentText("Trail Recording")
             .setSmallIcon(R.drawable.white_0)
-            .setOngoing(mRequestingLocationUpdates)
+            .setOngoing(true)
             .setLargeIcon(
                     Bitmap.createScaledBitmap(icon, 128, 128, false))
             .setContentIntent(pendingIntent)
@@ -171,7 +171,7 @@ public void updateNotification( PendingIntent pendingIntent ,PendingIntent pprev
                     mRequestingLocationUpdates ? "Stop"
                             : "Start", ppreviousIntent)
             .setUsesChronometer(mRequestingLocationUpdates)
-            .setWhen(starttime)
+            .setWhen(System.currentTimeMillis())
             .build();
 
     startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,   notification);

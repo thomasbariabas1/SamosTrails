@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat.Action;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -42,6 +44,7 @@ public class ProfilFragment extends Fragment {
     ServicesClient client;
     SystemServices ss;
     UserServices us;
+    ScrollView sv;
     public static ProfilFragment newInstance() {
         ProfilFragment fragment = new ProfilFragment();
         return fragment;
@@ -61,6 +64,20 @@ public class ProfilFragment extends Fragment {
         final Fragment fragment = LoginFragment.newInstance();
 
         client = ((MainActivity) getActivity()).getServicesClient();
+        sv = (ScrollView) view.findViewById(R.id.aboutussv);
+        final int[] i = {0};
+        new CountDownTimer(20000, 20) {
+
+            public void onTick(long millisUntilFinished) {
+                sv.scrollTo(0, i[0]++);
+            }
+
+            public void onFinish() {
+
+            }
+        }.start();
+
+
         ss = new SystemServices(client);
         us = new UserServices(client);
         login = (Button) view.findViewById(R.id.login);

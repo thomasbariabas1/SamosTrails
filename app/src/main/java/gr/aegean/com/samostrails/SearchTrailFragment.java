@@ -233,7 +233,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "Server Error: " + error.getMessage());
 
-                        Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Server Error", Toast.LENGTH_LONG).show();
 
                         // stopping swipe refresh
                         swipeRefreshLayout.setRefreshing(false);

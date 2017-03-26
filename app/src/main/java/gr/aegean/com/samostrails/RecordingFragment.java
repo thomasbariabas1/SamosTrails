@@ -157,6 +157,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("linestring", TrailLatLonLineString);
                     bundle.putBoolean("local", false);
+                    bundle.putDouble("distance",distancesum);
                     Fragment fragment = CreateTrailFragment.newInstance();
                     fragment.setArguments(bundle);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -403,6 +404,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     @Override
     public void onDataReceived(Location location) {
+        if(getActivity()!=null){
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -412,7 +414,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
-        }
+        }}
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
