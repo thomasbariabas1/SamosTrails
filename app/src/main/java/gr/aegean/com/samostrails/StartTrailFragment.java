@@ -36,9 +36,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-/**
- * Created by phantomas on 3/18/2017.
- */
 
 public class StartTrailFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;

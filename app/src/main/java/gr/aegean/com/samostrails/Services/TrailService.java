@@ -13,8 +13,14 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Chronometer;
+import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import gr.aegean.com.samostrails.MainActivity;
 import gr.aegean.com.samostrails.R;
@@ -24,13 +30,14 @@ public class TrailService extends Service {
     private static final String TAG = "BOOMBOOMTESTGPS";
     private LocationManager mLocationManager = null;
     private static  int LOCATION_INTERVAL = 1000;
-    private static  float LOCATION_DISTANCE = 0;
+    private static  float LOCATION_DISTANCE = 10;
     private static final String LOG_TAG = "ForegroundService";
     private boolean mRequestingLocationUpdates = false;
     private final IBinder mIBinder = new LocalBinder();
-    long starttime=0;
-    NotificationCompat.Builder  notification=null;
-    NotificationManager mNotificationManager;
+    long base=0;
+    double distance=0;
+    RemoteViews views ;
+    RemoteViews bigViews;
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
@@ -44,7 +51,11 @@ public class TrailService extends Service {
             Log.e(TAG, "onLocationChanged: " + location);
 
             if(mOnServiceListener != null){
-                mOnServiceListener.onDataReceived(location);
+                distance = mOnServiceListener.onDataReceived(location);
+                Log.e("DistanceNotification",""+distance);
+
+                updatenotification();
+
             }
             mLastLocation.set(location);
 
@@ -84,66 +95,39 @@ public class TrailService extends Service {
         notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-           /* PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                    notificationIntent, 0);*/
 
         Intent previousIntent = new Intent(this, TrailService.class);
         previousIntent.setAction(Constants.ACTION.PREV_ACTION);
-        PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
-                previousIntent, 0);
 
-        // While making notification
-        Intent i = new Intent("do_something");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+        views = new RemoteViews(getPackageName(),
+                R.layout.status_bar);
 
-        Bitmap icon = BitmapFactory.decodeResource(getResources(),
-                R.drawable.white_0);
+        bigViews=new RemoteViews(getPackageName(),
+                R.layout.status_bar_expanded);
 
+        base=intent.getLongExtra("base",base);
 
-
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
-            TrailService.LOCATION_INTERVAL=intent.getIntExtra("interval",0);
-            TrailService.LOCATION_DISTANCE=intent.getIntExtra("distance",0);
+            TrailService.LOCATION_INTERVAL=intent.getIntExtra("interval",LOCATION_INTERVAL);
+            TrailService.LOCATION_DISTANCE=intent.getFloatExtra("distance",LOCATION_DISTANCE);
             Log.i(LOG_TAG, "Received Start Foreground Intent ");
-            notification = new NotificationCompat.Builder(this)
-                    .setContentTitle("Trail Recording")
-                    .setTicker("Trail Recording")
-                    .setContentText("Trail Recording")
-                    .setSmallIcon(R.drawable.white_0)
-                    .setOngoing(mRequestingLocationUpdates)
-                    .setLargeIcon(
-                            Bitmap.createScaledBitmap(icon, 128, 128, false))
-                    .setContentIntent(pendingIntent)
-                    .setOngoing(true)
-                    .addAction(mRequestingLocationUpdates ? R.drawable.norecording
-                                    : R.drawable.recording,
-                            mRequestingLocationUpdates ? "Stop"
-                                    : "Start", ppreviousIntent)
-                    .setUsesChronometer(true);
-            starttime= System.currentTimeMillis();
 
-            startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,notification.build());
+            showNotification();
+
 
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
 
             Log.e(LOG_TAG, "Received Start Foreground Intent ");
             tongleLocationUpdates();
-            updateNotification(pendingIntent,ppreviousIntent,icon);
+            showNotification();
 
         }
-        else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
-
-            Log.e(LOG_TAG, "Received Stop Foreground Intent ");
+        else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
             tongleLocationUpdates();
-            updateNotification(pendingIntent,ppreviousIntent,icon);
-
-    } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
-            tongleLocationUpdates();
-            mOnServiceListener.onChangeState(mRequestingLocationUpdates);
-            updateNotification(pendingIntent,ppreviousIntent,icon);
+            base=mOnServiceListener.onChangeState(mRequestingLocationUpdates);
+            showNotification();
         } else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
             Log.e(LOG_TAG, "Received Stop Foreground Intent");
@@ -153,29 +137,6 @@ public class TrailService extends Service {
 
         return Service.START_STICKY;
     }
-public void updateNotification( PendingIntent pendingIntent ,PendingIntent ppreviousIntent,  Bitmap icon ){
-
-
-
-    Notification notification = new NotificationCompat.Builder(this)
-            .setContentTitle("Trail Recording")
-            .setTicker("Trail Recording")
-            .setContentText("Trail Recording")
-            .setSmallIcon(R.drawable.white_0)
-            .setOngoing(true)
-            .setLargeIcon(
-                    Bitmap.createScaledBitmap(icon, 128, 128, false))
-            .setContentIntent(pendingIntent)
-            .addAction(mRequestingLocationUpdates ? R.drawable.norecording
-                            : R.drawable.recording,
-                    mRequestingLocationUpdates ? "Stop"
-                            : "Start", ppreviousIntent)
-            .setUsesChronometer(mRequestingLocationUpdates)
-            .setWhen(System.currentTimeMillis())
-            .build();
-
-    startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,   notification);
-}
     @Override
     public void onCreate() {
         Log.e(TAG, "onCreate");
@@ -199,6 +160,7 @@ public void updateNotification( PendingIntent pendingIntent ,PendingIntent pprev
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
+        stopLocationUpdates();
     }
 
     @Override
@@ -290,12 +252,85 @@ public void startLocationUpdates(){
     }
 
     public interface OnServiceListener{
-         void onDataReceived(Location data );
-         void onChangeState(boolean statechange);
+         double onDataReceived(Location data );
+         long onChangeState(boolean statechange);
     }
     private OnServiceListener mOnServiceListener = null;
 
     public void setOnServiceListener(OnServiceListener serviceListener){
         mOnServiceListener = serviceListener;
+    }
+
+
+    Notification status;
+
+
+    private void showNotification() {
+
+
+// Using RemoteViews to bind custom layouts into Notification
+
+        bigViews.setImageViewBitmap(R.id.status_bar_album_art,
+                Constants.getDefaultAlbumArt(this));
+// showing default album image
+        views.setViewVisibility(R.id.status_bar_icon, View.VISIBLE);
+        views.setViewVisibility(R.id.status_bar_album_art, View.GONE);
+
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+
+
+
+        Intent previousIntent = new Intent(this, TrailService.class);
+        previousIntent.setAction(Constants.ACTION.PREV_ACTION);
+        PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
+                previousIntent, 0);
+
+
+
+        views.setOnClickPendingIntent(R.id.status_bar_recording, ppreviousIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_recordinglayout, ppreviousIntent);
+
+
+
+
+        views.setTextViewText(R.id.status_bar_track_name, "SamosTrails");
+        bigViews.setTextViewText(R.id.status_bar_track_name, "SamosTrails");
+
+
+        if(!mRequestingLocationUpdates) {
+
+            views.setTextViewText(R.id.status_bar_artist_name, "Stopped Recording");
+            bigViews.setTextViewText(R.id.status_bar_recordingstatus, "Stopped Recording");
+            bigViews.setImageViewResource(R.id.status_bar_recording,R.drawable.recording);
+            views.setImageViewResource(R.id.status_bar_recording,R.drawable.recording);
+            bigViews.setTextViewText(R.id.status_bar_recording_text, "Start");
+        }else {
+
+            views.setTextViewText(R.id.status_bar_artist_name, "Recording ...");
+            bigViews.setTextViewText(R.id.status_bar_recordingstatus, "Recording ...");
+            bigViews.setImageViewResource(R.id.status_bar_recording,R.drawable.norecording);
+            views.setImageViewResource(R.id.status_bar_recording,R.drawable.norecording);
+            bigViews.setTextViewText(R.id.status_bar_recording_text, "Stop");
+        }
+
+        bigViews.setChronometer(R.id.chronometer,base,null, mRequestingLocationUpdates);
+        status = new Notification.Builder(this).build();
+        status.contentView = views;
+        status.bigContentView = bigViews;
+        status.flags = Notification.FLAG_ONGOING_EVENT;
+        status.icon = R.drawable.white_0;
+        status.contentIntent = pendingIntent;
+        startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status);
+    }
+
+    public void updatenotification(){
+        bigViews.setTextViewText(R.id.distancenotification,""+distance);
+        startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status);
     }
 }

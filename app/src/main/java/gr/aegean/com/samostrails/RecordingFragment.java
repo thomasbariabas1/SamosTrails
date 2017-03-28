@@ -55,7 +55,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     // Location updates intervals in sec
     private int UPDATE_INTERVAL = 6000; // 5 sec
-    private int DISPLACEMENT = 0; // 10 meters//100metre is the best for better
+    private int DISPLACEMENT = 10; // 10 meters//100metre is the best for better
     private MapView mMapView;
     GoogleMap mMap;
     private double LastLat;
@@ -66,7 +66,6 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     private ImageButton savebutton;
     private ImageButton clear;
     private long stoppedtime = 0;
-
     public static RecordingFragment newInstance() {
         RecordingFragment fragment = new RecordingFragment();
         return fragment;
@@ -126,6 +125,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         animation.setInterpolator(new LinearInterpolator()); //do not alter animation rate
         animation.setRepeatCount(Animation.INFINITE); //Repeat animation infinitely
         animation.setRepeatMode(Animation.REVERSE); //Reverse animation at the end so the button will fade back in
+
         // Toggling the periodic location updates
         btnStartLocationUpdates.setOnClickListener(new View.OnClickListener() {
 
@@ -209,6 +209,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             Intent startIntent = new Intent(getActivity(), TrailService.class);
             startIntent.putExtra("interval", UPDATE_INTERVAL);
             startIntent.putExtra("distance", DISPLACEMENT);
+            startIntent.putExtra("base",SystemClock.elapsedRealtime() + stoppedtime);
             startIntent.setAction(Constants.ACTION.PLAY_ACTION);
             getActivity().startService(startIntent);
             // Starting the location updates
@@ -216,7 +217,8 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             Log.e(TAG, "Periodic location updates started!");
         } else {
             Intent startIntent = new Intent(getActivity(), TrailService.class);
-            startIntent.setAction(Constants.ACTION.NEXT_ACTION);
+            startIntent.setAction(Constants.ACTION.PLAY_ACTION);
+            startIntent.putExtra("base",time.getBase() - SystemClock.elapsedRealtime());
             getActivity().startService(startIntent);
             // Stopping the location updates
             mRequestingLocationUpdates = false;
@@ -403,7 +405,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
 
     @Override
-    public void onDataReceived(Location location) {
+    public double onDataReceived(Location location) {
         if(getActivity()!=null){
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -413,7 +415,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+            return 0;
         }}
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
@@ -434,16 +436,19 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             LastLat = Latitude;
             LastLon = Longtitude;
         }
-
+        return round(distancesum, 2);
     }
 
     @Override
-    public void onChangeState(boolean statechange) {
+    public long onChangeState(boolean statechange) {
         mRequestingLocationUpdates = statechange;
-        if(mRequestingLocationUpdates)
+        if(mRequestingLocationUpdates) {
             startLocationUpdates();
-            else
+            return SystemClock.elapsedRealtime() + stoppedtime;
+        }else {
             stopLocationUpdates();
+            return time.getBase() - SystemClock.elapsedRealtime();
+        }
 
     }
 
