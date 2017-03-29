@@ -15,22 +15,16 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-
 import gr.aegean.com.samostrails.Adapters.AdapterSwipeRefresh;
 import gr.aegean.com.samostrails.Models.DifficultyLevel;
 import gr.aegean.com.samostrails.Models.DistanceLevel;
@@ -47,6 +41,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     private TextView nointernetfound;
     private SearchView sv;
     private static String url = "http://test.samostrails.com/trail-webservice";
+    public boolean firsttime=true;
     ArrayList<Trail> TrailsArray = new ArrayList<>();
     int i = 0;
 
@@ -107,7 +102,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             lv.setVisibility(View.VISIBLE);
             nofoundimage.setVisibility(View.GONE);
             nointernetfound.setVisibility(View.GONE);
-
+            if(firsttime)
             fetchTrails();
 
         } else {
@@ -115,7 +110,6 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             nofoundimage.setVisibility(View.VISIBLE);
             nointernetfound.setVisibility(View.VISIBLE);
         }
-        // TrailDb.deleteAll(TrailDb.initiateDB(getActivity()));
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -155,7 +149,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
 
     private void fetchTrails() {
-
+        firsttime=false;
         // showing refresh animation before making http call
         swipeRefreshLayout.setRefreshing(true);
         final JsonObjectRequest[] req = {null};
@@ -246,7 +240,6 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             if (trail.getTitle().toLowerCase().contains(searchword.toLowerCase()))
                 FilteredTrails.add(trail);
         }
-       // i = i + 1;
         lv.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails, ((MainActivity) getActivity()).getCache()));
         lv.invalidateViews();
     }

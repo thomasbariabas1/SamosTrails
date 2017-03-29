@@ -20,7 +20,6 @@ import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 public class MainActivity extends AppCompatActivity  {
 
     SearchTrailFragment search = SearchTrailFragment.newInstance();
-
     RecordingFragment recording = RecordingFragment.newInstance();
     ProfilFragment profil = ProfilFragment.newInstance();
     LruCache<Integer, Bitmap> bitmapCache;
