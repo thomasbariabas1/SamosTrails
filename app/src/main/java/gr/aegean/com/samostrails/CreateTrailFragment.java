@@ -58,7 +58,6 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     ServicesClient client = null;
     SystemServices ss = null;
     Button sendTrail;
-    private ProgressDialog pDialog;
     Trail  trail;
     boolean local;
     public static CreateTrailFragment newInstance() {
@@ -100,7 +99,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
             StartingPoint.setText(trail.getStrartingPoin());
             MainSights.setText(trail.getMainSights());
             Tips.setText(trail.getTips());
-            Distance.setText(String.valueOf(trail.getDistance()));
+            Distance.setText(Double.toString(trail.getDistance()));
             OtherTransports.setText(trail.getOtherTransport());
             ConnectionToOtherTrails.setText(trail.getConnectionToOtherTrails());
             KindOfTrail.check(trail.getKindOfTrail()==gr.aegean.com.samostrails.Models.KindOfTrail.Loop?R.id.oneway:R.id.loop);
@@ -308,7 +307,6 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
         int radioButtonIDDi= DifficultyLevel.getCheckedRadioButtonId();
         View radioButtonDif = DifficultyLevel.findViewById(radioButtonIDDi);
         int Diff = DifficultyLevel.indexOfChild(radioButtonDif);
-
         int radioButtonIDkind= KindOfTrail.getCheckedRadioButtonId();
         View radioButtonkind = KindOfTrail.findViewById(radioButtonIDkind);
         int kind = KindOfTrail.indexOfChild(radioButtonkind);
@@ -324,7 +322,8 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
                     Diff==1?gr.aegean.com.samostrails.Models.DifficultyLevel.Moderate:
                             Diff==2?gr.aegean.com.samostrails.Models.DifficultyLevel.Challenging:
                                     Diff==3?gr.aegean.com.samostrails.Models.DifficultyLevel.Sport:gr.aegean.com.samostrails.Models.DifficultyLevel.Extreme);
-            trail2.setDistance(Distance.getText().toString().equals("")?0:Double.parseDouble(Distance.getText().toString()));
+            String tmp = Distance.getText().toString().replaceAll(",",".");
+            trail2.setDistance(Distance.getText().toString().equals("")?0:Double.parseDouble(tmp));
             trail2.setKindOfTrail(kind==0?gr.aegean.com.samostrails.Models.KindOfTrail.OneWay:gr.aegean.com.samostrails.Models.KindOfTrail.Loop);
             trail2.setMainSights(MainSights.getText().toString());
             trail2.setOtherTransport(OtherTransports.getText().toString());
@@ -406,5 +405,20 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
             mMap.addMarker(new MarkerOptions().position(Linestring.get(0)).position(Linestring.get(Linestring.size()-1)));
 
         mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(Linestring.get(0) , 14.0f) );
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
     }
 }

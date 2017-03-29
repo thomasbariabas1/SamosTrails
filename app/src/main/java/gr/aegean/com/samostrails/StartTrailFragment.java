@@ -321,4 +321,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         }
         return true;
     }
+
+    
+
 }

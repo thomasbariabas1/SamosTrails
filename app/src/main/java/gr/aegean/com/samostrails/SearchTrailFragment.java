@@ -1,16 +1,11 @@
 package gr.aegean.com.samostrails;
 
 
-import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +45,6 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     private GridView lv;
     private ImageView nofoundimage;
     private TextView nointernetfound;
-    private ProgressDialog pDialog;
     private SearchView sv;
     private static String url = "http://test.samostrails.com/trail-webservice";
     ArrayList<Trail> TrailsArray = new ArrayList<>();
@@ -83,7 +77,6 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
 
                 if (!hasFocus) {
                     if (i != 0)
@@ -97,8 +90,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             @Override
             public boolean onQueryTextSubmit(String query) {
                 search(query);
-                Toast.makeText(getActivity(), query,
-                        Toast.LENGTH_SHORT).show();
+
                 return false;
             }
 
@@ -157,7 +149,6 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             lv.setVisibility(View.INVISIBLE);
             nofoundimage.setVisibility(View.VISIBLE);
             nointernetfound.setVisibility(View.VISIBLE);
-            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -168,20 +159,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
         // showing refresh animation before making http call
         swipeRefreshLayout.setRefreshing(true);
         final JsonObjectRequest[] req = {null};
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                // Showing progress dialog
-                pDialog = new ProgressDialog(getActivity());
-                pDialog.setMessage("Please wait...");
-                pDialog.setCancelable(false);
-                pDialog.show();
 
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
 
                 req[0] = new JsonObjectRequest(Request.Method.GET, url, null,
                         new Response.Listener<JSONObject>() {
@@ -239,22 +217,14 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Void result) {
-                if (pDialog.isShowing())
-                    pDialog.dismiss();
-                RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-                queue.add(req[0]);
 
-            }
 
-        }.execute();
 
 
         // Adding request to request queue
+        RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        queue.add(req[0]);
 
     }
 
@@ -273,11 +243,10 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
         ArrayList<Trail> FilteredTrails = new ArrayList<>();
         for (Trail trail : TrailsArray) {
 
-            if (trail.getTitle().toLowerCase().indexOf(searchword.toLowerCase()) != -1)
+            if (trail.getTitle().toLowerCase().contains(searchword.toLowerCase()))
                 FilteredTrails.add(trail);
-
         }
-        i = i + 1;
+       // i = i + 1;
         lv.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails, ((MainActivity) getActivity()).getCache()));
         lv.invalidateViews();
     }

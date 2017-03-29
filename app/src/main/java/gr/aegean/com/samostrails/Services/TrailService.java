@@ -30,7 +30,7 @@ public class TrailService extends Service {
     private static final String TAG = "BOOMBOOMTESTGPS";
     private LocationManager mLocationManager = null;
     private static  int LOCATION_INTERVAL = 1000;
-    private static  float LOCATION_DISTANCE = 10;
+    private static  float LOCATION_DISTANCE = 0;
     private static final String LOG_TAG = "ForegroundService";
     private boolean mRequestingLocationUpdates = false;
     private final IBinder mIBinder = new LocalBinder();

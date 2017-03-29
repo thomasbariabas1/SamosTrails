@@ -66,6 +66,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     private ImageButton savebutton;
     private ImageButton clear;
     private long stoppedtime = 0;
+
     public static RecordingFragment newInstance() {
         RecordingFragment fragment = new RecordingFragment();
         return fragment;
@@ -451,5 +452,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         }
 
     }
+
+
 
 }
