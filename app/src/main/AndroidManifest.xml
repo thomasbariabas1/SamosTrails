@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application
+        android:launchMode="singleInstance"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -38,10 +39,10 @@
                 android:resource="@xml/searchable">
             </meta-data>
         </activity>
-        <activity android:name=".WelcomeActivity"/>
+        <activity android:name="gr.aegean.com.samostrails.WelcomeActivity"/>
         <service android:name="gr.aegean.com.samostrails.Services.TrailService"  />
         <activity
-            android:name=".MainActivity"
+            android:name="gr.aegean.com.samostrails.MainActivity"
           />
     </application>
 

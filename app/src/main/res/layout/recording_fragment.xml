@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
     <com.google.android.gms.maps.MapView
@@ -27,14 +28,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".40"
-                android:text="@string/distance_klm" />
+                android:text="@string/distance_klm"
+                android:textColor="#fff"/>
 
             <TextView
                 android:id="@+id/distancerecording"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".60"
-                android:text="0.0" />
+                android:text="0.0"
+                android:textColor="#fff"/>
         </LinearLayout>
 
         <LinearLayout
@@ -47,28 +50,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".40"
-                android:text="@string/time" />
+                android:text="@string/time"
+                android:textColor="#fff"/>
 
             <Chronometer
                 android:id="@+id/timerecording"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight=".60" />
+                android:layout_weight=".60"
+                android:textColor="#fff"/>
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/buttoncontainer"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:src="@drawable/clearmap"
-        android:background="@drawable/statelist"
         android:id="@+id/clearbuttonrecording"
+        app:backgroundTint="#ffffff"
 
         />
 
@@ -104,21 +109,20 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:background="@drawable/shadow_record"
         android:keepScreenOn="false"
         android:measureWithLargestChild="false"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
 
         <ImageButton
             android:id="@+id/setRangeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:background="@drawable/transparent_back"
-            android:contentDescription="@string/record"
 
             />
 
@@ -127,6 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="6dp"
-            android:text="Record" />
+            android:text="Record"
+            android:textColor="#fff"/>
     </LinearLayout>
 </RelativeLayout>

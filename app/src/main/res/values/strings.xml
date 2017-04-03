@@ -58,9 +58,9 @@
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
-    <string name="about_us">Authors: \nBariampas Lintion-Thomas \nBaggelis Zoukas
-    \n\nCopyrights:\nUnivercity of Aegean, \nDepartment of Information and Communication Systems Engineering
-        \n\nLocation:\nSamos\n\nWhy:\n Is our thesis.It can be used for helping hiker to have a better hiking experience.
+    <string name="about_us">Samos is the fifth largest island in the Aegean! It is characterized by the natural diversity that pervades, whose admiration of visitors topped by walking to many of its trails. The \"Samos Trails\" refers to those paths to their emergence. \n\n
+
+     The \'Samos Trails\' is a project, which is created within the Bachelor\'s thesis by the students Zoukas Evangelos and Bariampas Lidion Thomas, in collaboration with Professor Spiros Kokolakis. This project made an extensive reference to the hiking trails on the island of Samos, creating the prospect of emergence of these paths. It includes informing the walker through maps, positioning technologies, and through information (historical, guidance, etc.), important for a complete tour.
     </string>
 
     <!-- App name -->

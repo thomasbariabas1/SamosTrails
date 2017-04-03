@@ -40,7 +40,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     private ImageView nofoundimage;
     private TextView nointernetfound;
     private SearchView sv;
-    private static String url = "http://test.samostrails.com/trail-webservice";
+    private static String url = "http://www.samostrails.com/samostrails/trail-webservice";
     public boolean firsttime=true;
     ArrayList<Trail> TrailsArray = new ArrayList<>();
     int i = 0;

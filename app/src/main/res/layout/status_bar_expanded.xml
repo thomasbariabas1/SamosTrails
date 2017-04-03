@@ -74,7 +74,6 @@
         android:padding="8.0dip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/apollo_holo_dark_notifiation_bar_collapse"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:textColor="#fff"/>

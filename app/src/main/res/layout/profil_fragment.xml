@@ -13,12 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="30sp"
-        android:text="About Us:"/>
+        android:text="About SamosTrails:"/>
     <ScrollView
         android:id="@+id/aboutussv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/aboutus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="30sp"

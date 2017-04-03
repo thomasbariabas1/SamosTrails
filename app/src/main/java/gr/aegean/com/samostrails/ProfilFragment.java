@@ -1,26 +1,19 @@
 package gr.aegean.com.samostrails;
 
-import android.app.Notification;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.IntentFilter;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat.Action;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.RemoteInput;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -45,6 +38,9 @@ public class ProfilFragment extends Fragment {
     SystemServices ss;
     UserServices us;
     ScrollView sv;
+    TextView aboutus;
+    boolean clicked = false;
+
     public static ProfilFragment newInstance() {
         ProfilFragment fragment = new ProfilFragment();
         return fragment;
@@ -62,27 +58,40 @@ public class ProfilFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.profil_fragment, container, false);
         final Fragment fragment = LoginFragment.newInstance();
-
+        aboutus = (TextView) view.findViewById(R.id.aboutus);
         client = ((MainActivity) getActivity()).getServicesClient();
         sv = (ScrollView) view.findViewById(R.id.aboutussv);
         final int[] i = {0};
-        new CountDownTimer(20000, 20) {
+        new CountDownTimer(31000, 10) {
 
             public void onTick(long millisUntilFinished) {
+                if(!clicked)
                 sv.scrollTo(0, i[0]++);
+                else
+                    cancel();
             }
 
             public void onFinish() {
 
             }
         }.start();
-
+        aboutus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                clicked=true;
+                return false;
+            }
+        });
+       
 
         ss = new SystemServices(client);
         us = new UserServices(client);
         login = (Button) view.findViewById(R.id.login);
         logout = (Button) view.findViewById(R.id.logout);
-        register=(Button) view.findViewById(R.id.register);
+        register = (Button) view.findViewById(R.id.register);
+        login.setVisibility(View.GONE);
+        logout.setVisibility(View.GONE);
+        register.setVisibility(View.GONE);
         ss.connect(new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -96,7 +105,7 @@ public class ProfilFragment extends Fragment {
                         login.setVisibility(View.VISIBLE);
                         logout.setVisibility(View.GONE);
                         register.setVisibility(View.VISIBLE);
-                    } else{
+                    } else {
                         login.setVisibility(View.GONE);
                         register.setVisibility(View.GONE);
                         logout.setVisibility(View.VISIBLE);
@@ -120,10 +129,10 @@ public class ProfilFragment extends Fragment {
                 us.logout(new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                       Toast.makeText(getActivity(),"You have Successfully Logout",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "You have Successfully Logout", Toast.LENGTH_LONG).show();
 
                         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.content,  ProfilFragment.newInstance());
+                        transaction.replace(R.id.content, ProfilFragment.newInstance());
                         transaction.commit();
                     }
 

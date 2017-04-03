@@ -3,24 +3,21 @@ package gr.aegean.com.samostrails.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import gr.aegean.com.samostrails.MainActivity;
 import gr.aegean.com.samostrails.Models.Trail;
 import gr.aegean.com.samostrails.R;
 import gr.aegean.com.samostrails.SQLDb.TrailDb;
@@ -65,6 +62,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
     public View getView(final int i, View view, ViewGroup viewGroup) {
 
         View v = view;
+
         final ImageView picture;
         TextView name;
         TextView trailid;
@@ -81,6 +79,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
         name = (TextView) v.getTag(R.id.text);
         trailid = (TextView)v.getTag(R.id.trailid);
         favorite = (ImageView)v.getTag(R.id.favorite);
+
         Item item = getItem(i);
         final Bitmap[] bmp = new Bitmap[1];
         new AsyncTask<Void, Void, Void>() {

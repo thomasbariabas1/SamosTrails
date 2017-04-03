@@ -1,26 +1,18 @@
 package gr.aegean.com.samostrails.Services;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Chronometer;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import gr.aegean.com.samostrails.MainActivity;
 import gr.aegean.com.samostrails.R;
@@ -279,8 +271,7 @@ public void startLocationUpdates(){
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
 
@@ -323,7 +314,7 @@ public void startLocationUpdates(){
         status = new Notification.Builder(this).build();
         status.contentView = views;
         status.bigContentView = bigViews;
-        status.flags = Notification.FLAG_ONGOING_EVENT;
+        status.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
         status.icon = R.drawable.white_0;
         status.contentIntent = pendingIntent;
         startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status);

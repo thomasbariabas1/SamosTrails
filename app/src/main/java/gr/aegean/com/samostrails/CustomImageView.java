@@ -2,7 +2,6 @@ package gr.aegean.com.samostrails;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by phantomas on 3/7/2017.

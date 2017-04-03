@@ -2,12 +2,10 @@ package gr.aegean.com.samostrails;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +19,6 @@ public class MainActivity extends AppCompatActivity  {
 
     SearchTrailFragment search = SearchTrailFragment.newInstance();
     RecordingFragment recording = RecordingFragment.newInstance();
-    ProfilFragment profil = ProfilFragment.newInstance();
     LruCache<Integer, Bitmap> bitmapCache;
     String TAG = "";
     ServicesClient client = null;
@@ -47,7 +44,7 @@ public class MainActivity extends AppCompatActivity  {
                     TAG = "recording";
                     break;
                 case R.id.profil:
-                    selectedFragment = profil;
+                    selectedFragment = ProfilFragment.newInstance();
                     TAG = "profil";
                     break;
             }
@@ -64,14 +61,12 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        client = new ServicesClient("http://test.samostrails.com", "api");
+        client = new ServicesClient("http://www.samostrails.com/samostrails", "api");
 
         int memClass = ((ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
         int cacheSize = 1024 * 1024 * memClass / 8;
         bitmapCache = new LruCache<>(cacheSize);
-        if (savedInstanceState != null) {
-            profil = (ProfilFragment) getSupportFragmentManager().getFragment(savedInstanceState, "ProfilFragment");
-        }
+
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, SearchTrailFragment.newInstance());
