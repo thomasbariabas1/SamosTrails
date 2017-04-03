@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -82,7 +81,7 @@ public class ProfilFragment extends Fragment {
                 return false;
             }
         });
-       
+
 
         ss = new SystemServices(client);
         us = new UserServices(client);

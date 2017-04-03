@@ -7,8 +7,8 @@ android {
         applicationId "gr.aegean.com.samostrailsalpha"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -27,7 +27,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-vector-drawable:25.2.0'
     compile 'com.ncapdevi:frag-nav:1.0.3'
     compile 'com.google.android.gms:play-services:10.2.0'
