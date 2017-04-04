@@ -132,6 +132,7 @@ public class ProfilFragment extends Fragment {
 
                         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.content, ProfilFragment.newInstance());
+                        transaction.addToBackStack(null);
                         transaction.commit();
                     }
 
@@ -148,6 +149,7 @@ public class ProfilFragment extends Fragment {
 
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content, fragment);
+                transaction.addToBackStack(null);
                 transaction.commit();
 
             }
@@ -157,6 +159,7 @@ public class ProfilFragment extends Fragment {
             public void onClick(View v) {
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content, RegisterFragment.newInstance());
+                transaction.addToBackStack(null);
                 transaction.commit();
 
             }

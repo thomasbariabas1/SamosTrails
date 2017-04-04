@@ -3,6 +3,7 @@ package gr.aegean.com.samostrails;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,6 +54,8 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
     private Button DeleteTrail;
     private Button StartTrail;
     private Button EditTrail;
+
+    private Button backbutton;
     ArrayList<LatLng> fullline = new ArrayList<>();
     ArrayList<LatLng> fullpoints = new ArrayList<>();
     ScrollView hsv;
@@ -74,6 +77,8 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
 
         // Inflate the layout for this fragment
         TrailTitle = (TextView) view.findViewById(R.id.trail_title);
+
+        backbutton = (Button) view.findViewById(R.id.backbutton);
          Description=(TextView) view.findViewById(R.id.description);
          StartingPoint=(TextView) view.findViewById(R.id.startingpoint);
          MainSights=(TextView) view.findViewById(R.id.mainsights);
@@ -103,7 +108,14 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
                 transaction.commit();
             }
         });
-
+        backbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity()
+                        .getSupportFragmentManager();
+                fm.popBackStack();
+            }
+        });
 
         StartTrail.setOnClickListener(new View.OnClickListener() {
             @Override

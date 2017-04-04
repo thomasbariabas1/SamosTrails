@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/sv"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="gr.aegean.com.samostrails.MainActivity">
 
 
-    <FrameLayout
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -18,17 +15,31 @@
             android:layout_height="wrap_content"
             android:background="#10191919"
             android:orientation="vertical">
-
-            <android.support.v7.widget.AppCompatTextView
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/downHeader">
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight=".2"
+        android:drawableStart="@drawable/backbutton"
+        android:layout_gravity="start"
+        android:text="@string/back"
+        app:backgroundTint="@color/downHeader"
+        android:id="@+id/backbutton"
+        />
+            <TextView
                 android:id="@+id/savetrailtitle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight=".5"
                 android:layout_gravity="center"
-                android:background="@color/downHeader"
-                android:text="Save Trail"
+                android:text="@string/save_trail"
                 android:textColor="#ffffff"
                 android:textSize="30sp" />
 
+</LinearLayout>
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapcreatetable"
                 android:layout_width="match_parent"
@@ -266,7 +277,5 @@
             </LinearLayout>
 
         </LinearLayout>
-
-    </FrameLayout>
 
 </ScrollView>

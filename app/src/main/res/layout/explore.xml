@@ -13,7 +13,7 @@
         android:layout_width="fill_parent"
         android:layout_height="40dp"
         android:layout_centerHorizontal="true"
-        android:text="Current Available Trails"
+        android:text="@string/current_available_trails"
         android:textSize="30sp"
         android:gravity="center"
         android:background="@color/downHeader"
@@ -48,12 +48,12 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="No Internet Found"
+            android:text="@string/no_internet_found"
             android:visibility="invisible"
             android:id="@+id/nointernetfount"
             android:layout_marginTop="300dp"
             android:gravity="center"
-            android:textSize="30dp"
+            android:textSize="30sp"
             />
  </RelativeLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

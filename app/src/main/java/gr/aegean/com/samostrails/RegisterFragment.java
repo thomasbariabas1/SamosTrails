@@ -39,7 +39,6 @@ public class RegisterFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
     }
 
 
@@ -90,6 +89,7 @@ public class RegisterFragment extends Fragment {
 
                                               FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                                               transaction.replace(R.id.content,  ProfilFragment.newInstance());
+                                              transaction.addToBackStack(null);
                                               transaction.commit();
                                           }
 

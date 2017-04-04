@@ -1,6 +1,8 @@
 package gr.aegean.com.samostrails;
 
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -21,10 +23,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 import gr.aegean.com.samostrails.Adapters.AdapterSwipeRefresh;
 import gr.aegean.com.samostrails.Models.DifficultyLevel;
 import gr.aegean.com.samostrails.Models.DistanceLevel;
@@ -42,6 +51,8 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     private SearchView sv;
     private static String url = "http://www.samostrails.com/samostrails/trail-webservice";
     public boolean firsttime=true;
+    boolean isActive=true;
+    AsyncHttpClient client = new AsyncHttpClient();
     ArrayList<Trail> TrailsArray = new ArrayList<>();
     int i = 0;
 
@@ -120,6 +131,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                 fragment.setArguments(bundle);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content, fragment);
+                transaction.addToBackStack(null);
                 transaction.commit();
 
             }
@@ -150,87 +162,81 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
     private void fetchTrails() {
         firsttime=false;
+
         // showing refresh animation before making http call
         swipeRefreshLayout.setRefreshing(true);
-        final JsonObjectRequest[] req = {null};
+        client.get(url, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    JSONObject response = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
 
-
-                req[0] = new JsonObjectRequest(Request.Method.GET, url, null,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-
-
-                                if (response != null) {
-
-                                    JSONArray trails = null;
-                                    // Getting JSON Array node
-                                    try {
-                                        trails = response.getJSONArray("nodes");
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    TrailsArray.clear();
-                                    // looping through json and adding to movies list
-                                    for (int i = 0; i < trails.length(); i++) {
-                                        try {
-                                            JSONObject z = trails.getJSONObject(i);
-                                            JSONObject c = z.getJSONObject("node");
-                                            JSONObject image = c.getJSONObject("Image");
-
-                                            TrailsArray.add(new Trail(!c.getString("Children Friedly").equals("No"), Integer.parseInt(c.getString("Vid")),
-                                                    DifficultyLevel.valueOf(c.getString("Difficulty Level")), DistanceLevel.valueOf(c.getString("Distance Level").equals("Long (>3km)") ? "Long" : "Short"),
-                                                    KindOfTrail.valueOf(c.getString("Kind of trail").equals("One Way") ? "OneWay" : "Loop"), image.getString("src").replace("\\", ""), c.getString("Leaflet"),
-                                                    Double.parseDouble(c.getString("Distance").replaceAll("\\D+", "")), c.getString("Title"), c.getString("CONNECTION TO OTHER TRAILS"),
-                                                    c.getString("Description"), c.getString("MAIN SIGHTS"), c.getString("Other Transport"), c.getString("STARTING POINT"), c.getString("Tips"), c.getString("Video")));
-
-
-                                        } catch (JSONException e) {
-                                            Log.e(TAG, "JSON Parsing error: " + e.getMessage());
-                                        }
-                                    }
-
-
-                                    lv.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray, ((MainActivity) getActivity()).getCache()));
-
-
-                                }
-
-                                // stopping swipe refresh
-                                swipeRefreshLayout.setRefreshing(false);
-
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "Server Error: " + error.getMessage());
-
-                        Toast.makeText(getActivity(), "Server Error", Toast.LENGTH_LONG).show();
-
-                        // stopping swipe refresh
-                        swipeRefreshLayout.setRefreshing(false);
+                    JSONArray trails = null;
+                    // Getting JSON Array node
+                    try {
+                        trails = response.getJSONArray("nodes");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                });
+                    TrailsArray.clear();
+                    // looping through json and adding to movies list
+                    assert trails != null;
+                    for (int i = 0; i < trails.length(); i++) {
+                        try {
+                            JSONObject z = trails.getJSONObject(i);
+                            JSONObject c = z.getJSONObject("node");
+                            JSONObject image = c.getJSONObject("Image");
+
+                            TrailsArray.add(new Trail(!c.getString("Children Friedly").equals("No"), Integer.parseInt(c.getString("Vid")),
+                                    DifficultyLevel.valueOf(c.getString("Difficulty Level")), DistanceLevel.valueOf(c.getString("Distance Level").equals("Long (>3km)") ? "Long" : "Short"),
+                                    KindOfTrail.valueOf(c.getString("Kind of trail").equals("One Way") ? "OneWay" : "Loop"), image.getString("src").replace("\\", ""), c.getString("Leaflet"),
+                                    Double.parseDouble(c.getString("Distance").replaceAll("\\D+", "")), c.getString("Title"), c.getString("CONNECTION TO OTHER TRAILS"),
+                                    c.getString("Description"), c.getString("MAIN SIGHTS"), c.getString("Other Transport"), c.getString("STARTING POINT"), c.getString("Tips"), c.getString("Video")));
+
+
+                        } catch (JSONException e) {
+                            Log.e(TAG, "JSON Parsing error: " + e.getMessage());
+                        }
+                    }
+
+                    if(isActive)
+                    lv.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray, ((MainActivity) getActivity()).getCache()));
+
+
+                    // stopping swipe refresh
+                    swipeRefreshLayout.setRefreshing(false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e(TAG, "Server Error: " + error.getMessage());
+
+
+                // stopping swipe refresh
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
 
 
-
-
-        // Adding request to request queue
-        RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        queue.add(req[0]);
 
     }
 
     public void onResume() {
-        Log.e("DEBUG", "onResume of Search");
         super.onResume();
+        swipeRefreshLayout.setEnabled(true);
+        isActive=true;
     }
 
     @Override
     public void onPause() {
-        Log.e("DEBUG", "OnPause of Search");
         super.onPause();
+        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setEnabled(false);
+        isActive=false;
     }
 
     public void search(String searchword) {
@@ -246,9 +252,16 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
     public void onStart() {
         super.onStart();
+        swipeRefreshLayout.setEnabled(true);
+        isActive=true;
     }
 
     public void onStop() {
         super.onStop();
+        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setEnabled(false);
+        isActive=false;
     }
+
+
 }

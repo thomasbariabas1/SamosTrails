@@ -72,4 +72,8 @@
     <string name="cd_previous">Skip backwards</string>
     <string name="cd_play">Play and pause</string>
     <string name="cd_next">Skip forwards</string>
+    <string name="local_trails">Local Trails</string>
+    <string name="no_internet_found">No Internet Found</string>
+    <string name="current_available_trails">Current Available Trails</string>
+    <string name="back">Back</string>
 </resources>

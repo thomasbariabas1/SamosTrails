@@ -22,6 +22,8 @@
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
         app:menu="@menu/navigation"
         android:background="#57705d"/>
 

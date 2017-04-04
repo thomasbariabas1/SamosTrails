@@ -1,16 +1,20 @@
 package gr.aegean.com.samostrails;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.LruCache;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 
@@ -100,16 +104,27 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
-
-
-
-
-
-
-
-
+    @Override
+    public void onBackPressed() {
+        showDialog(this,"Exit","Are you sure you want to exit?");
+    }
     @Override
     public void onStop(){
         super.onStop();
+    }
+
+    public void showDialog(Activity activity, String title, CharSequence message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 }

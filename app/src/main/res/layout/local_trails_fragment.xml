@@ -2,9 +2,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="gr.aegean.com.samostrails.MainActivity">
 
-
+<TextView
+    android:layout_width="fill_parent"
+    android:layout_height="40dp"
+    android:text="@string/local_trails"
+    android:textSize="30sp"
+    android:gravity="center"
+    android:background="@color/downHeader"
+    android:textColor="#FFFFFF"
+    />
     <android.support.v4.view.ViewPager
         android:id="@+id/vpPager"
         android:layout_width="match_parent"
@@ -14,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
+            style="@style/viewPagerTitleStrip"
             android:paddingBottom="4dp"
             android:paddingTop="4dp"
             android:background="@color/downHeader"

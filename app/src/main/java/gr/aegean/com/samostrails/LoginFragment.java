@@ -103,6 +103,7 @@ public class LoginFragment extends Fragment {
                         Log.e(TAG, token[0]);
                         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.content, fragment);
+                        transaction.addToBackStack(null);
                         transaction.commit();
 
                     } catch (JSONException e) {

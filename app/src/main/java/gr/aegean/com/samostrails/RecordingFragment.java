@@ -163,6 +163,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
                     fragment.setArguments(bundle);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.content, fragment);
+                    transaction.addToBackStack(null);
                     transaction.commit();
                 } else
                     Toast.makeText(getActivity(), "Nothing to Save", Toast.LENGTH_LONG).show();

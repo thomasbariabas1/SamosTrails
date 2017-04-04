@@ -6,27 +6,23 @@
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home"
-        android:enabled="true"
-        app:showAsAction="ifRoom" />
+         />
 
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/your_trails"
-        android:enabled="true"
-        app:showAsAction="ifRoom" />
+       />
 
     <item
         android:id="@+id/recording"
         android:icon="@drawable/recording"
         android:title="@string/recording"
-        android:enabled="true"
-        app:showAsAction="ifRoom" />
+         />
 
     <item
         android:id="@+id/profil"
         android:icon="@drawable/moreicon"
         android:title="@string/more"
-        android:enabled="true"
-        app:showAsAction="ifRoom" />
+        />
 </menu>

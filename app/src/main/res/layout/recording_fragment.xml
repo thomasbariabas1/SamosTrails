@@ -102,7 +102,7 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/statelist"
             android:contentDescription="@string/test"
-            android:src="@drawable/layersicon" />
+            android:src="@drawable/settings"/>
 
     </RelativeLayout>
 

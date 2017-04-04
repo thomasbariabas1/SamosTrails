@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     ArrayList<LatLng> Linestring;
     private GoogleMap mMap;
     MapView mMapView;
+    private Button backbutton;
     private TextInputEditText Title;
     private TextInputEditText Description;
     private TextInputEditText StartingPoint;
@@ -76,6 +78,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
         local=bundle.getBoolean("local");
         trail=bundle.getParcelable("trail");
         Linestring = bundle.getParcelableArrayList("linestring");
+        backbutton = (Button) view.findViewById(R.id.backbutton);
         Title = (TextInputEditText) view.findViewById(R.id.title_input);
         Description = (TextInputEditText) view.findViewById(R.id.descriptioninput);
         StartingPoint = (TextInputEditText) view.findViewById(R.id.startingpointinput);
@@ -126,6 +129,14 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        backbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity()
+                        .getSupportFragmentManager();
+                fm.popBackStack();
             }
         });
         mMapView = (MapView) view.findViewById(R.id.mapcreatetable);

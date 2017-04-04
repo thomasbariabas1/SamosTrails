@@ -9,14 +9,12 @@ import android.os.Handler;
 
 public class SplashScreenActivity extends Activity {
 
-    // Splash screen timer
-    private static int SPLASH_TIME_OUT = 5000;
-    int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen_activity);
 
+        int SPLASH_TIME_OUT = 3000;
         new Handler().postDelayed(new Runnable() {
 
             /*
