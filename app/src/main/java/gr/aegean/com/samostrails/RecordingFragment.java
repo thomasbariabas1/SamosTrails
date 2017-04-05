@@ -38,8 +38,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import gr.aegean.com.samostrails.Services.Constants;
-import gr.aegean.com.samostrails.Services.TrailService;
+import gr.aegean.com.samostrails.services.Constants;
+import gr.aegean.com.samostrails.services.TrailService;
 
 public class RecordingFragment extends Fragment implements OnMapReadyCallback, PopUpFragment.EditNameDialogListener, TrailService.OnServiceListener {
     private static final String TAG = MainActivity.class.getSimpleName();

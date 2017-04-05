@@ -1,14 +1,19 @@
 package gr.aegean.com.samostrails;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +21,6 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -31,13 +28,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import gr.aegean.com.samostrails.services.Constants;
+import gr.aegean.com.samostrails.services.StartTrailService;
 
 
-public class StartTrailFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+public class StartTrailFragment extends Fragment implements OnMapReadyCallback, StartTrailService.OnServiceListener  {
     ImageButton starttrail;
     boolean hasStarted = false;
     ArrayList<LatLng> lines;
@@ -47,22 +44,15 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     Chronometer timer;
     private TextView distance;
     private long stoppedtime = 0;
-    private double latitude;
-    private double longtitude;
-    private double lastlat;
-    private double lastlong;
     private double distancesum = 0;
-    private LocationRequest mLocationRequest;
-    // Google client to interact with Google API
-
-    private GoogleApiClient mGoogleApiClient;
-    private int UPDATE_INTERVAL = 6000; // 5 sec
-    private static int FATEST_INTERVAL = 5000; // 5 sec
-    private int DISPLACEMENT = 0;
-
+    private ImageButton stop;
+    private double LastLat;
+    private double LastLon;
+    StartTrailService service;
+    boolean mIsBound;
+    int trailid;
     public static StartTrailFragment newInstance() {
-        StartTrailFragment fragment = new StartTrailFragment();
-        return fragment;
+        return new StartTrailFragment();
     }
 
     @Override
@@ -75,21 +65,19 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.start_trail_fragment, container, false);
         starttrail = (ImageButton) view.findViewById(R.id.starttrailbutton);
-
+        stop = (ImageButton) view.findViewById(R.id.stopbuttonstart);
+        ImageButton back = (ImageButton) view.findViewById(R.id.backtrailbutton);
         timer = (Chronometer) view.findViewById(R.id.timecreatetrail);
         final Bundle bundle = getArguments();
+        trailid= bundle.getInt("trailid");
         lines = bundle.getParcelableArrayList("lines");
         points = bundle.getParcelableArrayList("points");
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
         mMapView.onCreate(savedInstanceState);
-        if (checkPlayServices())
-
-        {
-
-            // Building the GoogleApi client
-            buildGoogleApiClient();
-            createLocationRequest();
-        }
+        Intent startIntent = new Intent(getActivity(), StartTrailService.class);
+        startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+        getActivity().startService(startIntent);
+        doBindService();
         starttrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,93 +86,100 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         });
         distance = (TextView) view.findViewById(R.id.distancetrail);
         mMapView.getMapAsync(this);
-
-
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity()
+                        .getSupportFragmentManager();
+                fm.popBackStack();
+            }
+        });
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).setHasStartedTrail(0);
+                ((MainActivity)getActivity()).setFirstTime(true);
+                starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_unpressed));
+                stop.setVisibility(View.INVISIBLE);
+                doUnbindService();
+            }
+        });
         return view;
     }
 
-
     public void tonggleStart() {
         if (!hasStarted) {
+
+            Intent startIntent = new Intent(getActivity(), StartTrailService.class);
+            startIntent.putExtra("base",SystemClock.elapsedRealtime() + stoppedtime);
+            startIntent.setAction(Constants.ACTION.PLAY_ACTION);
+            getActivity().startService(startIntent);
+
             startTrail();
         } else {
+            Intent startIntent = new Intent(getActivity(), StartTrailService.class);
+            startIntent.setAction(Constants.ACTION.PLAY_ACTION);
+            startIntent.putExtra("base",SystemClock.elapsedRealtime());
+            getActivity().startService(startIntent);
             stopTrail();
         }
     }
 
     public void startTrail() {
+        if(stop.getVisibility()!=View.VISIBLE)
+            stop.setVisibility(View.VISIBLE);
+        ((MainActivity)getActivity()).setHasStartedTrail(trailid);
+        ((MainActivity)getActivity()).setFirstTime(false);
         hasStarted = true;
         timer.setBase(SystemClock.elapsedRealtime() + stoppedtime);
         timer.start();
-        starttrail.setImageDrawable(getResources().getDrawable(R.drawable.pause));
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, Locationlistener);
+        starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.pause));
+
     }
 
     public void stopTrail() {
+        if(stop.getVisibility()!=View.VISIBLE)
+            stop.setVisibility(View.VISIBLE);
         hasStarted = false;
         stoppedtime = timer.getBase() - SystemClock.elapsedRealtime();
         timer.stop();
-        starttrail.setImageDrawable(getResources().getDrawable(R.drawable.start_pressed));
-        LocationServices.FusedLocationApi.removeLocationUpdates( mGoogleApiClient, Locationlistener);
-    }
+        starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_pressed));
 
+    }
 
     public void onStart() {
         super.onStart();
         mMapView.onStart();
-        if (mGoogleApiClient != null) {
-                       mGoogleApiClient.connect();
-                   }
+
     }
 
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        //setUpMap();
-        checkPlayServices();
+        if(mConnection !=null) {
+            Intent startIntent = new Intent(getActivity(), StartTrailService.class);
+            startIntent.setAction(Constants.ACTION.CHECK_STATE);
+            getActivity().startService(startIntent);
+        }
+        if(mMap!=null)
+        setUpMap();
+
     }
 
     public void onStop() {
         super.onStop();
         mMapView.onStart();
-        if (mGoogleApiClient.isConnected()) {
-                        mGoogleApiClient.disconnect();
-                    }
+
     }
 
     public void onPause() {
         super.onPause();
         mMapView.onPause();
 
-
     }
 
-
     private void setUpMap() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
 
-        }
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setRotateGesturesEnabled(true);
         PolylineOptions polyline = new PolylineOptions();
 
         if (lines.size() > 0) {
@@ -202,16 +197,14 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 14.0f));
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-
         setUpMap();
     }
 
     public double CalculationByDistance(LatLng StartP, LatLng EndP) {
+
         int Radius = 6371;// radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;
@@ -236,6 +229,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     public static double round(double value, int places) {
+
         if (places < 0) throw new IllegalArgumentException();
         long factor = (long) Math.pow(10, places);
         value = value * factor;
@@ -243,84 +237,93 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         return (double) tmp / factor;
     }
 
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    com.google.android.gms.location.LocationListener Locationlistener = new com.google.android.gms.location.LocationListener() {
+    private ServiceConnection mConnection = new ServiceConnection() {
         @Override
-        public void onLocationChanged(Location location) {
-            latitude = location.getLatitude();
-            longtitude = location.getLongitude();
-
-            if (lastlat == 0) {
-                lastlat = latitude;
-                lastlong = longtitude;
-
-            } else {
-                distancesum = distancesum + CalculationByDistance(new LatLng(lastlat, lastlong), new LatLng(latitude, longtitude));
-                distance.setText(String.valueOf(round(distancesum, 2)));
-            }
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            service = ((StartTrailService.LocalBinder) iBinder).getInstance();
+            service.setOnServiceListener(StartTrailFragment.this);
         }
 
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            service = null;
+        }
     };
 
-    /**
-     * -     * Creating google api client object
-     * -
-     */
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API).build();
+    private void doBindService() {
+        // Establish a connection with the service.  We use an explicit
+        // class name because we want a specific service implementation that
+        // we know will be running in our own process (and thus won't be
+        // supporting component replacement by other applications).
+        getActivity().bindService(new Intent(getActivity(),
+                StartTrailService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
     }
 
-
-    /**
-     * -     * Creating location request object
-     * -
-     */
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FATEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(DISPLACEMENT);
-    }
-
-    /**
-     * Method to verify google play services on the device
-     */
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil
-                .isGooglePlayServicesAvailable(getActivity());
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Toast.makeText(getActivity(),
-                        "This device is not supported.", Toast.LENGTH_LONG)
-                        .show();
-            }
-            return false;
+    private void doUnbindService() {
+        if (mIsBound) {
+            Intent startIntent = new Intent(getActivity(), StartTrailService.class);
+            startIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+            getActivity().startService(startIntent);
+            // Detach our existing connection.
+            getActivity().unbindService(mConnection);
+            mIsBound = false;
         }
-        return true;
     }
 
+    @Override
+    public double onDataReceived(Location location) {
+        if(getActivity()!=null){
+            if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return 0;
+            }}
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setRotateGesturesEnabled(true);
+        double Latitude = location.getLatitude();
+        double Longtitude = location.getLongitude();
+        if (LastLat != 0 && LastLon != 0) {
+            distancesum = distancesum + CalculationByDistance(new LatLng(LastLat, LastLon), new LatLng(Latitude, Longtitude));
+            distance.setText(String.valueOf(round(distancesum, 2)));
+            LastLat = Latitude;
+            LastLon = Longtitude;
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat, LastLon), 18.0f));
+        } else {
+            LastLat = Latitude;
+            LastLon = Longtitude;
+        }
+        return round(distancesum, 2);
+    }
 
+    @Override
+    public long onChangeState(boolean statechange) {
+        hasStarted = statechange;
+        if(hasStarted) {
+            startTrail();
+            return SystemClock.elapsedRealtime() + stoppedtime;
+        }else {
+            stopTrail();
+            return timer.getBase() - SystemClock.elapsedRealtime();
+        }
+
+    }
+
+    @Override
+    public void onCheckState(boolean statechange) {
+        hasStarted = statechange;
+        if(hasStarted) {
+            startTrail();
+        }else {
+            stopTrail();
+        }
+    }
 
 }

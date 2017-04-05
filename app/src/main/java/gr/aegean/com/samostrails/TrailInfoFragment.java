@@ -21,7 +21,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -31,37 +30,19 @@ import gr.aegean.com.samostrails.Models.Trail;
 import gr.aegean.com.samostrails.SQLDb.TrailDb;
 
 
-public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback {
-    private static final double LAT = 32.084;
-    private static final double LON = 34.8878;
-    private View view;
-    private Marker marker;
+public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     MapView mMapView;
-    private TextView TrailTitle;
-    private TextView Description;
-    private TextView StartingPoint;
-    private TextView MainSights;
-    private TextView Tips;
-    private TextView Distance;
-    private TextView KindOfTrail;
-    private TextView DifficultyLevel;
-    private TextView ChildrenFriendly;
-    private TextView OtherTransports;
-    private TextView ConnectionToOtherTrails;
     private Trail trail;
     private Button SaveTrail;
     private Button DeleteTrail;
-    private Button StartTrail;
-    private Button EditTrail;
 
-    private Button backbutton;
     ArrayList<LatLng> fullline = new ArrayList<>();
     ArrayList<LatLng> fullpoints = new ArrayList<>();
     ScrollView hsv;
+
     public static TrailInfoFragment newInstance() {
-        TrailInfoFragment fragment = new TrailInfoFragment();
-        return fragment;
+        return new TrailInfoFragment();
     }
 
 
@@ -73,34 +54,34 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.trail_info, container, false);
+        View view = inflater.inflate(R.layout.trail_info, container, false);
 
         // Inflate the layout for this fragment
-        TrailTitle = (TextView) view.findViewById(R.id.trail_title);
+        TextView trailTitle = (TextView) view.findViewById(R.id.trail_title);
 
-        backbutton = (Button) view.findViewById(R.id.backbutton);
-         Description=(TextView) view.findViewById(R.id.description);
-         StartingPoint=(TextView) view.findViewById(R.id.startingpoint);
-         MainSights=(TextView) view.findViewById(R.id.mainsights);
-         Tips=(TextView) view.findViewById(R.id.tips);
-         Distance=(TextView) view.findViewById(R.id.distance);
-         KindOfTrail=(TextView) view.findViewById(R.id.kindoftrail);
-         DifficultyLevel=(TextView) view.findViewById(R.id.difficultylevel);
-         ChildrenFriendly=(TextView) view.findViewById(R.id.childrenfriendly);
-         OtherTransports=(TextView) view.findViewById(R.id.othertransport);
-         ConnectionToOtherTrails=(TextView) view.findViewById(R.id.connectiontoothertrails);
+        Button backbutton = (Button) view.findViewById(R.id.backbutton);
+        TextView description = (TextView) view.findViewById(R.id.description);
+        TextView startingPoint = (TextView) view.findViewById(R.id.startingpoint);
+        TextView mainSights = (TextView) view.findViewById(R.id.mainsights);
+        TextView tips = (TextView) view.findViewById(R.id.tips);
+        TextView distance = (TextView) view.findViewById(R.id.distance);
+        TextView kindOfTrail = (TextView) view.findViewById(R.id.kindoftrail);
+        TextView difficultyLevel = (TextView) view.findViewById(R.id.difficultylevel);
+        TextView childrenFriendly = (TextView) view.findViewById(R.id.childrenfriendly);
+        TextView otherTransports = (TextView) view.findViewById(R.id.othertransport);
+        TextView connectionToOtherTrails = (TextView) view.findViewById(R.id.connectiontoothertrails);
         SaveTrail = (Button) view.findViewById(R.id.savetrail);
         DeleteTrail = (Button) view.findViewById(R.id.deletetrail);
         DeleteTrail.setVisibility(View.GONE);
-        StartTrail = (Button) view.findViewById(R.id.start_trail);
-        EditTrail = (Button) view.findViewById(R.id.edit_trail);
-                final Bundle bundle = getArguments();
-         trail = (Trail) bundle.getParcelable("trail");
-        EditTrail.setOnClickListener(new View.OnClickListener() {
+        Button startTrail = (Button) view.findViewById(R.id.start_trail);
+        Button editTrail = (Button) view.findViewById(R.id.edit_trail);
+        final Bundle bundle = getArguments();
+        trail = bundle.getParcelable("trail");
+        editTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bundle.putParcelableArrayList("linestring",fullline);
-                bundle.putParcelable("trail",trail);
+                bundle.putParcelableArrayList("linestring", fullline);
+                bundle.putParcelable("trail", trail);
                 Fragment fragment = CreateTrailFragment.newInstance();
                 fragment.setArguments(bundle);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -117,47 +98,57 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
             }
         });
 
-        StartTrail.setOnClickListener(new View.OnClickListener() {
+        startTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bundle.putParcelableArrayList("lines",fullline);
-                bundle.putParcelableArrayList("points",fullpoints);
+                bundle.putInt("trailid", trail.getTrailId());
+                bundle.putParcelableArrayList("lines", fullline);
+                bundle.putParcelableArrayList("points", fullpoints);
                 Fragment fragment = StartTrailFragment.newInstance();
                 fragment.setArguments(bundle);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content, fragment);
+                transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
 
-        TrailTitle.setText(trail.getTitle());
-        Description.setText(trail.getDescription());
-        StartingPoint.setText(trail.getStrartingPoin());
-        MainSights.setText(trail.getMainSights());
-        Tips.setText(trail.getTips());
-        Distance.setText(String.valueOf(trail.getDistance()));
-        KindOfTrail.setText(trail.getKindOfTrail().toString());
-        DifficultyLevel.setText(trail.getDifficultyLevel().toString());
-        ChildrenFriendly.setText(String.valueOf(trail.isChildren_Friedly()));
-        OtherTransports.setText(trail.getOtherTransport());
-        ConnectionToOtherTrails.setText(trail.getConnectionToOtherTrails());
-        if (TrailDb.ifExists(trail,TrailDb.initiateDB(getActivity()))){
-          SaveTrail.setVisibility(View.GONE);
+        if (!((MainActivity)getActivity()).isFirstTime()) {
+            if (!(trail.getTrailId() == ((MainActivity) getActivity()).hasStartedTrail()))
+                startTrail.setEnabled(false);
+            else
+                startTrail.setEnabled(true);
+        } else {
+            startTrail.setEnabled(true);
+        }
+        trailTitle.setText(trail.getTitle());
+        description.setText(trail.getDescription());
+        startingPoint.setText(trail.getStrartingPoin());
+        mainSights.setText(trail.getMainSights());
+        tips.setText(trail.getTips());
+        distance.setText(String.valueOf(trail.getDistance()));
+        kindOfTrail.setText(trail.getKindOfTrail().toString());
+        difficultyLevel.setText(trail.getDifficultyLevel().toString());
+        childrenFriendly.setText(String.valueOf(trail.isChildren_Friedly()));
+        otherTransports.setText(trail.getOtherTransport());
+        connectionToOtherTrails.setText(trail.getConnectionToOtherTrails());
+        if (TrailDb.ifExists(trail, TrailDb.initiateDB(getActivity()))) {
+            SaveTrail.setVisibility(View.GONE);
             DeleteTrail.setVisibility(View.VISIBLE);
         }
-        if(trail.isEditable()){
-            StartTrail.setVisibility(View.GONE);
-            EditTrail.setVisibility(View.VISIBLE);
+        if (trail.isEditable()) {
+            startTrail.setVisibility(View.GONE);
+            editTrail.setVisibility(View.VISIBLE);
         }
         SaveTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TrailDb.ifExists(trail,TrailDb.initiateDB(getActivity()))){
+                if (!TrailDb.ifExists(trail, TrailDb.initiateDB(getActivity()))) {
                     TrailDb.insertIntoDb(trail, TrailDb.initiateDB(getActivity()));
                     SaveTrail.setVisibility(View.GONE);
                     DeleteTrail.setVisibility(View.VISIBLE);
-            }else{
-                    Toast.makeText(getActivity(),"Trail is already in your collection!!",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Trail is already in your collection!!", Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -165,9 +156,9 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         DeleteTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(trail.isEditable()){
+                if (trail.isEditable()) {
                     TrailDb.deleteRecord(trail, TrailDb.initiateDB(getActivity()));
-                }else {
+                } else {
                     TrailDb.delete(trail, TrailDb.initiateDB(getActivity()));
                 }
                 SaveTrail.setVisibility(View.VISIBLE);
@@ -178,10 +169,10 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         mMapView = (MapView) view.findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
-        hsv  = (ScrollView) view.findViewById(R.id.sv);
+        hsv = (ScrollView) view.findViewById(R.id.sv);
         mMapView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v,MotionEvent ev) {
+            public boolean onTouch(View v, MotionEvent ev) {
                 int action = ev.getAction();
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
@@ -215,51 +206,53 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         String[] commatokens = toSplit.split(",");
 
         for (String commatoken : commatokens) {
-            Log.e("commatokens",""+commatoken);
+            Log.e("commatokens", "" + commatoken);
             coordinates.add(commatoken);
         }
         for (int i = 0; i < coordinates.size(); i++) {
 
             String[] tokens = coordinates.get(i).split("\\s");
 
-            for (int j=0;j<tokens.length;j++ ) {
-                String token=tokens[j];
+            for (int j = 0; j < tokens.length; j++) {
+                String token = tokens[j];
 
-               if(token.equals("POINT")){
-                   point.add(tokens[j]);
-                   point.add(tokens[j+1]);
-                   point.add(tokens[j+2]);
-                   j=j+2;
+                if (token.equals("POINT")) {
+                    point.add(tokens[j]);
+                    point.add(tokens[j + 1]);
+                    point.add(tokens[j + 2]);
+                    //  j = j + 2;
                     break;
-               }
+                }
 
-               linestring.add(tokens[j]);
+                linestring.add(tokens[j]);
             }
         }
-        ArrayList<Double> filtredlinestring=filter(linestring);
-        ArrayList<Double> filteredpoints=filter(point);
-        for(int i=0;i<filtredlinestring.size();i++){
-            fullline.add(new LatLng(filtredlinestring.get(i+1),filtredlinestring.get(i))); filtredlinestring.get(i);
+        ArrayList<Double> filtredlinestring = filter(linestring);
+        ArrayList<Double> filteredpoints = filter(point);
+        for (int i = 0; i < filtredlinestring.size(); i++) {
+            fullline.add(new LatLng(filtredlinestring.get(i + 1), filtredlinestring.get(i)));
+            filtredlinestring.get(i);
             i++;
         }
-        for(int i=0;i<filteredpoints.size();i++){
-            fullpoints.add(new LatLng(filteredpoints.get(i+1),filteredpoints.get(i)));
+        for (int i = 0; i < filteredpoints.size(); i++) {
+            fullpoints.add(new LatLng(filteredpoints.get(i + 1), filteredpoints.get(i)));
             i++;
         }
         // list of latlng
         for (int i = 0; i < fullline.size() - 1; i++) {
             LatLng src = fullline.get(i);
             LatLng dest = fullline.get(i + 1);
+
             // mMap is the Map Object
-             mMap.addPolyline(new PolylineOptions().add(
-                            new LatLng(src.latitude, src.longitude),
-                            new LatLng(dest.latitude,dest.longitude)
-                    ).width(5).color(Color.BLUE).geodesic(true));
+            mMap.addPolyline(new PolylineOptions().add(
+                    new LatLng(src.latitude, src.longitude),
+                    new LatLng(dest.latitude, dest.longitude)
+            ).width(5).color(Color.BLUE).geodesic(true));
         }
-        for(LatLng i :fullpoints ){
+        for (LatLng i : fullpoints) {
             mMap.addMarker(new MarkerOptions().position(i));
         }
-        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(fullpoints.get(0) , 14.0f) );
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fullpoints.get(0), 14.0f));
     }
 
     public void onResume() {
@@ -285,10 +278,10 @@ public class TrailInfoFragment extends Fragment   implements OnMapReadyCallback 
         mMapView.onLowMemory();
     }
 
-    public ArrayList<Double> filter(ArrayList<String> lineling){
-        ArrayList<Double> temp= new ArrayList<>();
-        for(String i :lineling){
-            if(!i.equals("POINT")&&!i.equals("GEOMETRYCOLLECTION")&&!i.equals("LINESTRING")&&!i.equals("")){
+    public ArrayList<Double> filter(ArrayList<String> lineling) {
+        ArrayList<Double> temp = new ArrayList<>();
+        for (String i : lineling) {
+            if (!i.equals("POINT") && !i.equals("GEOMETRYCOLLECTION") && !i.equals("LINESTRING") && !i.equals("")) {
                 temp.add(Double.parseDouble(i));
             }
         }

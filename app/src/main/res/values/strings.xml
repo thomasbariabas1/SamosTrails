@@ -76,4 +76,9 @@
     <string name="no_internet_found">No Internet Found</string>
     <string name="current_available_trails">Current Available Trails</string>
     <string name="back">Back</string>
+    <string name="_0_0">0.0</string>
+    <string name="tongle">tongle</string>
+    <string name="avg_speed">Avg Speed:</string>
+    <string name="stopstartedtrail">Stop</string>
+    <string name="avg_walking_time">Avg Walking Time:</string>
 </resources>

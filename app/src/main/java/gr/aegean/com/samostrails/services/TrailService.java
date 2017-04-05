@@ -1,4 +1,4 @@
-package gr.aegean.com.samostrails.Services;
+package gr.aegean.com.samostrails.services;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -89,7 +89,7 @@ public class TrailService extends Service {
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         Intent previousIntent = new Intent(this, TrailService.class);
-        previousIntent.setAction(Constants.ACTION.PREV_ACTION);
+        previousIntent.setAction(Constants.ACTION.TONGLE_ACTION);
 
         views = new RemoteViews(getPackageName(),
                 R.layout.status_bar);
@@ -116,7 +116,7 @@ public class TrailService extends Service {
             showNotification();
 
         }
-        else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
+        else if (intent.getAction().equals(Constants.ACTION.TONGLE_ACTION)) {
             tongleLocationUpdates();
             base=mOnServiceListener.onChangeState(mRequestingLocationUpdates);
             showNotification();
@@ -278,7 +278,7 @@ public void startLocationUpdates(){
 
 
         Intent previousIntent = new Intent(this, TrailService.class);
-        previousIntent.setAction(Constants.ACTION.PREV_ACTION);
+        previousIntent.setAction(Constants.ACTION.TONGLE_ACTION);
         PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
                 previousIntent, 0);
 

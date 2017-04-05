@@ -19,14 +19,15 @@ import android.widget.Toast;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
     SearchTrailFragment search = SearchTrailFragment.newInstance();
     RecordingFragment recording = RecordingFragment.newInstance();
     LruCache<Integer, Bitmap> bitmapCache;
     String TAG = "";
     ServicesClient client = null;
-
+    int hasStartedTrail;
+    boolean isFirstTime = true;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -106,13 +107,26 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     public void onBackPressed() {
-        showDialog(this,"Exit","Are you sure you want to exit?");
+        showDialog(this, "Exit", "Are you sure you want to exit?");
     }
+
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
     }
 
+    public void setHasStartedTrail(int startedTrail) {
+        this.hasStartedTrail=startedTrail;
+    }
+    public int hasStartedTrail(){
+        return hasStartedTrail;
+    }
+    public void setFirstTime(boolean isFirstTime){
+        this.isFirstTime=isFirstTime;
+    }
+    public boolean isFirstTime(){
+        return this.isFirstTime;
+    }
     public void showDialog(Activity activity, String title, CharSequence message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
