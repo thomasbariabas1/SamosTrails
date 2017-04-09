@@ -26,8 +26,10 @@
         android:id="@+id/searchview"
         android:layout_marginTop="40dp"
         android:queryHint="Search Trail"
+        android:iconifiedByDefault="false"
+        android:focusable="false"
        />
-    <GridView
+    <gr.aegean.com.samostrails.CustomGridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

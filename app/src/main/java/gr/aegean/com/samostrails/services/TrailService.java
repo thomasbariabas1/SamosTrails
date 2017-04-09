@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -310,7 +311,8 @@ public void startLocationUpdates(){
             bigViews.setTextViewText(R.id.status_bar_recording_text, "Stop");
         }
 
-        bigViews.setChronometer(R.id.chronometer,base,null, mRequestingLocationUpdates);
+        long tmp = base - SystemClock.elapsedRealtime();
+        bigViews.setChronometer(R.id.chronometer,mRequestingLocationUpdates?base:tmp,null, mRequestingLocationUpdates);
         status = new Notification.Builder(this).build();
         status.contentView = views;
         status.bigContentView = bigViews;

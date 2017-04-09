@@ -14,7 +14,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.LruCache;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 
@@ -80,10 +79,6 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    public void setServiceClient(ServicesClient servicesclient) {
-        this.client = servicesclient;
-
-    }
 
     public ServicesClient getServicesClient() {
         return this.client;

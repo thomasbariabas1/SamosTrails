@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -68,8 +69,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     private long stoppedtime = 0;
 
     public static RecordingFragment newInstance() {
-        RecordingFragment fragment = new RecordingFragment();
-        return fragment;
+        return new RecordingFragment();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         btnStartLocationUpdates = (ImageButton) view.findViewById(R.id.setRangeButton);
         layers = (ImageButton) view.findViewById(R.id.maplayers);
         savebutton = (ImageButton) view.findViewById(R.id.savetrail);
-        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording));
+        btnStartLocationUpdates.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.norecording));
         mMapView = (MapView) view.findViewById(R.id.recordingmap);
         distance = (TextView) view.findViewById(R.id.distancerecording);
         time = (Chronometer) view.findViewById(R.id.timerecording);
@@ -240,7 +240,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
 
         btnStartLocationUpdates.startAnimation(animation);
-        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.recording));
+        btnStartLocationUpdates.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.recording));
         layers.setClickable(false);
         savebutton.setClickable(false);
         getActivity().findViewById(R.id.navigation_home).setClickable(false);
@@ -257,7 +257,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         time.stop();
         clear.setVisibility(View.VISIBLE);
         btnStartLocationUpdates.clearAnimation();
-        btnStartLocationUpdates.setImageDrawable(getResources().getDrawable(R.drawable.norecording));
+        btnStartLocationUpdates.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.norecording));
         layers.setClickable(true);
         savebutton.setClickable(true);
         getActivity().findViewById(R.id.navigation_home).setClickable(true);

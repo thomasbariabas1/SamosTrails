@@ -58,8 +58,7 @@
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
-    <string name="about_us">Samos is the fifth largest island in the Aegean! It is characterized by the natural diversity that pervades, whose admiration of visitors topped by walking to many of its trails. The \"Samos Trails\" refers to those paths to their emergence. \n\n
-
+    <string name="about_us">
      The \'Samos Trails\' is a project, which is created within the Bachelor\'s thesis by the students Zoukas Evangelos and Bariampas Lidion Thomas, in collaboration with Professor Spiros Kokolakis. This project made an extensive reference to the hiking trails on the island of Samos, creating the prospect of emergence of these paths. It includes informing the walker through maps, positioning technologies, and through information (historical, guidance, etc.), important for a complete tour.
     </string>
 
@@ -74,11 +73,13 @@
     <string name="cd_next">Skip forwards</string>
     <string name="local_trails">Local Trails</string>
     <string name="no_internet_found">No Internet Found</string>
-    <string name="current_available_trails">Current Available Trails</string>
+    <string name="current_available_trails">Trails</string>
     <string name="back">Back</string>
     <string name="_0_0">0.0</string>
     <string name="tongle">tongle</string>
-    <string name="avg_speed">Avg Speed:</string>
+    <string name="avg_speed">Avg Speed(Km/h):</string>
     <string name="stopstartedtrail">Stop</string>
     <string name="avg_walking_time">Avg Walking Time:</string>
+    <string name="favorite">Favorite</string>
+    <string name="unfavorite">UnFavorite</string>
 </resources>

@@ -2,27 +2,22 @@ package gr.aegean.com.samostrails;
 
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -45,7 +40,7 @@ import static android.content.ContentValues.TAG;
 
 public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
-    private GridView lv;
+    private CustomGridView gridView;
     private ImageView nofoundimage;
     private TextView nointernetfound;
     private SearchView sv;
@@ -74,7 +69,17 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
         // Inflate the layout for this fragment
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        lv = (GridView) view.findViewById(R.id.gridview);
+        gridView = (CustomGridView) view.findViewById(R.id.gridview);
+        gridView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+
+            @Override
+            public void onScrollChanged() {
+                int scrollY = gridView.computeVerticalScrollOffset();
+                if(scrollY == 0) swipeRefreshLayout.setEnabled(true);
+                else swipeRefreshLayout.setEnabled(false);
+
+            }
+        });
         nofoundimage = (ImageView) view.findViewById(R.id.nofoundimage);
         nointernetfound = (TextView) view.findViewById(R.id.nointernetfount);
         sv = (SearchView) view.findViewById(R.id.searchview);
@@ -110,18 +115,18 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
 
         if (Utilities.isNetworkAvailable(getActivity())) {
-            lv.setVisibility(View.VISIBLE);
+            gridView.setVisibility(View.VISIBLE);
             nofoundimage.setVisibility(View.GONE);
             nointernetfound.setVisibility(View.GONE);
             if(firsttime)
             fetchTrails();
 
         } else {
-            lv.setVisibility(View.INVISIBLE);
+            gridView.setVisibility(View.INVISIBLE);
             nofoundimage.setVisibility(View.VISIBLE);
             nointernetfound.setVisibility(View.VISIBLE);
         }
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -144,7 +149,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
         if (Utilities.isNetworkAvailable(getActivity())) {
 
-            lv.setVisibility(View.VISIBLE);
+            gridView.setVisibility(View.VISIBLE);
             nofoundimage.setVisibility(View.GONE);
             nointernetfound.setVisibility(View.GONE);
 
@@ -152,7 +157,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             fetchTrails();
 
         } else {
-            lv.setVisibility(View.INVISIBLE);
+            gridView.setVisibility(View.INVISIBLE);
             nofoundimage.setVisibility(View.VISIBLE);
             nointernetfound.setVisibility(View.VISIBLE);
             swipeRefreshLayout.setRefreshing(false);
@@ -193,14 +198,13 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                                     Double.parseDouble(c.getString("Distance").replaceAll("\\D+", "")), c.getString("Title"), c.getString("CONNECTION TO OTHER TRAILS"),
                                     c.getString("Description"), c.getString("MAIN SIGHTS"), c.getString("Other Transport"), c.getString("STARTING POINT"), c.getString("Tips"), c.getString("Video")));
 
-
                         } catch (JSONException e) {
                             Log.e(TAG, "JSON Parsing error: " + e.getMessage());
                         }
                     }
 
                     if(isActive)
-                    lv.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray, ((MainActivity) getActivity()).getCache()));
+                    gridView.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray, ((MainActivity) getActivity()).getCache()));
 
 
                     // stopping swipe refresh
@@ -246,8 +250,8 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             if (trail.getTitle().toLowerCase().contains(searchword.toLowerCase()))
                 FilteredTrails.add(trail);
         }
-        lv.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails, ((MainActivity) getActivity()).getCache()));
-        lv.invalidateViews();
+        gridView.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails, ((MainActivity) getActivity()).getCache()));
+        gridView.invalidateViews();
     }
 
     public void onStart() {
@@ -262,6 +266,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
         swipeRefreshLayout.setEnabled(false);
         isActive=false;
     }
+
 
 
 }

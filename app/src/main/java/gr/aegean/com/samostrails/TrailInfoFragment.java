@@ -1,10 +1,12 @@
 package gr.aegean.com.samostrails;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -36,11 +38,10 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
     private Trail trail;
     private Button SaveTrail;
     private Button DeleteTrail;
-
     ArrayList<LatLng> fullline = new ArrayList<>();
     ArrayList<LatLng> fullpoints = new ArrayList<>();
     ScrollView hsv;
-
+    View view;
     public static TrailInfoFragment newInstance() {
         return new TrailInfoFragment();
     }
@@ -54,7 +55,7 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.trail_info, container, false);
+         view = inflater.inflate(R.layout.trail_info, container, false);
 
         // Inflate the layout for this fragment
         TextView trailTitle = (TextView) view.findViewById(R.id.trail_title);
@@ -70,8 +71,10 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         TextView childrenFriendly = (TextView) view.findViewById(R.id.childrenfriendly);
         TextView otherTransports = (TextView) view.findViewById(R.id.othertransport);
         TextView connectionToOtherTrails = (TextView) view.findViewById(R.id.connectiontoothertrails);
+        Button deleteRecordedTrails = (Button) view.findViewById(R.id.deleterecordedtrail);
         SaveTrail = (Button) view.findViewById(R.id.savetrail);
         DeleteTrail = (Button) view.findViewById(R.id.deletetrail);
+        Button startRecordedTrails = (Button) view.findViewById(R.id.startrecordedtrails);
         DeleteTrail.setVisibility(View.GONE);
         Button startTrail = (Button) view.findViewById(R.id.start_trail);
         Button editTrail = (Button) view.findViewById(R.id.edit_trail);
@@ -114,9 +117,10 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         });
 
         if (!((MainActivity)getActivity()).isFirstTime()) {
-            if (!(trail.getTrailId() == ((MainActivity) getActivity()).hasStartedTrail()))
+            if (!(trail.getTrailId() == ((MainActivity) getActivity()).hasStartedTrail())) {
                 startTrail.setEnabled(false);
-            else
+                Toast.makeText(getActivity(), "You have already Started one trail", Toast.LENGTH_LONG).show();
+            }else
                 startTrail.setEnabled(true);
         } else {
             startTrail.setEnabled(true);
@@ -138,8 +142,35 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         }
         if (trail.isEditable()) {
             startTrail.setVisibility(View.GONE);
+            SaveTrail.setVisibility(View.GONE);
+            DeleteTrail.setVisibility(View.GONE);
             editTrail.setVisibility(View.VISIBLE);
+            startRecordedTrails.setVisibility(View.VISIBLE);
+            deleteRecordedTrails.setVisibility(View.VISIBLE);
         }
+        deleteRecordedTrails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                 builder.setTitle("Delete Trail");
+
+                builder.setMessage("Do you want to Delete Record?");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        TrailDb.deleteRecord(trail, TrailDb.initiateDB(getActivity()));
+                        Fragment fragment = LocalTrailsFragment.newInstance();
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.content, fragment);
+                        transaction.commit();
+                    }
+                });
+                builder.setNegativeButton("Cancel", null);
+                builder.show();
+            }
+
+
+        });
         SaveTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,25 +198,11 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         });
         MapsInitializer.initialize(this.getActivity());
         mMapView = (MapView) view.findViewById(R.id.map);
+        mMapView.setClickable(false);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
         hsv = (ScrollView) view.findViewById(R.id.sv);
-        mMapView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent ev) {
-                int action = ev.getAction();
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        ((ScrollView) v.findViewById(R.id.sv)).requestDisallowInterceptTouchEvent(true);
-                        break;
 
-                    case MotionEvent.ACTION_UP:
-                        ((ScrollView) v.findViewById(R.id.sv)).requestDisallowInterceptTouchEvent(false);
-                        break;
-                }
-                return true;
-            }
-        });
         return view;
     }
 
@@ -193,6 +210,18 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                hsv.requestDisallowInterceptTouchEvent(true);
+            }
+        });
+        mMap.setOnCameraMoveCanceledListener(new GoogleMap.OnCameraMoveCanceledListener() {
+            @Override
+            public void onCameraMoveCanceled() {
+                hsv.requestDisallowInterceptTouchEvent(false);
+            }
+        });
         setUpMap();
     }
 
@@ -220,7 +249,6 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
                     point.add(tokens[j]);
                     point.add(tokens[j + 1]);
                     point.add(tokens[j + 2]);
-                    //  j = j + 2;
                     break;
                 }
 
@@ -253,6 +281,7 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
             mMap.addMarker(new MarkerOptions().position(i));
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fullpoints.get(0), 14.0f));
+
     }
 
     public void onResume() {
@@ -289,4 +318,5 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-}
+
+    }

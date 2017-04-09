@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -51,6 +53,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     StartTrailService service;
     boolean mIsBound;
     int trailid;
+    private TextView avgSpeed;
     public static StartTrailFragment newInstance() {
         return new StartTrailFragment();
     }
@@ -72,6 +75,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         trailid= bundle.getInt("trailid");
         lines = bundle.getParcelableArrayList("lines");
         points = bundle.getParcelableArrayList("points");
+        avgSpeed = (TextView) view.findViewById(R.id.avgspeedstart);
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
         mMapView.onCreate(savedInstanceState);
         Intent startIntent = new Intent(getActivity(), StartTrailService.class);
@@ -101,6 +105,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
                 ((MainActivity)getActivity()).setFirstTime(true);
                 starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_unpressed));
                 stop.setVisibility(View.INVISIBLE);
+                timer.stop();
                 doUnbindService();
             }
         });
@@ -203,30 +208,6 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         setUpMap();
     }
 
-    public double CalculationByDistance(LatLng StartP, LatLng EndP) {
-
-        int Radius = 6371;// radius of earth in Km
-        double lat1 = StartP.latitude;
-        double lat2 = EndP.latitude;
-        double lon1 = StartP.longitude;
-        double lon2 = EndP.longitude;
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                * Math.sin(dLon / 2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult = Radius * c;
-        double km = valueResult / 1;
-        DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.valueOf(newFormat.format(km));
-        double meter = valueResult % 1000;
-        int meterInDec = Integer.valueOf(newFormat.format(meter));
-        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
-                + " Meter   " + meterInDec);
-        return Radius * c * 1000;
-    }
 
     public static double round(double value, int places) {
 
@@ -272,7 +253,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     @Override
-    public double onDataReceived(Location location) {
+    public double onDataReceived(Location location,double distancefromservice) {
         if(getActivity()!=null){
             if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -290,9 +271,15 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         mMap.getUiSettings().setRotateGesturesEnabled(true);
         double Latitude = location.getLatitude();
         double Longtitude = location.getLongitude();
+
+        float seconds = (SystemClock.elapsedRealtime()-timer.getBase())/1000;
+        float mins = seconds/60;
+        float hours = mins/60;
+
+
         if (LastLat != 0 && LastLon != 0) {
-            distancesum = distancesum + CalculationByDistance(new LatLng(LastLat, LastLon), new LatLng(Latitude, Longtitude));
-            distance.setText(String.valueOf(round(distancesum, 2)));
+            avgSpeed.setText(String.valueOf(round((distancefromservice*1000)/hours,2)));
+            distance.setText(String.valueOf(round(distancefromservice, 2)));
             LastLat = Latitude;
             LastLon = Longtitude;
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(LastLat, LastLon), 18.0f));
@@ -317,8 +304,9 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     @Override
-    public void onCheckState(boolean statechange) {
+    public void onCheckState(boolean statechange,long base) {
         hasStarted = statechange;
+        stoppedtime=base-SystemClock.elapsedRealtime();
         if(hasStarted) {
             startTrail();
         }else {
