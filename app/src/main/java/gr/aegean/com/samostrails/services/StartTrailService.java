@@ -10,16 +10,13 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.RemoteViews;
-
 import com.google.android.gms.maps.model.LatLng;
-
 import java.text.DecimalFormat;
-
 import gr.aegean.com.samostrails.MainActivity;
 import gr.aegean.com.samostrails.R;
 
@@ -33,10 +30,14 @@ public class StartTrailService extends Service {
     private final IBinder mIBinder = new StartTrailService.LocalBinder();
     long base = 0;
     double distance = 0;
+    long stoppedtime=0;
+    long startedtime=0;
     Chronometer chr;
     RemoteViews views;
     RemoteViews bigViews;
+    boolean backpressed = false;
     int i=0;
+
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
@@ -48,19 +49,17 @@ public class StartTrailService extends Service {
         @Override
         public void onLocationChanged(Location location) {
             Log.e(TAG, "onLocationChanged: " + location);
+            Log.e("Chronometer",""+chr.getBase());
             if(i!=0)
             distance=distance+CalculationByDistance(new LatLng(location.getLatitude(),location.getLongitude()),new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
 
             if (mOnServiceListener != null) {
                 mOnServiceListener.onDataReceived(location,round(distance,2));
                 Log.e("DistanceNotification", "" + distance);
-
                 updatenotification();
-
             }
             i++;
             mLastLocation.set(location);
-
         }
 
         @Override
@@ -97,9 +96,7 @@ public class StartTrailService extends Service {
 
         Intent previousIntent = new Intent(this, StartTrailService.class);
         previousIntent.setAction(Constants.ACTION.TONGLE_ACTION);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.status_bar_expanded, null);
-        chr = (Chronometer) view.findViewById(R.id.chronometer);
+
         views = new RemoteViews(getPackageName(),
                 R.layout.status_bar);
 
@@ -112,7 +109,9 @@ public class StartTrailService extends Service {
             StartTrailService.LOCATION_INTERVAL = intent.getIntExtra("interval", LOCATION_INTERVAL);
             StartTrailService.LOCATION_DISTANCE = intent.getFloatExtra("distance", LOCATION_DISTANCE);
             Log.i(LOG_TAG, "Received Start Foreground Intent ");
-
+            if (mOnServiceListener != null)
+                backpressed=mOnServiceListener.backpressed();
+            startedtime = SystemClock.elapsedRealtime();
             showNotification();
 
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
@@ -123,15 +122,22 @@ public class StartTrailService extends Service {
 
         } else if (intent.getAction().equals(Constants.ACTION.CHECK_STATE)) {
             if (mOnServiceListener != null)
-                mOnServiceListener.onCheckState(mRequestingLocationUpdates,chr.getBase());
+                mOnServiceListener.onCheckState(mRequestingLocationUpdates,base,distance);
 
-        } else if (intent.getAction().equals(Constants.ACTION.TONGLE_ACTION)) {
+        }  else if (intent.getAction().equals(Constants.ACTION.BACK_PRESSED)) {
+            if (mOnServiceListener != null)
+                backpressed=mOnServiceListener.backpressed();
+
+        }else if (intent.getAction().equals(Constants.ACTION.TONGLE_ACTION)) {
             tongleLocationUpdates();
+            if(!backpressed)
             base = mOnServiceListener.onChangeState(mRequestingLocationUpdates);
             showNotification();
         } else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
             Log.e(LOG_TAG, "Received Stop Foreground Intent");
+            distance=0;
+            stopLocationUpdates();
             stopForeground(true);
             stopSelf();
         }
@@ -143,7 +149,8 @@ public class StartTrailService extends Service {
     public void onCreate() {
         Log.e(TAG, "onCreate");
         initializeLocationManager();
-
+        chr =new Chronometer(this);
+        chr.setBase(SystemClock.elapsedRealtime());
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -256,8 +263,11 @@ public class StartTrailService extends Service {
 
         long onChangeState(boolean statechange);
 
-        void onCheckState(boolean statechange, long base);
+        void onCheckState(boolean statechange, long base , double distance);
+
+        boolean backpressed();
     }
+
 
     private StartTrailService.OnServiceListener mOnServiceListener = null;
 
@@ -307,11 +317,15 @@ public class StartTrailService extends Service {
             views.setImageViewResource(R.id.status_bar_recording, R.drawable.pause);
             bigViews.setTextViewText(R.id.status_bar_recording_text, "Pause");
         }
-        chr.setBase(base);
-        if (mRequestingLocationUpdates)
-            chr.start();
-        else
-            chr.stop();
+
+        if (mRequestingLocationUpdates) {
+            startedtime = SystemClock.elapsedRealtime() +stoppedtime;
+            base=startedtime;
+        }else {
+            stoppedtime =startedtime - SystemClock.elapsedRealtime();
+            base=stoppedtime;
+
+        }
         bigViews.setChronometer(R.id.chronometer, base, null, mRequestingLocationUpdates);
         status = new Notification.Builder(this).build();
         status.contentView = views;
@@ -323,7 +337,7 @@ public class StartTrailService extends Service {
     }
 
     public void updatenotification() {
-        bigViews.setTextViewText(R.id.distancenotification, "" + distance);
+        bigViews.setTextViewText(R.id.distancenotification, "" + round(distance,2));
         startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status);
     }
 

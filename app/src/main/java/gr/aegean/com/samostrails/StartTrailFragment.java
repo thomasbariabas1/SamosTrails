@@ -53,6 +53,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     StartTrailService service;
     boolean mIsBound;
     int trailid;
+    boolean backpressed = false;
     private TextView avgSpeed;
     public static StartTrailFragment newInstance() {
         return new StartTrailFragment();
@@ -78,6 +79,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         avgSpeed = (TextView) view.findViewById(R.id.avgspeedstart);
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
         mMapView.onCreate(savedInstanceState);
+        backpressed=false;
         Intent startIntent = new Intent(getActivity(), StartTrailService.class);
         startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
         getActivity().startService(startIntent);
@@ -90,9 +92,15 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         });
         distance = (TextView) view.findViewById(R.id.distancetrail);
         mMapView.getMapAsync(this);
+
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               backpressed=true;
+                Intent startIntent = new Intent(getActivity(), StartTrailService.class);
+                startIntent.setAction(Constants.ACTION.BACK_PRESSED);
+                getActivity().startService(startIntent);
                 FragmentManager fm = getActivity()
                         .getSupportFragmentManager();
                 fm.popBackStack();
@@ -304,14 +312,21 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     @Override
-    public void onCheckState(boolean statechange,long base) {
+    public void onCheckState(boolean statechange,long base,double distance) {
         hasStarted = statechange;
-        stoppedtime=base-SystemClock.elapsedRealtime();
+        this.distance.setText(String.valueOf(round(distance,2)));
+        Log.e("base:",""+base);
+        timer.setBase(SystemClock.elapsedRealtime()+base);
         if(hasStarted) {
             startTrail();
         }else {
             stopTrail();
         }
+    }
+
+    @Override
+    public boolean backpressed() {
+        return backpressed;
     }
 
 }

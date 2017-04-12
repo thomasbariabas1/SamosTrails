@@ -13,6 +13,7 @@ public class Constants {
         String CHECK_STATE = "gr.aegean.com.samostrails.action.checkstate";
          String STARTFOREGROUND_ACTION = "gr.aegean.com.samostrails.action.startforeground";
          String STOPFOREGROUND_ACTION = "gr.aegean.com.samostrails.action.stopforeground";
+        String BACK_PRESSED = "gr.aegean.com.samostrails.action.backpressed";
     }
 
      interface NOTIFICATION_ID {

@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0.0dip"
             android:layout_weight="1.0"
-            android:textSize="30sp"
+            android:textSize="20sp"
             android:textColor="#fff"
             android:layout_marginBottom="5dp"/>
         </LinearLayout>
@@ -113,4 +113,5 @@
             />
 
     </LinearLayout>
+
 </RelativeLayout>
