@@ -107,6 +107,7 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
                 bundle.putInt("trailid", trail.getTrailId());
                 bundle.putParcelableArrayList("lines", fullline);
                 bundle.putParcelableArrayList("points", fullpoints);
+                bundle.putParcelable("trail", trail);
                 Fragment fragment = StartTrailFragment.newInstance();
                 fragment.setArguments(bundle);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();

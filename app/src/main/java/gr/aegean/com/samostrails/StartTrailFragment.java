@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,8 +29,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import gr.aegean.com.samostrails.Models.Trail;
 import gr.aegean.com.samostrails.services.Constants;
 import gr.aegean.com.samostrails.services.StartTrailService;
 
@@ -43,9 +43,10 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     ArrayList<LatLng> points;
     private MapView mMapView;
     GoogleMap mMap;
-    Chronometer timer;
+    TextView timer;
     private TextView distance;
     private long stoppedtime = 0;
+    private long starttime=0;
     private double distancesum = 0;
     private ImageButton stop;
     private double LastLat;
@@ -53,8 +54,14 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     StartTrailService service;
     boolean mIsBound;
     int trailid;
+    Trail trail;
     boolean backpressed = false;
     private TextView avgSpeed;
+    boolean firsttime=true;
+    String start;
+    double pausedtime=0;
+    long sumpausedtime=0;
+    Chronometer chrono;
     public static StartTrailFragment newInstance() {
         return new StartTrailFragment();
     }
@@ -71,12 +78,15 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         starttrail = (ImageButton) view.findViewById(R.id.starttrailbutton);
         stop = (ImageButton) view.findViewById(R.id.stopbuttonstart);
         ImageButton back = (ImageButton) view.findViewById(R.id.backtrailbutton);
-        timer = (Chronometer) view.findViewById(R.id.timecreatetrail);
+        timer = (TextView) view.findViewById(R.id.timecreatetrail);
+        timer.setText("0");
         final Bundle bundle = getArguments();
-        trailid= bundle.getInt("trailid");
+        trail = bundle.getParcelable("trail");
+        trailid= trail.getTrailId();
         lines = bundle.getParcelableArrayList("lines");
         points = bundle.getParcelableArrayList("points");
         avgSpeed = (TextView) view.findViewById(R.id.avgspeedstart);
+        chrono = (Chronometer) view.findViewById(R.id.chrono);
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
         mMapView.onCreate(savedInstanceState);
         backpressed=false;
@@ -93,17 +103,20 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         distance = (TextView) view.findViewById(R.id.distancetrail);
         mMapView.getMapAsync(this);
 
-
+        if(!(backpressed&&hasStarted)){
+            stop.setVisibility(View.GONE);
+            starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_unpressed));
+        }
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                backpressed=true;
-                Intent startIntent = new Intent(getActivity(), StartTrailService.class);
-                startIntent.setAction(Constants.ACTION.BACK_PRESSED);
-                getActivity().startService(startIntent);
-                FragmentManager fm = getActivity()
-                        .getSupportFragmentManager();
-                fm.popBackStack();
+                FragmentManager fm = getFragmentManager();
+                StartTrailPopUpInfo dialogFragment = new StartTrailPopUpInfo();
+                bundle.putParcelable("trail", trail);
+                dialogFragment.setArguments(bundle);
+                dialogFragment.setTargetFragment(StartTrailFragment.this, 300);
+                dialogFragment.show(fm, "Sample Fragment");
             }
         });
         stop.setOnClickListener(new View.OnClickListener() {
@@ -111,10 +124,28 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
             public void onClick(View v) {
                 ((MainActivity)getActivity()).setHasStartedTrail(0);
                 ((MainActivity)getActivity()).setFirstTime(true);
+                stoppedtime = System.currentTimeMillis();
+                hasStarted=false;
                 starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_unpressed));
                 stop.setVisibility(View.INVISIBLE);
-                timer.stop();
                 doUnbindService();
+                FragmentManager fm = getFragmentManager();
+                StartTrailPopUp dialogFragment = new StartTrailPopUp();
+                Bundle bundle = getArguments();
+                bundle.putLong("endtime",stoppedtime);
+                bundle.putString("starttime",start);
+                bundle.putString("end",getRealTime(stoppedtime));
+                bundle.putDouble("distance",distancesum);
+                bundle.putLong("pausedtime",sumpausedtime);
+                bundle.putLong("starttimelong",starttime);
+                dialogFragment.setArguments(bundle);
+                dialogFragment.setTargetFragment(StartTrailFragment.this, 300);
+                dialogFragment.show(fm, "Sample Fragment");
+                stoppedtime=0;
+                distancesum=0;
+                sumpausedtime=0;
+                starttime=0;
+                firsttime=true;
             }
         });
         return view;
@@ -124,7 +155,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         if (!hasStarted) {
 
             Intent startIntent = new Intent(getActivity(), StartTrailService.class);
-            startIntent.putExtra("base",SystemClock.elapsedRealtime() + stoppedtime);
+            startIntent.putExtra("base",SystemClock.elapsedRealtime() );
             startIntent.setAction(Constants.ACTION.PLAY_ACTION);
             getActivity().startService(startIntent);
 
@@ -139,13 +170,27 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     public void startTrail() {
+        if(firsttime){
+            starttime = System.currentTimeMillis();
+            start = getRealTime(starttime);
+            timer.setText(start);
+            chrono.setBase(SystemClock.elapsedRealtime() + stoppedtime);
+            chrono.start();
+            Log.e("startedtime",""+starttime);
+            firsttime=false;
+        }
+        else
+        sumpausedtime += System.currentTimeMillis()-pausedtime;
+
+        Log.e("sumpausedtime",""+sumpausedtime);
+        Log.e("pausedtime",""+pausedtime);
+        Log.e("System current time",""+System.currentTimeMillis());
         if(stop.getVisibility()!=View.VISIBLE)
             stop.setVisibility(View.VISIBLE);
         ((MainActivity)getActivity()).setHasStartedTrail(trailid);
         ((MainActivity)getActivity()).setFirstTime(false);
         hasStarted = true;
-        timer.setBase(SystemClock.elapsedRealtime() + stoppedtime);
-        timer.start();
+
         starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.pause));
 
     }
@@ -154,8 +199,10 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         if(stop.getVisibility()!=View.VISIBLE)
             stop.setVisibility(View.VISIBLE);
         hasStarted = false;
-        stoppedtime = timer.getBase() - SystemClock.elapsedRealtime();
-        timer.stop();
+        stoppedtime = chrono.getBase() - SystemClock.elapsedRealtime();
+        chrono.stop();
+        pausedtime=System.currentTimeMillis();
+        Log.e("pausedtime",""+pausedtime);
         starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_pressed));
 
     }
@@ -170,6 +217,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         super.onResume();
         mMapView.onResume();
         if(mConnection !=null) {
+            Log.e("Connection",""+mConnection);
             Intent startIntent = new Intent(getActivity(), StartTrailService.class);
             startIntent.setAction(Constants.ACTION.CHECK_STATE);
             getActivity().startService(startIntent);
@@ -188,6 +236,12 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     public void onPause() {
         super.onPause();
         mMapView.onPause();
+
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        mMapView.onDestroy();
 
     }
 
@@ -280,7 +334,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         double Latitude = location.getLatitude();
         double Longtitude = location.getLongitude();
 
-        float seconds = (SystemClock.elapsedRealtime()-timer.getBase())/1000;
+        float seconds = 0;
         float mins = seconds/60;
         float hours = mins/60;
 
@@ -306,7 +360,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
             return SystemClock.elapsedRealtime() + stoppedtime;
         }else {
             stopTrail();
-            return timer.getBase() - SystemClock.elapsedRealtime();
+            return chrono.getBase() - SystemClock.elapsedRealtime();
         }
 
     }
@@ -316,7 +370,6 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         hasStarted = statechange;
         this.distance.setText(String.valueOf(round(distance,2)));
         Log.e("base:",""+base);
-        timer.setBase(SystemClock.elapsedRealtime()+base);
         if(hasStarted) {
             startTrail();
         }else {
@@ -329,4 +382,12 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         return backpressed;
     }
 
+    public String getRealTime(Long time){
+        String test;
+        int seconds = (int) (time / 1000) % 60 ;
+        int minutes = (int) ((time / (1000*60)) % 60);
+        int hours   = (int) ((time / (1000*60*60)) % 24);
+        test=hours +3+":"+minutes+":"+seconds;
+        return  test;
+    }
 }

@@ -35,6 +35,7 @@ public class StartTrailService extends Service {
     Chronometer chr;
     RemoteViews views;
     RemoteViews bigViews;
+    private boolean firsttime = true;
     boolean backpressed = false;
     int i=0;
 
@@ -49,7 +50,6 @@ public class StartTrailService extends Service {
         @Override
         public void onLocationChanged(Location location) {
             Log.e(TAG, "onLocationChanged: " + location);
-            Log.e("Chronometer",""+chr.getBase());
             if(i!=0)
             distance=distance+CalculationByDistance(new LatLng(location.getLatitude(),location.getLongitude()),new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
 
@@ -111,7 +111,6 @@ public class StartTrailService extends Service {
             Log.i(LOG_TAG, "Received Start Foreground Intent ");
             if (mOnServiceListener != null)
                 backpressed=mOnServiceListener.backpressed();
-            startedtime = SystemClock.elapsedRealtime();
             showNotification();
 
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
@@ -122,7 +121,7 @@ public class StartTrailService extends Service {
 
         } else if (intent.getAction().equals(Constants.ACTION.CHECK_STATE)) {
             if (mOnServiceListener != null)
-                mOnServiceListener.onCheckState(mRequestingLocationUpdates,base,distance);
+                mOnServiceListener.onCheckState(mRequestingLocationUpdates,startedtime,distance);
 
         }  else if (intent.getAction().equals(Constants.ACTION.BACK_PRESSED)) {
             if (mOnServiceListener != null)
@@ -149,8 +148,6 @@ public class StartTrailService extends Service {
     public void onCreate() {
         Log.e(TAG, "onCreate");
         initializeLocationManager();
-        chr =new Chronometer(this);
-        chr.setBase(SystemClock.elapsedRealtime());
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -220,6 +217,10 @@ public class StartTrailService extends Service {
     public void startLocationUpdates() {
         mRequestingLocationUpdates = true;
 
+        if(firsttime){
+            startedtime=SystemClock.elapsedRealtime();
+        }
+        firsttime=false;
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -313,19 +314,13 @@ public class StartTrailService extends Service {
 
             views.setTextViewText(R.id.status_bar_artist_name, "Start ...");
             bigViews.setTextViewText(R.id.status_bar_recordingstatus, "Start ...");
+            bigViews.setTextViewTextSize(R.id.status_bar_artist_name,0,20);
             bigViews.setImageViewResource(R.id.status_bar_recording, R.drawable.pause);
             views.setImageViewResource(R.id.status_bar_recording, R.drawable.pause);
             bigViews.setTextViewText(R.id.status_bar_recording_text, "Pause");
         }
 
-        if (mRequestingLocationUpdates) {
-            startedtime = SystemClock.elapsedRealtime() +stoppedtime;
-            base=startedtime;
-        }else {
-            stoppedtime =startedtime - SystemClock.elapsedRealtime();
-            base=stoppedtime;
 
-        }
         bigViews.setChronometer(R.id.chronometer, base, null, mRequestingLocationUpdates);
         status = new Notification.Builder(this).build();
         status.contentView = views;

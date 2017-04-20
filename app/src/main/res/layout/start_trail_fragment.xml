@@ -76,9 +76,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".4"
-                android:text="@string/time"
+                android:text="Start Time"
                 android:textColor="@color/white"/>
-            <Chronometer
+            <TextView
                 android:id="@+id/timecreatetrail"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -99,8 +99,9 @@
             android:id="@+id/backtrailbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/startback"
+            android:src="@drawable/info"
             android:background="@drawable/transparent_back"
+            android:layout_marginTop="5dp"
             android:layout_alignParentStart="true"
             android:contentDescription="@string/back" />
         <ImageButton
@@ -122,4 +123,9 @@
             android:layout_marginEnd="20dp"
             android:visibility="gone"/>
     </RelativeLayout>
+    <Chronometer
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/chrono"/>
 </RelativeLayout>
