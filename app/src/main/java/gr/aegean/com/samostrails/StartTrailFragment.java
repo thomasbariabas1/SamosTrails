@@ -138,6 +138,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
                 bundle.putDouble("distance",distancesum);
                 bundle.putLong("pausedtime",sumpausedtime);
                 bundle.putLong("starttimelong",starttime);
+                bundle.putParcelable("trail",trail);
                 dialogFragment.setArguments(bundle);
                 dialogFragment.setTargetFragment(StartTrailFragment.this, 300);
                 dialogFragment.show(fm, "Sample Fragment");
@@ -242,7 +243,8 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     public void onDestroy(){
         super.onDestroy();
         mMapView.onDestroy();
-
+        if(mConnection!=null)
+        doUnbindService();
     }
 
     private void setUpMap() {

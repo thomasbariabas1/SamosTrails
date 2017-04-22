@@ -29,13 +29,14 @@ public class Trail implements Parcelable {
     private String Tips;
     private String Video;
     private boolean editable;
+    private String url;
 
     public Trail(boolean children_Friedly, int tailid, DifficultyLevel difficultyLevel,
                  gr.aegean.com.samostrails.Models.DistanceLevel distanceLevel,
                  gr.aegean.com.samostrails.Models.KindOfTrail kindOfTrail,
                  String image, String geometryCollection,
                  double distance, String title, String ConnectionToOtherTrails, String Description, String MainSights, String OtherTransport,
-                 String StrartingPoin, String Tips, String Video) {
+                 String StrartingPoin, String Tips, String Video, String url) {
         Children_Friedly = children_Friedly;
         TrailId = tailid;
         DifficultyLevel = difficultyLevel;
@@ -53,6 +54,7 @@ public class Trail implements Parcelable {
         this.Tips = Tips;
         this.Video = Video;
         this.editable=false;
+        this.url=url;
     }
     public Trail(boolean children_Friedly, int tailid, DifficultyLevel difficultyLevel,
                  gr.aegean.com.samostrails.Models.DistanceLevel distanceLevel,
@@ -315,6 +317,14 @@ public class Trail implements Parcelable {
             return new Trail[size];
         }
     };
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
 
 

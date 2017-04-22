@@ -103,7 +103,6 @@ public class StartTrailService extends Service {
         bigViews = new RemoteViews(getPackageName(),
                 R.layout.status_bar_expanded);
 
-        base = intent.getLongExtra("base", base);
 
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
             StartTrailService.LOCATION_INTERVAL = intent.getIntExtra("interval", LOCATION_INTERVAL);
@@ -114,6 +113,7 @@ public class StartTrailService extends Service {
             showNotification();
 
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
+            base = intent.getLongExtra("base", base);
 
             Log.e(LOG_TAG, "Received Start Foreground Intent ");
             tongleLocationUpdates();

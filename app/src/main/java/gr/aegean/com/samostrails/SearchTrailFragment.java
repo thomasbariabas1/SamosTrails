@@ -196,7 +196,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                                     DifficultyLevel.valueOf(c.getString("Difficulty Level")), DistanceLevel.valueOf(c.getString("Distance Level").equals("Long (>3km)") ? "Long" : "Short"),
                                     KindOfTrail.valueOf(c.getString("Kind of trail").equals("One Way") ? "OneWay" : "Loop"), image.getString("src").replace("\\", ""), c.getString("Leaflet"),
                                     Double.parseDouble(c.getString("Distance").replaceAll("\\D+", "")), c.getString("Title"), c.getString("CONNECTION TO OTHER TRAILS"),
-                                    c.getString("Description"), c.getString("MAIN SIGHTS"), c.getString("Other Transport"), c.getString("STARTING POINT"), c.getString("Tips"), c.getString("Video")));
+                                    c.getString("Description"), c.getString("MAIN SIGHTS"), c.getString("Other Transport"), c.getString("STARTING POINT"), c.getString("Tips"), c.getString("Video"),"http://www.samostrails.com"+c.getString("Path")));
 
                         } catch (JSONException e) {
                             Log.e(TAG, "JSON Parsing error: " + e.getMessage());
