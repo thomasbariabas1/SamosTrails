@@ -100,7 +100,21 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
                 fm.popBackStack();
             }
         });
-
+        startRecordedTrails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bundle.putInt("trailid", trail.getTrailId());
+                bundle.putParcelableArrayList("lines", fullline);
+                bundle.putParcelableArrayList("points", fullpoints);
+                bundle.putParcelable("trail", trail);
+                Fragment fragment = StartTrailFragment.newInstance();
+                fragment.setArguments(bundle);
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
         startTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,7 +132,7 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         });
 
         if (!((MainActivity)getActivity()).isFirstTime()) {
-            if (!(trail.getTrailId() == ((MainActivity) getActivity()).hasStartedTrail())) {
+            if (!(trail.getTrailId() == ((MainActivity) getActivity()).hasStartedTrail())|| ((MainActivity) getActivity()).hasStartedTrail()==-1) {
                 startTrail.setEnabled(false);
                 Toast.makeText(getActivity(), "You have already Started one trail", Toast.LENGTH_LONG).show();
             }else
@@ -147,6 +161,8 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
             DeleteTrail.setVisibility(View.GONE);
             editTrail.setVisibility(View.VISIBLE);
             startRecordedTrails.setVisibility(View.VISIBLE);
+
+            startRecordedTrails.setEnabled(true);
             deleteRecordedTrails.setVisibility(View.VISIBLE);
         }
         deleteRecordedTrails.setOnClickListener(new View.OnClickListener() {

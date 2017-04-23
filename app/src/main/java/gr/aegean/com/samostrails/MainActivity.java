@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     LruCache<Integer, Bitmap> bitmapCache;
     String TAG = "";
     ServicesClient client = null;
-    int hasStartedTrail;
+    int hasStartedTrail=-1;
     boolean isFirstTime = true;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {

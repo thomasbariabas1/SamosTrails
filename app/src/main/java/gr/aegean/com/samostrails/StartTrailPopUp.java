@@ -174,6 +174,8 @@ public class StartTrailPopUp extends DialogFragment {
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+        dismiss();
+
     }
     public String getRealTime(Long time){
         String test;

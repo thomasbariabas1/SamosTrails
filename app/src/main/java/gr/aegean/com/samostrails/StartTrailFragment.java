@@ -90,10 +90,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
         mMapView.onCreate(savedInstanceState);
         backpressed=false;
-        Intent startIntent = new Intent(getActivity(), StartTrailService.class);
-        startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-        getActivity().startService(startIntent);
-        doBindService();
+
         starttrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,6 +126,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
                 starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_unpressed));
                 stop.setVisibility(View.INVISIBLE);
                 doUnbindService();
+                mConnection=null;
                 FragmentManager fm = getFragmentManager();
                 StartTrailPopUp dialogFragment = new StartTrailPopUp();
                 Bundle bundle = getArguments();
@@ -153,6 +151,12 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     public void tonggleStart() {
+        if(firsttime){
+            Intent startIntent = new Intent(getActivity(), StartTrailService.class);
+            startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+            getActivity().startService(startIntent);
+            doBindService();
+        }
         if (!hasStarted) {
 
             Intent startIntent = new Intent(getActivity(), StartTrailService.class);
@@ -218,6 +222,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         super.onResume();
         mMapView.onResume();
         if(mConnection !=null) {
+            Log.e("onResume","dsaaaaaaaaaa");
             Log.e("Connection",""+mConnection);
             Intent startIntent = new Intent(getActivity(), StartTrailService.class);
             startIntent.setAction(Constants.ACTION.CHECK_STATE);
@@ -243,8 +248,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     public void onDestroy(){
         super.onDestroy();
         mMapView.onDestroy();
-        if(mConnection!=null)
-        doUnbindService();
+
     }
 
     private void setUpMap() {
