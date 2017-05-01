@@ -152,6 +152,18 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
 
     public void tonggleStart() {
         if(firsttime){
+            mConnection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                    service = ((StartTrailService.LocalBinder) iBinder).getInstance();
+                    service.setOnServiceListener(StartTrailFragment.this);
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName componentName) {
+                    service = null;
+                }
+            };
             Intent startIntent = new Intent(getActivity(), StartTrailService.class);
             startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
             getActivity().startService(startIntent);
@@ -286,18 +298,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         return (double) tmp / factor;
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            service = ((StartTrailService.LocalBinder) iBinder).getInstance();
-            service.setOnServiceListener(StartTrailFragment.this);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            service = null;
-        }
-    };
+    private ServiceConnection mConnection ;
 
     private void doBindService() {
         // Establish a connection with the service.  We use an explicit

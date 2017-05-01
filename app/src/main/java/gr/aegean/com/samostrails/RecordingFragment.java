@@ -246,7 +246,6 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         getActivity().findViewById(R.id.navigation_home).setClickable(false);
         getActivity().findViewById(R.id.navigation_dashboard).setClickable(false);
         getActivity().findViewById(R.id.recording).setClickable(false);
-        getActivity().findViewById(R.id.profil).setClickable(false);
     }
 
     /**
@@ -263,7 +262,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         getActivity().findViewById(R.id.navigation_home).setClickable(true);
         getActivity().findViewById(R.id.navigation_dashboard).setClickable(true);
         getActivity().findViewById(R.id.recording).setClickable(true);
-        getActivity().findViewById(R.id.profil).setClickable(true);
+
 
     }
 

@@ -95,9 +95,12 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         backbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getActivity()
-                        .getSupportFragmentManager();
-                fm.popBackStack();
+                Fragment fragment = LocalTrailsFragment.newInstance();
+                fragment.setArguments(bundle);
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
         startRecordedTrails.setOnClickListener(new View.OnClickListener() {

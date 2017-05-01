@@ -20,9 +20,4 @@
         android:title="@string/recording"
          />
 
-    <item
-        android:id="@+id/profil"
-        android:icon="@drawable/moreicon"
-        android:title="@string/more"
-        />
 </menu>

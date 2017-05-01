@@ -260,7 +260,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
-                    android:background="@drawable/buttonshape"
+                    android:background="@drawable/statelist"
                     android:drawableStart="@drawable/upload"
                     android:text="@string/submit_trail"
                     android:textColor="#FFFFFF" />
@@ -270,7 +270,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
-                    android:background="@drawable/buttonshape"
+                    android:background="@drawable/statelist"
                     android:drawableStart="@drawable/saveicon"
                     android:text="@string/save_trail"
                     android:textColor="#FFFFFF" />

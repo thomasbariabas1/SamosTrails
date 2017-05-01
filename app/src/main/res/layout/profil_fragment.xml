@@ -40,7 +40,7 @@
         android:layout_weight=".5"
         android:drawableStart="@drawable/logout"
         android:textColor="#FFFFFF"
-        android:background="@drawable/buttonshape"
+        android:background="@drawable/statelist"
         android:visibility="gone"/>
     <Button
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
         android:layout_weight=".5"
         android:drawableStart="@drawable/login"
         android:textColor="#FFFFFF"
-        android:background="@drawable/buttonshape"/>
+        android:background="@drawable/statelist"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
         android:text="register"
         android:drawableStart="@drawable/register"
         android:textColor="#FFFFFF"
-        android:background="@drawable/buttonshape"
+        android:background="@drawable/statelist"
 
         />
 

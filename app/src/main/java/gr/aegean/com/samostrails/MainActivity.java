@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.LruCache;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
@@ -48,10 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = recording;
                     TAG = "recording";
                     break;
-                case R.id.profil:
-                    selectedFragment = ProfilFragment.newInstance();
-                    TAG = "profil";
-                    break;
+
             }
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -138,5 +136,29 @@ public class MainActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("Cancel", null);
         builder.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_name) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content, ProfilFragment.newInstance(), TAG);
+            transaction.commit();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
