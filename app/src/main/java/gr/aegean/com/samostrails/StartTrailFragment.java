@@ -2,18 +2,22 @@ package gr.aegean.com.samostrails;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +66,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     double pausedtime=0;
     long sumpausedtime=0;
     Chronometer chrono;
+    private boolean gpsenabled=true;
     public static StartTrailFragment newInstance() {
         return new StartTrailFragment();
     }
@@ -94,6 +99,8 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         starttrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkGPS();
+                if(gpsenabled)
                 tonggleStart();
             }
         });
@@ -396,5 +403,43 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         int hours   = (int) ((time / (1000*60*60)) % 24);
         test=hours +3+":"+minutes+":"+seconds;
         return  test;
+    }
+    public void checkGPS(){
+        LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        boolean network_enabled = false;
+
+        try {
+            gpsenabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gpsenabled && !network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+            dialog.setMessage(getActivity().getResources().getString(R.string.gps_network_not_enabled));
+            dialog.setPositiveButton(getActivity().getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    gpsenabled=true;
+                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    getActivity().startActivity(myIntent);
+                    //get gps
+                }
+            });
+            dialog.setNegativeButton(getActivity().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    gpsenabled=false;
+                }
+            });
+            dialog.show();
+        }
     }
 }

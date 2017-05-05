@@ -8,9 +8,11 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -67,7 +69,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     private ImageButton savebutton;
     private ImageButton clear;
     private long stoppedtime = 0;
-
+    private boolean gpsenabled = true;
     public static RecordingFragment newInstance() {
         return new RecordingFragment();
     }
@@ -132,8 +134,10 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
             @Override
             public void onClick(View v) {
-
-                togglePeriodicLocationUpdates();
+                checkGPS();
+                if(gpsenabled) {
+                    togglePeriodicLocationUpdates();
+                }
             }
         });
         doBindService();
@@ -453,6 +457,43 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     }
 
+    public void checkGPS(){
+        LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
+        boolean network_enabled = false;
+
+        try {
+            gpsenabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gpsenabled && !network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+            dialog.setMessage(getActivity().getResources().getString(R.string.gps_network_not_enabled));
+            dialog.setPositiveButton(getActivity().getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    gpsenabled=true;
+                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    getActivity().startActivity(myIntent);
+                    //get gps
+                }
+            });
+            dialog.setNegativeButton(getActivity().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    gpsenabled=false;
+                }
+            });
+            dialog.show();
+        }
+    }
 
 }

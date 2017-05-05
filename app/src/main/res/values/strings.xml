@@ -10,7 +10,7 @@
     <string name="record">Record</string>
     <string name="save">Save</string>
     <string name="test">Test</string>
-    <string name="your_trails">Your Trails</string>
+    <string name="your_trails">My Trails</string>
     <string name="recording">Recording</string>
     <string name="profil">Profil</string>
     <string name="more">More</string>
@@ -82,4 +82,7 @@
     <string name="avg_walking_time">Avg Walking Time:</string>
     <string name="favorite">Favorite</string>
     <string name="unfavorite">UnFavorite</string>
+    <string name="gps_network_not_enabled">GPS not Enabled</string>
+    <string name="open_location_settings">open</string>
+    <string name="Cancel">Cancel</string>
 </resources>

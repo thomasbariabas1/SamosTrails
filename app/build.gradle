@@ -7,8 +7,8 @@ android {
         applicationId "gr.aegean.com.samostrails"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 7
-        versionName "1.06"
+        versionCode 8
+        versionName "1.07"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

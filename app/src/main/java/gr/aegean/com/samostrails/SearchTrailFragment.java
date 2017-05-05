@@ -194,7 +194,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
                             TrailsArray.add(new Trail(!c.getString("Children Friedly").equals("No"), Integer.parseInt(c.getString("Vid")),
                                     DifficultyLevel.valueOf(c.getString("Difficulty Level")), DistanceLevel.valueOf(c.getString("Distance Level").equals("Long (>3km)") ? "Long" : "Short"),
-                                    KindOfTrail.valueOf(c.getString("Kind of trail").equals("One Way") ? "OneWay" : "Loop"), image.getString("src").replace("\\", ""), c.getString("Leaflet"),
+                                    KindOfTrail.valueOf(c.getString("Kind of trail").equals("One Way") ? "OneWay" : "Loop"), image.getString("src").replace("\\", ""), c.getString("Leaflet_trails").equals("no")?c.getString("Leaflet _trailstobechecked"):c.getString("Leaflet_trails"),
                                     Double.parseDouble(c.getString("Distance").replaceAll(",",".")), c.getString("Title"), c.getString("CONNECTION TO OTHER TRAILS"),
                                     c.getString("Description"), c.getString("MAIN SIGHTS"), c.getString("Other Transport"), c.getString("STARTING POINT"), c.getString("Tips"), c.getString("Video"),"http://www.samostrails.com"+c.getString("Path")));
 
