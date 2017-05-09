@@ -12,8 +12,8 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Set Displasment of Gps Tracker \n(100 is the best value for \nmore acurate results)"
-        android:textSize="20dp" />
+        android:text="Set Displasment of Gps Tracker"
+        android:textSize="20sp" />
 <RelativeLayout
     android:layout_width="wrap_content"
     android:layout_height="30dp">
@@ -43,12 +43,15 @@
         android:layout_centerInParent="true"
         android:text="0"/>
 </RelativeLayout>
+
+
     <TextView
         android:id="@+id/intervaltitle"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Interval of Location Updates\n(The lower means faster \nLocation updates,more \nbattary consumption)"
-        android:textSize="20dp" />
+        android:text="Interval of Location Updates"
+        android:textSize="20sp" />
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="30dp">
@@ -78,8 +81,16 @@
             android:layout_centerInParent="true"
             android:text="0"/>
     </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Less: Battery Drain fast, More Accurate.\nMore:Battery Drain slow, Less Accurate."
+        android:textSize="15sp"
+        android:textColor="@color/background_grey"/>
     <Button
         android:id="@+id/dismiss"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save Settings" />

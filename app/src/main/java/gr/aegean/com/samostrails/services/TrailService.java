@@ -22,8 +22,8 @@ import gr.aegean.com.samostrails.R;
 public class TrailService extends Service {
     private static final String TAG = "BOOMBOOMTESTGPS";
     private LocationManager mLocationManager = null;
-    private static  int LOCATION_INTERVAL = 1000;
-    private static  float LOCATION_DISTANCE = 0;
+    private static  int LOCATION_INTERVAL = 5000;
+    private static  int LOCATION_DISTANCE = 10;
     private static final String LOG_TAG = "ForegroundService";
     private boolean mRequestingLocationUpdates = false;
     private final IBinder mIBinder = new LocalBinder();
@@ -31,6 +31,7 @@ public class TrailService extends Service {
     double distance=0;
     RemoteViews views ;
     RemoteViews bigViews;
+    private boolean isGPSenabled=false;
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
@@ -74,8 +75,7 @@ public class TrailService extends Service {
 
 
     LocationListener[] mLocationListeners = new LocationListener[]{
-            new LocationListener(LocationManager.GPS_PROVIDER),
-            new LocationListener(LocationManager.NETWORK_PROVIDER)
+            new LocationListener(LocationManager.GPS_PROVIDER)
     };
 
 
@@ -103,25 +103,33 @@ public class TrailService extends Service {
 
 
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
+
             TrailService.LOCATION_INTERVAL=intent.getIntExtra("interval",LOCATION_INTERVAL);
-            TrailService.LOCATION_DISTANCE=intent.getFloatExtra("distance",LOCATION_DISTANCE);
+            TrailService.LOCATION_DISTANCE=intent.getIntExtra("distance",LOCATION_DISTANCE);
             Log.i(LOG_TAG, "Received Start Foreground Intent ");
 
             showNotification();
 
 
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
-
+            isGPSenabled=true;
             Log.e(LOG_TAG, "Received Start Foreground Intent ");
             tongleLocationUpdates();
             showNotification();
 
         }
         else if (intent.getAction().equals(Constants.ACTION.TONGLE_ACTION)) {
+            isGPSenabled = mOnServiceListener.checkGPSstate();
             tongleLocationUpdates();
             base=mOnServiceListener.onChangeState(mRequestingLocationUpdates);
+
             showNotification();
-        } else if (intent.getAction().equals(
+        }else if(intent.getAction().equals(Constants.ACTION.REQUEST_ARGS)){
+            Log.e("inside Request ","");
+            mOnServiceListener.getDistanceLocation(LOCATION_DISTANCE);
+            mOnServiceListener.getTimeLocation(LOCATION_INTERVAL);
+        }
+        else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
             Log.e(LOG_TAG, "Received Stop Foreground Intent");
             stopForeground(true);
@@ -135,15 +143,7 @@ public class TrailService extends Service {
         Log.e(TAG, "onCreate");
         initializeLocationManager();
 
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
+
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -175,14 +175,15 @@ public class TrailService extends Service {
 
     public void tongleLocationUpdates(){
 
-
-        if(mRequestingLocationUpdates){
+    if(isGPSenabled) {
+        if (mRequestingLocationUpdates) {
 
             stopLocationUpdates();
-        }else{
+        } else {
 
             startLocationUpdates();
         }
+    }
     }
 
     public void stopLocationUpdates() {
@@ -204,15 +205,7 @@ public class TrailService extends Service {
 public void startLocationUpdates(){
  mRequestingLocationUpdates=true;
 
-    try {
-        mLocationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                mLocationListeners[1]);
-    } catch (java.lang.SecurityException ex) {
-        Log.i(TAG, "fail to request location update, ignore", ex);
-    } catch (IllegalArgumentException ex) {
-        Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-    }
+
     try {
         mLocationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -247,6 +240,9 @@ public void startLocationUpdates(){
     public interface OnServiceListener{
          double onDataReceived(Location data );
          long onChangeState(boolean statechange);
+         boolean checkGPSstate();
+         void getDistanceLocation(int distance);
+         void getTimeLocation(int time);
     }
     private OnServiceListener mOnServiceListener = null;
 
@@ -326,4 +322,6 @@ public void startLocationUpdates(){
         bigViews.setTextViewText(R.id.distancenotification,""+distance);
         startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status);
     }
+
+
 }

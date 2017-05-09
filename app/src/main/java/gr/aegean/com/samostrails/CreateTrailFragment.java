@@ -110,6 +110,9 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
         }else{
             DecimalFormat df = new DecimalFormat("#.##");
             Distance.setText(String.valueOf(df.format(bundle.getDouble("distance"))));
+            KindOfTrail.check(R.id.oneway);
+            DifficultyLevel.check(R.id.easy);
+            ChildrenFriendly.check(R.id.yes);
         }
         saveTrail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +125,10 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
             public void onClick(View v) {
                 try {
                     if (Utilities.isNetworkAvailable(getActivity())) {
-                        sendtrail();
+                        if(!Title.getText().toString().equals(""))
+                            sendtrail();
+                        else
+                            Toast.makeText(getActivity(),"Please fill at least Title",Toast.LENGTH_LONG).show();
                     }else{
                         Toast.makeText(getActivity(),"No Internet Connection",Toast.LENGTH_LONG).show();
                     }

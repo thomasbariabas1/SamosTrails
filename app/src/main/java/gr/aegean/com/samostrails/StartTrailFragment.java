@@ -442,4 +442,23 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
             dialog.show();
         }
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            timer.setText(savedInstanceState.getString("timer"));
+            distance.setText(savedInstanceState.getString("distance"));
+            avgSpeed.setText(savedInstanceState.getString("avgspeed"));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("timer",timer.getText().toString());
+        outState.putString("distance",distance.getText().toString());
+        outState.putString("avgspeed",avgSpeed.getText().toString());
+    }
+
 }

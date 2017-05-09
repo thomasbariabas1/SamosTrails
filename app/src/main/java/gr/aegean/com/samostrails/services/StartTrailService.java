@@ -80,8 +80,7 @@ public class StartTrailService extends Service {
     }
 
     StartTrailService.LocationListener[] mLocationListeners = new StartTrailService.LocationListener[]{
-            new StartTrailService.LocationListener(LocationManager.GPS_PROVIDER),
-            new StartTrailService.LocationListener(LocationManager.NETWORK_PROVIDER)
+            new StartTrailService.LocationListener(LocationManager.GPS_PROVIDER)
     };
 
 
@@ -148,15 +147,7 @@ public class StartTrailService extends Service {
     public void onCreate() {
         Log.e(TAG, "onCreate");
         initializeLocationManager();
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
+
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -221,15 +212,7 @@ public class StartTrailService extends Service {
             startedtime=SystemClock.elapsedRealtime();
         }
         firsttime=false;
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
+
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,

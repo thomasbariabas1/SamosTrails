@@ -2,6 +2,7 @@ package gr.aegean.com.samostrails;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,17 @@ public class PopUpFragment extends DialogFragment {
     TextView seekbarprogress;
     SeekBar seekinternal;
     TextView seekbarprogressinternal;
+    int distance;
+    int time;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_layout, container, false);
         getDialog().setTitle("Simple Dialog");
+        Bundle bundle =getArguments();
+        distance = bundle.getInt("Distance_Location");
+        time = bundle.getInt("Time_Location");
+        Log.e("distance",""+distance);
+        Log.e("time",""+time);
         seekbarprogress= (TextView) view.findViewById(R.id.seekbarprogress);
         Button dismiss = (Button) view.findViewById(R.id.dismiss);
         dismiss.setOnClickListener(new View.OnClickListener() {
@@ -34,6 +42,10 @@ public class PopUpFragment extends DialogFragment {
         seek=(SeekBar)view.findViewById(R.id.seekBar);
         seekinternal = (SeekBar) view.findViewById(R.id.seekBarinterval);
         seekbarprogressinternal = (TextView) view.findViewById(R.id.seekbarprogressinterval);
+        seekinternal.setProgress(time/1000);
+        seekbarprogress.setText(String.valueOf(distance));
+        seek.setProgress(distance);
+        seekbarprogressinternal.setText(String.valueOf(time/1000));
        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
            @Override
            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

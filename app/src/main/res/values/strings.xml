@@ -71,7 +71,7 @@
     <string name="cd_previous">Skip backwards</string>
     <string name="cd_play">Play and pause</string>
     <string name="cd_next">Skip forwards</string>
-    <string name="local_trails">Local Trails</string>
+    <string name="local_trails">My Trails</string>
     <string name="no_internet_found">No Internet Found</string>
     <string name="current_available_trails">Trails</string>
     <string name="back">Back</string>
@@ -82,7 +82,7 @@
     <string name="avg_walking_time">Avg Walking Time:</string>
     <string name="favorite">Favorite</string>
     <string name="unfavorite">UnFavorite</string>
-    <string name="gps_network_not_enabled">GPS not Enabled</string>
-    <string name="open_location_settings">open</string>
+    <string name="gps_network_not_enabled">GPS not Enabled. Please enable GPS to Record Trails.</string>
+    <string name="open_location_settings">Open Settings</string>
     <string name="Cancel">Cancel</string>
 </resources>

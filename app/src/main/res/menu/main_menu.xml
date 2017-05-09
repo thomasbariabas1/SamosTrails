@@ -6,5 +6,6 @@
         android:icon="@drawable/moreicon"
         android:title="Text to be seen by user"
         app:showAsAction="always"
-        android:orderInCategory="0"/>
+        android:orderInCategory="0"
+        />
 </menu>

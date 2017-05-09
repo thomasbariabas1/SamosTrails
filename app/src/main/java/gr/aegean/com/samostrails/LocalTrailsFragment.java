@@ -1,6 +1,7 @@
 package gr.aegean.com.samostrails;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -30,7 +31,8 @@ public class LocalTrailsFragment extends Fragment {
         adapterViewPager = new FragmentTrailPageAdapter(getActivity().getSupportFragmentManager());
 
         vpPager.setAdapter(adapterViewPager);
-
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(vpPager);
         return view;
     }
 

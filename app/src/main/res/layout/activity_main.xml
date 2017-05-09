@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/background_grey"
     tools:context="gr.aegean.com.samostrails.MainActivity">
 
     <FrameLayout
@@ -22,8 +23,8 @@
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        app:itemIconTint="#ffffff"
-        app:itemTextColor="#ffffff"
+        app:itemIconTint="@drawable/bottom_nav_selector"
+        app:itemTextColor="@drawable/bottom_nav_selector"
         app:menu="@menu/navigation"
         android:background="#57705d"/>
 

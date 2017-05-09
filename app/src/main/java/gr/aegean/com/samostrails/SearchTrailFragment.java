@@ -1,19 +1,16 @@
 package gr.aegean.com.samostrails;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -64,7 +61,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.explore, container, false);
+        View view = inflater.inflate(R.layout.search_trail_fragment, container, false);
 
 
         // Inflate the layout for this fragment

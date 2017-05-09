@@ -14,6 +14,7 @@ public class Constants {
          String STARTFOREGROUND_ACTION = "gr.aegean.com.samostrails.action.startforeground";
          String STOPFOREGROUND_ACTION = "gr.aegean.com.samostrails.action.stopforeground";
         String BACK_PRESSED = "gr.aegean.com.samostrails.action.backpressed";
+        String REQUEST_ARGS="gr.aegean.com.samostrails.action.requestargs";
     }
 
      interface NOTIFICATION_ID {

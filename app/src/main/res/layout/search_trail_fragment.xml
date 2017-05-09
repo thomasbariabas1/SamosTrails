@@ -28,6 +28,7 @@
         android:queryHint="Search Trail"
         android:iconifiedByDefault="false"
         android:focusable="false"
+        android:background="@color/transparent"
        />
     <gr.aegean.com.samostrails.CustomGridView
         android:id="@+id/gridview"

@@ -57,8 +57,8 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     private boolean mRequestingLocationUpdates = false;
 
     // Location updates intervals in sec
-    private int UPDATE_INTERVAL = 6000; // 5 sec
-    private int DISPLACEMENT = 10; // 10 meters//100metre is the best for better
+    private int UPDATE_INTERVAL = 5000; // 5 sec
+    private int DISPLACEMENT = 10; // 10 meters
     private MapView mMapView;
     GoogleMap mMap;
     private double LastLat;
@@ -90,6 +90,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         startIntent.putExtra("distance", DISPLACEMENT);
         startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
         getActivity().startService(startIntent);
+        final Bundle bundle = new Bundle();
         btnStartLocationUpdates = (ImageButton) view.findViewById(R.id.setRangeButton);
         layers = (ImageButton) view.findViewById(R.id.maplayers);
         savebutton = (ImageButton) view.findViewById(R.id.savetrail);
@@ -144,8 +145,15 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         layers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent requestIntent = new Intent(getActivity(), TrailService.class);
+                requestIntent.setAction(Constants.ACTION.REQUEST_ARGS);
+                getActivity().startService(requestIntent);
+                Log.e("Distance_Location",""+ DISPLACEMENT);
+                bundle.putInt("Distance_Location",DISPLACEMENT);
+                bundle.putInt("Time_Location",UPDATE_INTERVAL);
                 FragmentManager fm = getFragmentManager();
                 PopUpFragment dialogFragment = new PopUpFragment();
+                dialogFragment.setArguments(bundle);
                 dialogFragment.setTargetFragment(RecordingFragment.this, 300);
                 dialogFragment.show(fm, "Sample Fragment");
 
@@ -274,6 +282,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.729842, 26.810417), 10.0f));
         setUpMap();
     }
 
@@ -292,6 +301,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
         }
         // displayLocation();
+
     }
 
 
@@ -457,6 +467,12 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     }
 
+    @Override
+    public boolean checkGPSstate() {
+        checkGPS();
+        return gpsenabled;
+    }
+
     public void checkGPS(){
         LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -495,5 +511,10 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             dialog.show();
         }
     }
-
+    public void getDistanceLocation(int distance){
+      DISPLACEMENT=distance;
+    }
+    public void getTimeLocation(int time){
+        UPDATE_INTERVAL=time;
+    }
 }

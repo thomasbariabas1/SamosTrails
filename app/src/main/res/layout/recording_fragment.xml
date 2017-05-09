@@ -11,18 +11,19 @@
         android:layout_height="match_parent" />
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:background="@color/downHeader">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight=".5"
             android:orientation="vertical"
-            android:weightSum="1">
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="30dp"
+            android:id="@+id/distancetest">
 
             <TextView
                 android:layout_width="match_parent"
@@ -41,9 +42,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight=".5"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="30dp"
             android:orientation="vertical">
 
             <TextView
@@ -62,7 +64,7 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -90,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_marginStart="10dp"
-            android:background="@drawable/statelist"
+            android:background="@drawable/recording_button_statelist"
             android:contentDescription="@string/save"
             android:src="@drawable/saveicon"
             android:layout_marginTop="5dp"/>
@@ -101,7 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/statelist"
+            android:background="@drawable/recording_button_statelist"
             android:contentDescription="@string/test"
             android:src="@drawable/settings"
             android:layout_marginTop="5dp"/>
