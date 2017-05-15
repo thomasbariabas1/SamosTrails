@@ -41,6 +41,7 @@ import gr.aegean.com.samostrails.services.StartTrailService;
 
 
 public class StartTrailFragment extends Fragment implements OnMapReadyCallback, StartTrailService.OnServiceListener  {
+
     ImageButton starttrail;
     boolean hasStarted = false;
     ArrayList<LatLng> lines;
@@ -67,6 +68,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     long sumpausedtime=0;
     Chronometer chrono;
     private boolean gpsenabled=true;
+
     public static StartTrailFragment newInstance() {
         return new StartTrailFragment();
     }
