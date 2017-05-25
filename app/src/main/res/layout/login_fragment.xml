@@ -1,5 +1,4 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,8 +11,8 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|center_vertical"
-        android:text="Welcome, please login to use your account." />
+        android:layout_gravity="start|center_vertical"
+        android:text="@string/welcome_please_login_to_use_your_account" />
 
     <TextView
         android:id="@+id/textView"
@@ -22,7 +21,7 @@
         android:layout_alignLeft="@+id/textView2"
         android:layout_alignParentTop="true"
         android:layout_marginTop="46dp"
-        android:text="Username:"
+        android:text="Email:"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <EditText

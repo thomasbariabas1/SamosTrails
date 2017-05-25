@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import gr.aegean.com.samostrails.SQLDb.DataFragment;
 import gr.aegean.com.samostrails.services.Constants;
 import gr.aegean.com.samostrails.services.TrailService;
 
@@ -73,12 +74,22 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     public static RecordingFragment newInstance() {
         return new RecordingFragment();
     }
-
+    private DataFragment dataFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        FragmentManager fm = getFragmentManager();
+        dataFragment = (DataFragment) fm.findFragmentByTag("TrailLatLonLineString");
+        if (dataFragment == null) {
+            // add the fragment
+            dataFragment = new DataFragment();
+            fm.beginTransaction().add(dataFragment, "TrailLatLonLineString").commit();
+            // load the data from the web
+            dataFragment.setData(TrailLatLonLineString);
+        }else{
+            TrailLatLonLineString= dataFragment.getData();
+        }
     }
 
     @Override
@@ -167,6 +178,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
                     stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
                     getActivity().startService(stopIntent);
                     doUnbindService();
+                    dataFragment.dataClear();
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("linestring", TrailLatLonLineString);
                     bundle.putBoolean("local", false);
@@ -195,7 +207,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         super.onResume();
         mMapView.onResume();
         setUpMap();
-
+        dataFragment.setData(TrailLatLonLineString);
 
     }
 
@@ -354,7 +366,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
 
     }
 
-    @Override
+    /*@Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
@@ -366,7 +378,7 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("trailarray",TrailLatLonLineString);
-    }
+    }*/
 
     @Override
     public void onFinishEditDialog(int displacement, int interval) {
@@ -414,8 +426,8 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
         super.onDestroy();
         mMapView.onDestroy();
         if (mConnection != null)
-
             doUnbindService();
+        dataFragment.setData(TrailLatLonLineString);
     }
 
 

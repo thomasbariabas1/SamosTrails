@@ -85,4 +85,5 @@
     <string name="gps_network_not_enabled">GPS not Enabled. Please enable GPS to Record Trails.</string>
     <string name="open_location_settings">Open Settings</string>
     <string name="Cancel">Cancel</string>
+    <string name="welcome_please_login_to_use_your_account">Welcome, please login to use your account.</string>
 </resources>

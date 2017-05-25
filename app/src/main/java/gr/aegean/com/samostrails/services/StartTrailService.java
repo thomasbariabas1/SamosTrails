@@ -30,7 +30,6 @@ public class StartTrailService extends Service {
     private final IBinder mIBinder = new StartTrailService.LocalBinder();
     long base = 0;
     double distance = 0;
-    long stoppedtime=0;
     long startedtime=0;
     Chronometer chr;
     RemoteViews views;

@@ -65,8 +65,6 @@ public class LocalFavouriteTrailsFragment extends Fragment {
         protected Void doInBackground(Void... arg0) {
 
             TrailsArray = TrailDb.readFromDb(TrailDb.initiateDB(getActivity()));
-
-
             return null;
         }
 

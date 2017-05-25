@@ -255,7 +255,6 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         String[] commatokens = toSplit.split(",");
 
         for (String commatoken : commatokens) {
-            Log.e("commatokens", "" + commatoken);
             coordinates.add(commatoken);
         }
         for (int i = 0; i < coordinates.size(); i++) {

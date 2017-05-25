@@ -81,7 +81,7 @@ public class TrailDb {
 
     public static class TrailDbHelper extends SQLiteOpenHelper {
         // If you change the database schema, you must increment the database version.
-        public static final int DATABASE_VERSION = 2;
+        public static final int DATABASE_VERSION = 3;
         public static final String DATABASE_NAME = "Trail.db";
 
         public TrailDbHelper(Context context) {
@@ -117,6 +117,7 @@ public class TrailDb {
         if(trail.isEditable()){
             trail.setTrailId(getMaxID(db)+1);
         }
+        Log.e("",""+trail.toString());
 // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
 
@@ -233,7 +234,8 @@ public class TrailDb {
         ArrayList<Trail> itemIds = new ArrayList<>();
         Trail trail;
         while (cursor.moveToNext()) {
-            trail = new Trail(cursor.getInt(cursor.getColumnIndexOrThrow(TrailEntry.COLUMN_NAME_CHILDRENFRIENDLY))>0,
+            boolean test = cursor.getInt(cursor.getColumnIndexOrThrow(TrailEntry.COLUMN_NAME_CHILDRENFRIENDLY)) > 0;
+            trail = new Trail(test,
                     cursor.getInt(cursor.getColumnIndexOrThrow(TrailEntry.COLUMN_NAME_TRAILID)),
                     DifficultyLevel.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(TrailEntry.COLUMN_NAME_DIFFICULTYLEVEL))),
                     DistanceLevel.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(TrailEntry.COLUMN_NAME_DISTANCELEVEL))),

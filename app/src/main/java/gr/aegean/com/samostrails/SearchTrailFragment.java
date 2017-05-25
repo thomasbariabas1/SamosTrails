@@ -128,12 +128,14 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("trail", TrailsArray.get(position));
+                Trail trail = TrailsArray.get(position);
+                trail.setDownlImage(null);
+                Log.e("trail",""+trail.getDownlImage());
+                bundle.putParcelable("trail",trail );
                 Fragment fragment = TrailInfoFragment.newInstance();
                 fragment.setArguments(bundle);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content, fragment);
-                transaction.addToBackStack(null);
                 transaction.commit();
 
             }

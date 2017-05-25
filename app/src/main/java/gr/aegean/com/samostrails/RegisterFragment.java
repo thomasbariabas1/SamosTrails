@@ -20,10 +20,6 @@ import gr.aegean.com.samostrails.DrupalDroid.UserServices;
 
 import static android.content.ContentValues.TAG;
 
-/**
- * Created by phantomas on 3/19/2017.
- */
-
 public class RegisterFragment extends Fragment {
     ServicesClient client;
     Button register;

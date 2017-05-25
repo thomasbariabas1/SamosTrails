@@ -325,6 +325,32 @@ public class Trail implements Parcelable {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @Override
+    public String toString() {
+        return "Trail{" +
+                "DBId=" + DBId +
+                ", Children_Friedly=" + Children_Friedly +
+                ", TrailId=" + TrailId +
+                ", DifficultyLevel=" + DifficultyLevel +
+                ", DistanceLevel=" + DistanceLevel +
+                ", KindOfTrail=" + KindOfTrail +
+                ", image='" + image + '\'' +
+                ", GeometryCollection='" + "" + '\'' +
+                ", Distance=" + Distance +
+                ", Title='" + Title + '\'' +
+                ", downlImage=" + downlImage +
+                ", ConnectionToOtherTrails='" + ConnectionToOtherTrails + '\'' +
+                ", Description='" + Description + '\'' +
+                ", MainSights='" + MainSights + '\'' +
+                ", OtherTransport='" + OtherTransport + '\'' +
+                ", StrartingPoin='" + StrartingPoin + '\'' +
+                ", Tips='" + Tips + '\'' +
+                ", Video='" + Video + '\'' +
+                ", editable=" + editable +
+                ", url='" + url + '\'' +
+                '}';
+    }
 }
 
 

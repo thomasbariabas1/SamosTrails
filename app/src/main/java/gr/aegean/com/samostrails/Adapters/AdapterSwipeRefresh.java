@@ -1,9 +1,11 @@
 package gr.aegean.com.samostrails.Adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,7 +90,9 @@ public class AdapterSwipeRefresh extends BaseAdapter {
                     if(bitmapCache.get(trails.get(i).getTrailId())==null) {
                         if (Utilities.isNetworkAvailable(mInflater.getContext())) {
                             InputStream in = new URL(trails.get(i).getImage()).openStream();
-                            bmp[0] = BitmapFactory.decodeStream(in);
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inSampleSize = 2;
+                            bmp[0] = BitmapFactory.decodeStream(in,null,options);
                             trails.get(i).setDownlImage(bmp[0]);
                             bitmapCache.put(trails.get(i).getTrailId(),bmp[0]);
                         }
@@ -107,7 +111,7 @@ public class AdapterSwipeRefresh extends BaseAdapter {
             protected void onPostExecute(Void result) {
 
 
-                picture.setImageBitmap(trails.get(i).getDownlImage());
+                picture.setImageBitmap(bitmapCache.get(trails.get(i).getTrailId()));
 
             }
 
@@ -117,13 +121,15 @@ public class AdapterSwipeRefresh extends BaseAdapter {
         trailid.setText(String.valueOf(item.trailid));
         if (TrailDb.ifExists(trails.get(i),TrailDb.initiateDB(v.getContext()))&&!trails.get(i).isEditable()){
             favorite.setImageDrawable(v.getResources().getDrawable(R.drawable.heart_filled));
-        }
+        }else
+            favorite.setImageDrawable(v.getResources().getDrawable(R.drawable.heart));
 
 
         favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!TrailDb.ifExists(trails.get(i),TrailDb.initiateDB(v.getContext()))&&!trails.get(i).isEditable()){
+                    Log.e("trailsave",""+trails.get(i));
                     TrailDb.insertIntoDb(trails.get(i), TrailDb.initiateDB(v.getContext()));
                     favorite.setImageDrawable(v.getResources().getDrawable(R.drawable.heart_filled));
 
@@ -146,5 +152,6 @@ public class AdapterSwipeRefresh extends BaseAdapter {
             this.trailid=trailid;
         }
     }
+
 
 }

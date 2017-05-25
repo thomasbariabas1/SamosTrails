@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,8 +35,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import gr.aegean.com.samostrails.Models.Trail;
+import gr.aegean.com.samostrails.SQLDb.DataStartFragment;
 import gr.aegean.com.samostrails.services.Constants;
 import gr.aegean.com.samostrails.services.StartTrailService;
 
@@ -67,8 +70,9 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     double pausedtime=0;
     long sumpausedtime=0;
     Chronometer chrono;
+    private DataStartFragment dataFragment;
     private boolean gpsenabled=true;
-
+    HashMap<String,String> data = new HashMap<>();
     public static StartTrailFragment newInstance() {
         return new StartTrailFragment();
     }
@@ -76,6 +80,20 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FragmentManager fm = getFragmentManager();
+        dataFragment = (DataStartFragment) fm.findFragmentByTag("data");
+        if (dataFragment == null) {
+            // add the fragment
+            dataFragment = new DataStartFragment();
+            fm.beginTransaction().add(dataFragment, "data").commit();
+            // load the data from the web
+            dataFragment.setData(data);
+        }else{
+            firsttime=false;
+            data= dataFragment.getData();
+            Log.e("Saved Data", data.toString());
+
+        }
     }
 
     @Override
@@ -86,7 +104,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         stop = (ImageButton) view.findViewById(R.id.stopbuttonstart);
         ImageButton back = (ImageButton) view.findViewById(R.id.backtrailbutton);
         timer = (TextView) view.findViewById(R.id.timecreatetrail);
-        timer.setText("0");
+        timer.setText("00:00");
         final Bundle bundle = getArguments();
         trail = bundle.getParcelable("trail");
         trailid= trail.getTrailId();
@@ -109,10 +127,8 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         distance = (TextView) view.findViewById(R.id.distancetrail);
         mMapView.getMapAsync(this);
 
-        if(!(backpressed&&hasStarted)){
-            stop.setVisibility(View.GONE);
-            starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_unpressed));
-        }
+
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,8 +170,16 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
                 sumpausedtime=0;
                 starttime=0;
                 firsttime=true;
+                timer.setText("00:00");
+                data.clear();
+                dataFragment.clearData();
             }
         });
+        if(data.size()!=0){
+            timer.setText(data.get("timer"));
+            distance.setText(data.get("distance"));
+            avgSpeed.setText(data.get("avgspeed"));
+        }
         return view;
     }
 
@@ -202,15 +226,11 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
             timer.setText(start);
             chrono.setBase(SystemClock.elapsedRealtime() + stoppedtime);
             chrono.start();
-            Log.e("startedtime",""+starttime);
             firsttime=false;
         }
         else
         sumpausedtime += System.currentTimeMillis()-pausedtime;
 
-        Log.e("sumpausedtime",""+sumpausedtime);
-        Log.e("pausedtime",""+pausedtime);
-        Log.e("System current time",""+System.currentTimeMillis());
         if(stop.getVisibility()!=View.VISIBLE)
             stop.setVisibility(View.VISIBLE);
         ((MainActivity)getActivity()).setHasStartedTrail(trailid);
@@ -228,7 +248,6 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         stoppedtime = chrono.getBase() - SystemClock.elapsedRealtime();
         chrono.stop();
         pausedtime=System.currentTimeMillis();
-        Log.e("pausedtime",""+pausedtime);
         starttrail.setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.start_pressed));
 
     }
@@ -263,13 +282,21 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-
+        data.put("timer",timer.getText().toString());
+        data.put("distance",distance.getText().toString());
+        data.put("avgspeed",avgSpeed.getText().toString());
+        dataFragment.setData(data);
+        Log.e("Saved Data", data.toString());
     }
 
     public void onDestroy(){
         super.onDestroy();
         mMapView.onDestroy();
-
+        data.put("timer",timer.getText().toString());
+        data.put("distance",distance.getText().toString());
+        data.put("avgspeed",avgSpeed.getText().toString());
+        dataFragment.setData(data);
+        doUnbindService();
     }
 
     private void setUpMap() {
@@ -445,22 +472,5 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         }
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            timer.setText(savedInstanceState.getString("timer"));
-            distance.setText(savedInstanceState.getString("distance"));
-            avgSpeed.setText(savedInstanceState.getString("avgspeed"));
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("timer",timer.getText().toString());
-        outState.putString("distance",distance.getText().toString());
-        outState.putString("avgspeed",avgSpeed.getText().toString());
-    }
 
 }
