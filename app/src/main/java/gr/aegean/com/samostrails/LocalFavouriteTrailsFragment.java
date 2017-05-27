@@ -93,7 +93,9 @@ public class LocalFavouriteTrailsFragment extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("trail", favoritetrailsarray.get(position));
+                    Trail trail =  favoritetrailsarray.get(position);
+                    trail.setDownlImage(null);
+                    bundle.putParcelable("trail",trail);
                     Fragment fragment = TrailInfoFragment.newInstance();
                     fragment.setArguments(bundle);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
