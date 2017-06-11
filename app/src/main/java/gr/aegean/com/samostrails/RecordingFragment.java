@@ -174,21 +174,27 @@ public class RecordingFragment extends Fragment implements OnMapReadyCallback, P
             @Override
             public void onClick(View v) {
                 if (TrailLatLonLineString.size() > 0) {
+                    ArrayList<LatLng> temp = new ArrayList<>();
+                    for(LatLng l : TrailLatLonLineString) {
+                        temp.add(l);
+                    }
+                  //  Log.e("TrailLatLonLineString:",""+TrailLatLonLineString.toString());
                     Intent stopIntent = new Intent(getActivity(), TrailService.class);
                     stopIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
                     getActivity().startService(stopIntent);
                     doUnbindService();
-                    dataFragment.dataClear();
                     Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("linestring", TrailLatLonLineString);
+                    bundle.putParcelableArrayList("linestring", temp);
                     bundle.putBoolean("local", false);
                     bundle.putDouble("distance",distancesum);
                     Fragment fragment = CreateTrailFragment.newInstance();
                     fragment.setArguments(bundle);
+
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.content, fragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
+
                 } else
                     Toast.makeText(getActivity(), "Nothing to Save", Toast.LENGTH_LONG).show();
             }

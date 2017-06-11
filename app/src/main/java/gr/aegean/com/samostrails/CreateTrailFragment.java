@@ -31,6 +31,7 @@ import cz.msebera.android.httpclient.Header;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
 import gr.aegean.com.samostrails.Models.Trail;
+import gr.aegean.com.samostrails.SQLDb.DataFragment;
 import gr.aegean.com.samostrails.SQLDb.TrailDb;
 
 import static android.content.ContentValues.TAG;
@@ -58,6 +59,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     Button sendTrail;
     Trail  trail;
     boolean local;
+    private DataFragment dataFragment;
     public static CreateTrailFragment newInstance() {
         return new CreateTrailFragment();
     }
@@ -65,6 +67,14 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FragmentManager fm = getFragmentManager();
+        dataFragment = (DataFragment) fm.findFragmentByTag("TrailLatLonLineString");
+        if (dataFragment == null) {
+            // add the fragment
+            dataFragment = new DataFragment();
+            fm.beginTransaction().add(dataFragment, "TrailLatLonLineString").commit();
+
+        }
     }
 
     @Override
@@ -78,6 +88,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
         local=bundle.getBoolean("local");
         trail=bundle.getParcelable("trail");
         Linestring = bundle.getParcelableArrayList("linestring");
+        Log.e("linestring:",""+Linestring.toString());
         backbutton = (Button) view.findViewById(R.id.backbutton);
         Title = (TextInputEditText) view.findViewById(R.id.title_input);
         Description = (TextInputEditText) view.findViewById(R.id.descriptioninput);
@@ -135,6 +146,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                dataFragment.dataClear();
             }
         });
         backbutton.setOnClickListener(new View.OnClickListener() {
@@ -344,10 +356,12 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
             trail2.setTips(Tips.getText().toString());
             TrailDb.insertIntoDb(trail2, TrailDb.initiateDB(getActivity()));
             Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
+            dataFragment.dataClear();
             Fragment fragment = RecordingFragment.newInstance();
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.content, fragment);
             transaction.commit();
+
         }else{
             trail.setTitle(Title.getText().toString());
             trail.setChildren_Friedly(ChildrenFriendlyin==0);
@@ -365,6 +379,7 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
             trail.setTips(Tips.getText().toString());
             TrailDb.updateDb(trail, TrailDb.initiateDB(getActivity()));
             Toast.makeText(getActivity(), "Your Trail have been saved Locally", Toast.LENGTH_LONG).show();
+            dataFragment.dataClear();
             Fragment fragment = LocalTrailsFragment.newInstance();
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.content, fragment);
