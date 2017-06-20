@@ -92,9 +92,10 @@ public class LocalRecordingTrailsFragment extends Fragment{
             recordingtrails.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                    Trail trail =  recordedtrailsarray.get(position);
+                    trail.setDownlImage(null);
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("trail", recordedtrailsarray.get(position));
+                    bundle.putParcelable("trail",trail);
                     bundle.putBoolean("local",true);
                     Fragment fragment = TrailInfoFragment.newInstance();
                     fragment.setArguments(bundle);

@@ -46,6 +46,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     boolean isActive=true;
     AsyncHttpClient client = new AsyncHttpClient();
     ArrayList<Trail> TrailsArray = new ArrayList<>();
+    ArrayList<Trail> FilteredTrails = new ArrayList<>();
     int i = 0;
 
     public static SearchTrailFragment newInstance() {
@@ -104,6 +105,7 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
                 search(newText);
                 return false;
             }
@@ -128,7 +130,12 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Bundle bundle = new Bundle();
-                Trail trail = TrailsArray.get(position);
+                Trail trail;
+                if(FilteredTrails.size()>0){
+                    trail = FilteredTrails.get(position);
+                }else {
+                    trail= TrailsArray.get(position);
+                }
                 trail.setDownlImage(null);
                 Log.e("trail",""+trail.getDownlImage());
                 bundle.putParcelable("trail",trail );
@@ -202,10 +209,11 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
                         }
                     }
 
-                    if(isActive)
-                    gridView.setAdapter(new AdapterSwipeRefresh(getActivity(), TrailsArray, ((MainActivity) getActivity()).getCache()));
+                    if(isActive) {
+                        AdapterSwipeRefresh b = new AdapterSwipeRefresh(getActivity(), TrailsArray, ((MainActivity) getActivity()).getCache());
+                        gridView.setAdapter(b);
 
-
+                    }
                     // stopping swipe refresh
                     swipeRefreshLayout.setRefreshing(false);
                 } catch (JSONException e) {
@@ -243,14 +251,16 @@ public class SearchTrailFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     public void search(String searchword) {
-        ArrayList<Trail> FilteredTrails = new ArrayList<>();
+            FilteredTrails.clear();
         for (Trail trail : TrailsArray) {
 
             if (trail.getTitle().toLowerCase().contains(searchword.toLowerCase()))
                 FilteredTrails.add(trail);
         }
-        gridView.setAdapter(new AdapterSwipeRefresh(getActivity(), FilteredTrails, ((MainActivity) getActivity()).getCache()));
+        AdapterSwipeRefresh a = new AdapterSwipeRefresh(getActivity(), FilteredTrails, ((MainActivity) getActivity()).getCache());
+        gridView.setAdapter(a);
         gridView.invalidateViews();
+        gridView.deferNotifyDataSetChanged();
     }
 
     public void onStart() {

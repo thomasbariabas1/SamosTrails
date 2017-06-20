@@ -103,6 +103,7 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
                 transaction.commit();
             }
         });
+        backbutton.setVisibility(View.INVISIBLE);
         startRecordedTrails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

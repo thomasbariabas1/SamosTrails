@@ -337,6 +337,9 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
         int kind = KindOfTrail.indexOfChild(radioButtonkind);
         if(!local) {
             Trail trail2 = new Trail(getActivity());
+            if(Title.getText().toString().equals(""))
+                trail2.setTitle("Some trail");
+            else
             trail2.setTitle(Title.getText().toString());
             trail2.setGeometryCollection(getGeometryCollectionFormat(Linestring));
             trail2.setEditable(true);
@@ -363,6 +366,9 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
             transaction.commit();
 
         }else{
+            if(Title.getText().toString().equals(""))
+                trail.setTitle("Some trail");
+            else
             trail.setTitle(Title.getText().toString());
             trail.setChildren_Friedly(ChildrenFriendlyin==0);
             trail.setConnectionToOtherTrails(ConnectionToOtherTrails.getText().toString());
