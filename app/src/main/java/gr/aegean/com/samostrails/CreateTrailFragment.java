@@ -435,10 +435,11 @@ public class CreateTrailFragment extends Fragment implements OnMapReadyCallback 
                     new LatLng(dest.latitude,dest.longitude)
             ).width(5).color(Color.BLUE).geodesic(true));
         }
+            if(Linestring.size()>0) {
+                mMap.addMarker(new MarkerOptions().position(Linestring.get(0)).position(Linestring.get(Linestring.size() - 1)));
 
-            mMap.addMarker(new MarkerOptions().position(Linestring.get(0)).position(Linestring.get(Linestring.size()-1)));
-
-        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(Linestring.get(0) , 14.0f) );
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Linestring.get(0), 14.0f));
+            }
     }
 
 
