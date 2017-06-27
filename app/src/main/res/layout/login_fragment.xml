@@ -66,5 +66,24 @@
         android:shadowDy="0"
         android:shadowRadius="5"/>
 
-
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
+    <Button
+        android:id="@+id/testss"
+        android:layout_width="138dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:drawableStart="@drawable/login"
+        android:text="Login"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/statelist"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"/>
 </LinearLayout>

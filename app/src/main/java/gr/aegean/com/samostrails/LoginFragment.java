@@ -3,6 +3,7 @@ package gr.aegean.com.samostrails;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
@@ -23,11 +31,13 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.message.TokenParser;
 import gr.aegean.com.samostrails.DrupalDroid.ServicesClient;
 import gr.aegean.com.samostrails.DrupalDroid.SystemServices;
 import gr.aegean.com.samostrails.DrupalDroid.UserServices;
 
 import static android.content.ContentValues.TAG;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class LoginFragment extends Fragment {
@@ -38,8 +48,8 @@ public class LoginFragment extends Fragment {
     Activity activity;
     ProgressDialog progressDialog;
     ServicesClient client;
-
-
+    LoginButton  loginButton;
+    CallbackManager callbackManager;
     public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
         return fragment;
@@ -56,8 +66,10 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        FacebookSdk.setApplicationId("631461603708736");
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         View view = inflater.inflate(R.layout.login_fragment, container, false);
-
+        Button b = (Button) view.findViewById(R.id.testss) ;
         client = ((MainActivity) getActivity()).getServicesClient();
         final UserServices us;
         us = new UserServices(client);
@@ -74,7 +86,35 @@ public class LoginFragment extends Fragment {
 
             }
         });
+        callbackManager = CallbackManager.Factory.create();
+         loginButton = (LoginButton) view.findViewById(R.id.login_button);
+        // Callback registration
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Toast.makeText(getActivity(),"assssssssssda", Toast.LENGTH_LONG).show();
+                Log.d("OnSuccess",""+loginResult.getAccessToken());
+            }
 
+            @Override
+            public void onCancel() {
+                Toast.makeText(getActivity(),"cansel", Toast.LENGTH_LONG).show();
+                Log.d("OnCansel","");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Toast.makeText(getActivity(),"Error", Toast.LENGTH_LONG).show();
+                Log.d("OnError","");
+            }
+        });
+
+b.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        Log.e("inside on lick",""+AccessToken.getCurrentAccessToken()) ;
+    }
+});
         return view;
     }
 
@@ -143,6 +183,8 @@ public class LoginFragment extends Fragment {
             password.setText(savedInstanceState.getString("password"));
         }
     }
+
+
     public void onPause(){
         super.onPause();
     }
