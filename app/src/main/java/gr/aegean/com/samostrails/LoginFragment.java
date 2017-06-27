@@ -69,7 +69,7 @@ public class LoginFragment extends Fragment {
         FacebookSdk.setApplicationId("631461603708736");
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         View view = inflater.inflate(R.layout.login_fragment, container, false);
-        Button b = (Button) view.findViewById(R.id.testss) ;
+
         client = ((MainActivity) getActivity()).getServicesClient();
         final UserServices us;
         us = new UserServices(client);
@@ -86,35 +86,42 @@ public class LoginFragment extends Fragment {
 
             }
         });
+        loginButton = (LoginButton) view.findViewById(R.id.login_button);
+        loginButton.setReadPermissions("email");
+        // If using in a fragment
+        loginButton.setFragment(this);
         callbackManager = CallbackManager.Factory.create();
-         loginButton = (LoginButton) view.findViewById(R.id.login_button);
+        if(isLoggedIn())
+            try {
+                fblogin(AccessToken.getCurrentAccessToken().getToken());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         // Callback registration
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Toast.makeText(getActivity(),"assssssssssda", Toast.LENGTH_LONG).show();
-                Log.d("OnSuccess",""+loginResult.getAccessToken());
+
+                Log.e("OnSuccess",loginResult.getAccessToken().getToken());
+                try {
+                    fblogin(loginResult.getAccessToken().getToken());
+                } catch (JSONException e) {
+                   Log.e("exception",""+e.getMessage());
+                }
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(getActivity(),"cansel", Toast.LENGTH_LONG).show();
-                Log.d("OnCansel","");
+                Log.e("OnCansel","");
             }
 
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(getActivity(),"Error", Toast.LENGTH_LONG).show();
-                Log.d("OnError","");
+                Log.e("OnError","");
             }
         });
 
-b.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        Log.e("inside on lick",""+AccessToken.getCurrentAccessToken()) ;
-    }
-});
+
         return view;
     }
 
@@ -168,6 +175,54 @@ b.setOnClickListener(new View.OnClickListener() {
         }
     }
 
+    public void fblogin(String fbtoken) throws JSONException {
+        activity = getActivity();
+        Log.e("inside fblogin","");
+        final String[] token = new String[1];
+        final Fragment fragment = ProfilFragment.newInstance();
+        JSONObject params = new JSONObject();
+        try {
+            params.put("access_token", fbtoken);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+            progressDialog = ProgressDialog.show(activity, "", "Logging you in", true, false);
+            client.post("fboauth/connect", params, new AsyncHttpResponseHandler() {
+                @Override
+                public void onFinish() {
+                    progressDialog.hide();
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
+                        token[0] = jsonObject.getString("token");
+                        client.setToken(token[0]);
+                        Log.e(TAG, token[0]);
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.content, fragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    new AlertDialog.Builder(activity).setMessage("Login was successful.").setPositiveButton("OK", null).setCancelable(true).create().show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    Log.e(TAG, error.getMessage());
+                    Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+
+                    new AlertDialog.Builder(activity).setMessage("Login failed. For:" + new String(responseBody, StandardCharsets.UTF_8)).setPositiveButton("OK", null).setCancelable(true).create().show();
+                }
+            });
+
+    }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -184,7 +239,15 @@ b.setOnClickListener(new View.OnClickListener() {
         }
     }
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
     public void onPause(){
         super.onPause();
     }

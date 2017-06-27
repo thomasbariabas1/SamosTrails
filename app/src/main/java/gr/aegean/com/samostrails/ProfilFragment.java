@@ -1,5 +1,8 @@
 package gr.aegean.com.samostrails;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +18,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
@@ -55,6 +61,8 @@ public class ProfilFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        FacebookSdk.setApplicationId("631461603708736");
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         View view = inflater.inflate(R.layout.profil_fragment, container, false);
         final Fragment fragment = LoginFragment.newInstance();
         aboutus = (TextView) view.findViewById(R.id.aboutus);
@@ -91,6 +99,16 @@ public class ProfilFragment extends Fragment {
         login.setVisibility(View.GONE);
         logout.setVisibility(View.GONE);
         register.setVisibility(View.GONE);
+        if(isLoggedIn()){
+            try {
+                fblogin(AccessToken.getCurrentAccessToken().getToken());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            login.setVisibility(View.GONE);
+            register.setVisibility(View.GONE);
+            logout.setVisibility(View.VISIBLE);
+        }else{
         ss.connect(new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -122,9 +140,35 @@ public class ProfilFragment extends Fragment {
 
             }
         });
+        }
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(isLoggedIn()) {
+                    LoginManager.getInstance().logOut();
+                   // Toast.makeText(getActivity(), "You have Successfully Logout", Toast.LENGTH_LONG).show();
+                    us.logout(new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            Toast.makeText(getActivity(), "You have Successfully Logout", Toast.LENGTH_LONG).show();
+
+                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            transaction.replace(R.id.content, ProfilFragment.newInstance());
+                            transaction.addToBackStack(null);
+                            transaction.commit();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                            Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+                        }
+                    });
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content, ProfilFragment.newInstance());
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
+                else{
                 us.logout(new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -140,7 +184,7 @@ public class ProfilFragment extends Fragment {
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                         Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
                     }
-                });
+                });}
             }
         });
         login.setOnClickListener(new View.OnClickListener() {
@@ -166,30 +210,50 @@ public class ProfilFragment extends Fragment {
         });
         return view;
     }
+    public void fblogin(String fbtoken) throws JSONException {
+       final Activity activity = getActivity();
+        Log.e("inside fblogin","");
+        final String[] token = new String[1];
 
-    /* public void showNotification() {
-         PendingIntent pi = PendingIntent.getActivity(getActivity(), 0, new Intent(getActivity(), MainActivity.class), 0);
-         // Key for the string that's delivered in the action's intent.
-         final String KEY_TEXT_REPLY = "key_text_reply";
-         String replyLabel = "hiiiiiiiiiiiiii";
-         RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
-                 .setLabel(replyLabel)
-                 .build();
-       Action action = new Action.Builder(R.drawable.cast_ic_notification_small_icon,   "wtf", pi)
-                         .addRemoteInput(remoteInput)
-                         .build();
-         Notification notification = new NotificationCompat.Builder( getActivity())
-                 .setTicker("test")
-                 .setSmallIcon(android.R.drawable.ic_menu_report_image)
-                 .setContentTitle("TEST")
-                 .setContentText("TESTING TEST")
-                 .setContentIntent(pi)
-                 .setAutoCancel(false).addAction(action)
-                 .build();
+        JSONObject params = new JSONObject();
+        try {
+            params.put("access_token", fbtoken);
 
-         NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-         notificationManager.notify(0, notification);
-     }*/
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final ProgressDialog progressDialog = ProgressDialog.show(activity, "", "Logging you in with Facebook", true, false);
+        client.post("fboauth/connect", params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onFinish() {
+               progressDialog.hide();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    JSONObject jsonObject = new JSONObject(new String(responseBody, StandardCharsets.UTF_8));
+                    token[0] = jsonObject.getString("token");
+                    client.setToken(token[0]);
+                    Log.e(TAG, token[0]);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+               // new AlertDialog.Builder(activity).setMessage("Login was successful.").setPositiveButton("OK", null).setCancelable(true).create().show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e(TAG, error.getMessage());
+                Log.e(TAG, new String(responseBody, StandardCharsets.UTF_8));
+
+                //new AlertDialog.Builder(activity).setMessage("Login failed. For:" + new String(responseBody, StandardCharsets.UTF_8)).setPositiveButton("OK", null).setCancelable(true).create().show();
+            }
+        });
+
+    }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -201,7 +265,10 @@ public class ProfilFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
     }
-
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
     public void onPause() {
         super.onPause();
     }
