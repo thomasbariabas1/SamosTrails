@@ -6,10 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -28,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
     LruCache<Integer, Bitmap> bitmapCache;
     String TAG = "";
     ServicesClient client = null;
-    int hasStartedTrail=-1;
+    String hasStartedTrail="";
+
     boolean isFirstTime = true;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -102,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    public void setHasStartedTrail(int startedTrail) {
+    public void setHasStartedTrail(String startedTrail) {
         this.hasStartedTrail=startedTrail;
     }
-    public int hasStartedTrail(){
+    public String hasStartedTrail(){
         return hasStartedTrail;
     }
     public void setFirstTime(boolean isFirstTime){

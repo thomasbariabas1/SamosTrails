@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -23,14 +24,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -61,7 +64,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     private double LastLon;
     StartTrailService service;
     boolean mIsBound;
-    int trailid;
+    String trailtitle;
     Trail trail;
     boolean backpressed = false;
     private TextView avgSpeed;
@@ -70,6 +73,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     double pausedtime=0;
     long sumpausedtime=0;
     Chronometer chrono;
+    Bitmap bm;
     private DataStartFragment dataFragment;
     private boolean gpsenabled=true;
     HashMap<String,String> data = new HashMap<>();
@@ -100,6 +104,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.start_trail_fragment, container, false);
+        View custommarker = inflater.inflate(R.layout.custom_marker_with_text_and_image, container, false);
         starttrail = (ImageButton) view.findViewById(R.id.starttrailbutton);
         stop = (ImageButton) view.findViewById(R.id.stopbuttonstart);
         ImageButton back = (ImageButton) view.findViewById(R.id.backtrailbutton);
@@ -107,7 +112,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         timer.setText("00:00");
         final Bundle bundle = getArguments();
         trail = bundle.getParcelable("trail");
-        trailid= trail.getTrailId();
+        trailtitle = trail.getTitle();
         lines = bundle.getParcelableArrayList("lines");
         points = bundle.getParcelableArrayList("points");
         avgSpeed = (TextView) view.findViewById(R.id.avgspeedstart);
@@ -115,6 +120,13 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
         mMapView.onCreate(savedInstanceState);
         backpressed=false;
+        ImageView iv=(ImageView) custommarker.findViewById(R.id.ImageView01);
+        TextView  tv = (TextView) custommarker.findViewById(R.id.textmarkervew);
+        iv.setImageDrawable(getResources().getDrawable(R.drawable.heart));
+        tv.setText("WTF");
+        custommarker.setDrawingCacheEnabled(true);
+        custommarker.buildDrawingCache();
+        bm = custommarker.getDrawingCache();
 
         starttrail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,7 +156,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).setHasStartedTrail(0);
+                ((MainActivity)getActivity()).setHasStartedTrail("");
                 ((MainActivity)getActivity()).setFirstTime(true);
                 stoppedtime = System.currentTimeMillis();
                 hasStarted=false;
@@ -208,14 +220,16 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
             startIntent.putExtra("base",SystemClock.elapsedRealtime() );
             startIntent.setAction(Constants.ACTION.PLAY_ACTION);
             getActivity().startService(startIntent);
-
             startTrail();
+
         } else {
+
             Intent startIntent = new Intent(getActivity(), StartTrailService.class);
             startIntent.setAction(Constants.ACTION.PLAY_ACTION);
             startIntent.putExtra("base",SystemClock.elapsedRealtime());
             getActivity().startService(startIntent);
             stopTrail();
+
         }
     }
 
@@ -233,7 +247,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
 
         if(stop.getVisibility()!=View.VISIBLE)
             stop.setVisibility(View.VISIBLE);
-        ((MainActivity)getActivity()).setHasStartedTrail(trailid);
+        ((MainActivity)getActivity()).setHasStartedTrail(trailtitle);
         ((MainActivity)getActivity()).setFirstTime(false);
         hasStarted = true;
 
@@ -315,6 +329,10 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
                 mMap.addMarker(new MarkerOptions().position(latLng));
             }
         }
+        if(bm!=null)
+        mMap.addMarker(new MarkerOptions()
+                .position(lines.get(3))
+                .icon(BitmapDescriptorFactory.fromBitmap(bm)));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 14.0f));
     }
 

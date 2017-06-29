@@ -107,7 +107,7 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         startRecordedTrails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bundle.putInt("trailid", trail.getTrailId());
+                bundle.putInt("trailtitle", trail.getTrailId());
                 bundle.putParcelableArrayList("lines", fullline);
                 bundle.putParcelableArrayList("points", fullpoints);
                 bundle.putParcelable("trail", trail);
@@ -122,7 +122,7 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         startTrail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bundle.putInt("trailid", trail.getTrailId());
+                bundle.putInt("trailtitle", trail.getTrailId());
                 bundle.putParcelableArrayList("lines", fullline);
                 bundle.putParcelableArrayList("points", fullpoints);
                 bundle.putParcelable("trail", trail);
@@ -136,9 +136,9 @@ public class TrailInfoFragment extends Fragment implements OnMapReadyCallback {
         });
 
         if (!((MainActivity)getActivity()).isFirstTime()) {
-            if (!(trail.getTrailId() == ((MainActivity) getActivity()).hasStartedTrail())|| ((MainActivity) getActivity()).hasStartedTrail()==-1) {
+            if (!(trail.getTitle().equals(((MainActivity) getActivity()).hasStartedTrail())|| ((MainActivity) getActivity()).hasStartedTrail().equals(""))){
                 startTrail.setEnabled(false);
-                Toast.makeText(getActivity(), "You have already Started one trail", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "You have already Started one trail with title:"+((MainActivity) getActivity()).hasStartedTrail(), Toast.LENGTH_LONG).show();
             }else
                 startTrail.setEnabled(true);
         } else {
