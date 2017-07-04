@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <FrameLayout
-        android:id="@+id/framelayout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:layout_width="55dp"
+        android:layout_height="65dp"
+        android:src="@drawable/custom_marker" />
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content">
-
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="vertical">
         <ImageView
-            android:id="@+id/ImageView01"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:id="@+id/custom_marker_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/heart_filled"/>
 
-        <TextView android:id="@+id/textmarkervew"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </FrameLayout>
-</LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

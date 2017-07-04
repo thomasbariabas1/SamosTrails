@@ -1,5 +1,6 @@
 package gr.aegean.com.samostrails;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,7 +8,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +39,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
@@ -73,7 +78,6 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     double pausedtime=0;
     long sumpausedtime=0;
     Chronometer chrono;
-    Bitmap bm;
     private DataStartFragment dataFragment;
     private boolean gpsenabled=true;
     HashMap<String,String> data = new HashMap<>();
@@ -104,7 +108,6 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.start_trail_fragment, container, false);
-        View custommarker = inflater.inflate(R.layout.custom_marker_with_text_and_image, container, false);
         starttrail = (ImageButton) view.findViewById(R.id.starttrailbutton);
         stop = (ImageButton) view.findViewById(R.id.stopbuttonstart);
         ImageButton back = (ImageButton) view.findViewById(R.id.backtrailbutton);
@@ -120,13 +123,7 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
         mMapView = (MapView) view.findViewById(R.id.starttrailmap);
         mMapView.onCreate(savedInstanceState);
         backpressed=false;
-        ImageView iv=(ImageView) custommarker.findViewById(R.id.ImageView01);
-        TextView  tv = (TextView) custommarker.findViewById(R.id.textmarkervew);
-        iv.setImageDrawable(getResources().getDrawable(R.drawable.heart));
-        tv.setText("WTF");
-        custommarker.setDrawingCacheEnabled(true);
-        custommarker.buildDrawingCache();
-        bm = custommarker.getDrawingCache();
+
 
         starttrail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,6 +313,13 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
     private void setUpMap() {
 
         PolylineOptions polyline = new PolylineOptions();
+       /* View marker = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_with_text_and_image, null);
+
+        customMarker = mMap.addMarker(new MarkerOptions()
+                .position(lines.get(3))
+                .title("Title")
+                .snippet("Description")
+                .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker))));*/
 
         if (lines.size() > 0) {
             for (LatLng latlng : lines) {
@@ -329,10 +333,9 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
                 mMap.addMarker(new MarkerOptions().position(latLng));
             }
         }
-        if(bm!=null)
-        mMap.addMarker(new MarkerOptions()
-                .position(lines.get(3))
-                .icon(BitmapDescriptorFactory.fromBitmap(bm)));
+
+        else
+            Log.e("bitmapcheck","null");
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 14.0f));
     }
 
@@ -489,6 +492,20 @@ public class StartTrailFragment extends Fragment implements OnMapReadyCallback, 
             dialog.show();
         }
     }
+    // Convert a view to bitmap
+    public static Bitmap createDrawableFromView(Context context, View view) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
 
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        return bitmap;
+    }
 
 }
