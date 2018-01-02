@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Samostrails.iml" filepath="$PROJECT_DIR$/Samostrails.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SamosTrails.iml" filepath="$PROJECT_DIR$/SamosTrails.iml" />
+      <module fileurl="file://C:\Users\Thomas\Desktop\samostrails\SamosTrails\Samostrails.iml" filepath="C:\Users\Thomas\Desktop\samostrails\SamosTrails\Samostrails.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Thomas\Desktop\samostrails\SamosTrails\app\app.iml" filepath="C:\Users\Thomas\Desktop\samostrails\SamosTrails\app\app.iml" />
     </modules>
   </component>
 </project>
