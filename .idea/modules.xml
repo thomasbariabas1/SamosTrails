@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Samostrails.iml" filepath="$PROJECT_DIR$/Samostrails.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../Thomas/Desktop/samostrails/SamosTrails/Samostrails.iml" filepath="$PROJECT_DIR$/../../../Thomas/Desktop/samostrails/SamosTrails/Samostrails.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../Thomas/Desktop/samostrails/SamosTrails/app/app.iml" filepath="$PROJECT_DIR$/../../../Thomas/Desktop/samostrails/SamosTrails/app/app.iml" />
     </modules>
   </component>
 </project>
